@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Settings · PakEsports Scout PRO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/main.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--deep-obsidian); color: var(--on-surface); font-family: var(--font-body); font-size: 15px; line-height: 1.5; overflow: hidden; -webkit-font-smoothing: antialiased; }
+    body { display: flex; flex-direction: column; }
+    a { color: inherit; text-decoration: none; }
+    :root { --sidebar-w: 240px; --nav-h: 60px; }
+
+    .top-nav { display: flex; align-items: center; height: var(--nav-h); padding: 0 20px; background: rgba(7,11,20,0.9); backdrop-filter: blur(40px); border-bottom: 1px solid var(--glass-stroke); flex-shrink: 0; z-index: 100; gap: 0; }
+    .top-nav .brand { font-family: var(--font-headline); font-weight: 800; font-size: 15px; letter-spacing: -0.02em; background: linear-gradient(90deg, var(--toxic-lime), var(--electric-teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; white-space: nowrap; margin-right: 32px; }
+    .top-nav .nav-links { display: flex; align-items: center; gap: 4px; }
+    .top-nav .nav-links a { padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--on-surface-variant); border-radius: 8px; transition: background 0.2s, color 0.2s; white-space: nowrap; }
+    .top-nav .nav-links a:hover { color: var(--on-surface); background: rgba(255,255,255,0.04); }
+    .top-nav .nav-links a.active { color: var(--toxic-lime); background: rgba(163,255,18,0.08); }
+    .top-nav .icon-group { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+    .top-nav .icon-btn { width: 36px; height: 36px; border: none; border-radius: 10px; background: transparent; color: var(--on-surface-variant); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, color 0.2s; }
+    .top-nav .icon-btn:hover { background: rgba(255,255,255,0.06); color: var(--on-surface); }
+    .top-nav .icon-btn .material-symbols-outlined { font-size: 20px; }
+
+    .layout { display: flex; flex: 1; overflow: hidden; }
+
+    .sidebar { width: var(--sidebar-w); flex-shrink: 0; background: rgba(7,11,20,0.95); border-right: 1px solid var(--glass-stroke); display: flex; flex-direction: column; padding: 20px 12px 16px; overflow-y: auto; z-index: 50; }
+    .sidebar .sidebar-header { display: flex; align-items: center; gap: 10px; padding: 0 8px 16px; border-bottom: 1px solid var(--glass-stroke); margin-bottom: 16px; }
+    .sidebar .sidebar-header .material-symbols-outlined { font-size: 22px; color: var(--toxic-lime); }
+    .sidebar .sidebar-header .sidebar-title { font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--toxic-lime); }
+    .sidebar .sidebar-header .switch-link { font-family: var(--font-body); font-size: 11px; color: var(--on-surface-variant); margin-left: auto; transition: color 0.2s; }
+    .sidebar .sidebar-header .switch-link:hover { color: var(--toxic-lime); }
+    .sidebar .nav-section { margin-bottom: 20px; }
+    .sidebar .nav-section .section-label { font-family: var(--font-mono); font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--on-surface-variant); padding: 0 8px; margin-bottom: 6px; }
+    .sidebar .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--on-surface-variant); cursor: pointer; transition: background 0.2s, color 0.2s; position: relative; text-decoration: none; }
+    .sidebar .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--on-surface); }
+    .sidebar .nav-item .material-symbols-outlined { font-size: 18px; }
+    .sidebar .nav-item.active { background: rgba(163,255,18,0.06); color: var(--toxic-lime); border-left: 2px solid var(--toxic-lime); border-radius: 0 8px 8px 0; margin-left: -2px; padding-left: 12px; }
+    .sidebar .nav-item.active .material-symbols-outlined { color: var(--toxic-lime); }
+    .sidebar .spacer { flex: 1; }
+    .sidebar .bottom-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; color: var(--on-surface-variant); cursor: pointer; transition: background 0.2s, color 0.2s; text-decoration: none; }
+    .sidebar .bottom-item:hover { background: rgba(255,255,255,0.04); color: var(--on-surface-variant); }
+    .sidebar .bottom-item .material-symbols-outlined { font-size: 18px; }
+
+    .main-area { flex: 1; overflow-y: auto; padding: 28px; padding-bottom: 100px; position: relative; max-width: 640px; margin: 0 auto; width: 100%; }
+
+    .settings-section { margin-bottom: 2rem; }
+    .settings-section h1 { font-family: var(--font-headline); font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+    .settings-section > p { font-family: var(--font-body); font-size: 14px; color: var(--on-surface-variant); margin-top: 4px; }
+
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; margin-bottom: 0.35rem; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--on-surface-variant); }
+    .btn-group { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+    .btn-danger { background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; }
+
+    .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 56px; background: rgba(7,11,20,0.95); backdrop-filter: blur(40px); border-top: 1px solid var(--glass-stroke); z-index: 200; align-items: center; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom, 0); }
+    .bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 1px; color: var(--on-surface-variant); font-size: 9px; font-weight: 500; letter-spacing: 0.04em; transition: color 0.2s; padding: 4px 0; text-decoration: none; }
+    .bottom-nav a .material-symbols-outlined { font-size: 20px; }
+    .bottom-nav a.active { color: var(--toxic-lime); }
+    .bottom-nav a:hover { color: var(--on-surface-variant); }
+
+    @media (max-width: 1024px) {
+      .sidebar { display: none; }
+      .main-area { padding: 18px 16px; }
+      .bottom-nav { display: flex; }
+    }
+    @media (max-width: 600px) {
+      .top-nav .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body class="shell-player">
+
+    <main class="main-area">
+      <div class="settings-section">
+        <h1>Account Settings</h1>
+        <p>Manage your account, password, and preferences.</p>
+      </div>
+
+      <div class="glass-card">
+        <div id="formError" class="error-msg"></div>
+        <div id="formSuccess" class="success-msg"></div>
+
+        <h2 style="font-family:var(--font-headline);font-size:18px;font-weight:700;margin-bottom:1rem;">Change Password</h2>
+        <form id="passwordForm">
+          <div class="form-group">
+            <label for="currentPassword">Current Password</label>
+            <input type="password" id="currentPassword" required>
+          </div>
+          <div class="form-group">
+            <label for="newPassword">New Password</label>
+            <input type="password" id="newPassword" required minlength="6">
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword">Confirm New Password</label>
+            <input type="password" id="confirmPassword" required>
+          </div>
+          <button type="submit" class="btn btn-neon" style="width:auto;">Update Password</button>
+        </form>
+      </div>
+
+      <div class="glass-card" style="margin-top:1.5rem;">
+        <h2 style="font-family:var(--font-headline);font-size:18px;font-weight:700;margin-bottom:0.5rem;color:var(--danger);">Danger Zone</h2>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1rem;">Permanently delete your account and all associated data.</p>
+        <button class="btn btn-danger" id="deleteAccountBtn">Delete Account</button>
+      </div>
+    </main>
+
+  <script type="module">
+    import { requireRole } from '../../services/auth.js';
+    import { api } from '../../services/api.js';
+    import { initLayout } from '../../components/layout.js';
+    initLayout();
+
+    if (!requireRole('player')) throw new Error('unauthorized');
+
+    document.getElementById('passwordForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const err = document.getElementById('formError');
+      const succ = document.getElementById('formSuccess');
+      err.textContent = '';
+      succ.textContent = '';
+
+      const current = document.getElementById('currentPassword').value;
+      const newPass = document.getElementById('newPassword').value;
+      const confirm = document.getElementById('confirmPassword').value;
+
+      if (newPass !== confirm) { err.textContent = 'Passwords do not match.'; return; }
+
+      try {
+        await api('/auth/password', {
+          method: 'PUT',
+          body: JSON.stringify({ currentPassword: current, newPassword: newPass })
+        });
+        succ.textContent = 'Password updated successfully!';
+        document.getElementById('passwordForm').reset();
+      } catch (ex) { err.textContent = ex.message || 'Password update failed'; }
+    };
+
+    document.getElementById('deleteAccountBtn').onclick = async () => {
+      const confirmed = confirm('⚠️ PERMANENTLY delete your account? All data will be lost.');
+      if (!confirmed) return;
+      try {
+        await api('/auth/account', { method: 'DELETE' });
+        logout();
+      } catch { alert('Delete failed'); }
+    };
+  </script>
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  <script type="module" src="../../services/notification.js"></script>
+</body>
+</html>

@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Scout Profile · PakEsports Scout PRO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/main.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --obsidian: #070B14;
+      --graphite: #0B1020;
+      --hyper-purple: #A855F7;
+      --toxic-lime: #A3FF12;
+      --electric-teal: #06B6D4;
+      --glass: rgba(255, 255, 255, 0.04);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-stroke: rgba(255, 255, 255, 0.08);
+      --text: #dfe2f0;
+      --text-muted: rgba(255, 255, 255, 0.4);
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --sidebar-w: 260px;
+      --nav-h: 60px;
+      --font-display: 'Sora', system-ui, sans-serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    html, body { height: 100%; background: var(--obsidian); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.5; overflow: hidden; -webkit-font-smoothing: antialiased; }
+    body { display: flex; flex-direction: column; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; }
+
+    .top-nav { display: flex; align-items: center; height: var(--nav-h); padding: 0 20px; background: rgba(7, 11, 20, 0.9); backdrop-filter: blur(40px); border-bottom: 1px solid var(--glass-border); flex-shrink: 0; z-index: 100; gap: 0; }
+    .top-nav .brand { font-family: var(--font-display); font-weight: 800; font-size: 15px; letter-spacing: -0.02em; background: linear-gradient(90deg, var(--toxic-lime), var(--electric-teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; white-space: nowrap; margin-right: 32px; }
+    .top-nav .brand small { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; -webkit-text-fill-color: var(--text-muted); color: var(--text-muted); background: none; margin-left: 4px; }
+    .top-nav .nav-links { display: flex; align-items: center; gap: 4px; }
+    .top-nav .nav-links a { padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--text-secondary); border-radius: 8px; transition: background 0.2s, color 0.2s; white-space: nowrap; }
+    .top-nav .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .top-nav .nav-links a.active { color: var(--toxic-lime); background: rgba(163,255,18,0.08); }
+    .top-nav .icon-group { display: flex; align-items: center; gap: 6px; margin-left: 16px; }
+    .top-nav .icon-btn { width: 36px; height: 36px; border: none; border-radius: 10px; background: transparent; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, color 0.2s; position: relative; }
+    .top-nav .icon-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+    .top-nav .icon-btn .material-symbols-outlined { font-size: 20px; }
+    .top-nav .notif-dot { position: absolute; top: 4px; right: 4px; width: 7px; height: 7px; border-radius: 50%; background: #FF3B81; box-shadow: 0 0 8px rgba(255,59,129,0.6); }
+
+    .layout { display: flex; flex: 1; overflow: hidden; }
+
+    .sidebar { width: var(--sidebar-w); flex-shrink: 0; background: rgba(7, 11, 20, 0.95); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; padding: 20px 12px 16px; overflow-y: auto; z-index: 50; }
+    .sidebar .scout-profile { display: flex; align-items: center; gap: 12px; padding: 0 8px 16px; border-bottom: 1px solid var(--glass-border); margin-bottom: 16px; }
+    .sidebar .scout-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--toxic-lime); box-shadow: 0 0 16px rgba(163,255,18,0.25); object-fit: cover; flex-shrink: 0; }
+    .sidebar .scout-info h4 { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--text); }
+    .sidebar .scout-info .badge-row { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+    .sidebar .scout-info .badge-row .mode-badge { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 4px; background: rgba(168,85,247,0.15); color: var(--hyper-purple); border: 1px solid rgba(168,85,247,0.25); }
+    .sidebar .scout-info .badge-row .level-badge { font-family: var(--font-mono); font-size: 8px; font-weight: 600; letter-spacing: 0.06em; padding: 2px 6px; border-radius: 4px; background: rgba(6,182,212,0.12); color: var(--electric-teal); border: 1px solid rgba(6,182,212,0.2); }
+    .sidebar .nav-section { margin-bottom: 20px; }
+    .sidebar .nav-section .section-label { font-family: var(--font-mono); font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); padding: 0 8px; margin-bottom: 6px; }
+    .sidebar .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: background 0.2s, color 0.2s; }
+    .sidebar .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+    .sidebar .nav-item .material-symbols-outlined { font-size: 18px; }
+    .sidebar .nav-item.active { background: rgba(163,255,18,0.06); color: var(--toxic-lime); border-left: 2px solid var(--toxic-lime); border-radius: 0 8px 8px 0; margin-left: -2px; padding-left: 12px; }
+    .sidebar .spacer { flex: 1; }
+    .sidebar .bottom-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: background 0.2s, color 0.2s; }
+
+    .main-area { flex: 1; overflow-y: auto; padding: 0; padding-bottom: 100px; position: relative; }
+
+    /* Cover */
+    .cover-wrap { position: relative; height: 180px; background: linear-gradient(135deg, #0B1020 0%, #1a0a2e 40%, #0f1b2d 100%); overflow: hidden; }
+    .cover-wrap::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 20% 50%, rgba(168,85,247,0.15) 0%, transparent 70%), radial-gradient(ellipse at 80% 20%, rgba(6,182,212,0.1) 0%, transparent 60%), radial-gradient(ellipse at 50% 80%, rgba(163,255,18,0.06) 0%, transparent 50%); }
+    .cover-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 40px 40px; }
+
+    /* Hero section overlaid on cover */
+    .hero-section { position: relative; margin-top: -80px; padding: 0 28px; display: flex; align-items: flex-end; gap: 20px; z-index: 2; }
+    .hero-avatar-wrap { position: relative; width: 120px; height: 120px; flex-shrink: 0; }
+    .hero-avatar-wrap img { width: 100%; height: 100%; border-radius: 20px; object-fit: cover; border: 3px solid var(--toxic-lime); box-shadow: 0 0 30px rgba(163,255,18,0.3); }
+    .hero-avatar-wrap .badge-verified { position: absolute; bottom: -4px; right: -4px; width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border: 2px solid var(--obsidian); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; }
+    .hero-info { flex: 1; padding-top: 100px; }
+    .hero-info h1 { font-family: var(--font-display); font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+    .hero-info .hero-sub { color: var(--text-muted); font-size: 14px; margin-top: 2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .hero-info .hero-bio { color: var(--text-secondary); font-size: 14px; margin-top: 8px; line-height: 1.6; max-width: 600px; }
+    .hero-info .hero-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .hero-info .hero-tags .tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; font-family: var(--font-mono); background: rgba(168,85,247,0.12); color: var(--hyper-purple); border: 1px solid rgba(168,85,247,0.2); }
+    .hero-info .hero-tags .tag.lime { background: rgba(163,255,18,0.08); color: var(--toxic-lime); border-color: rgba(163,255,18,0.15); }
+    .hero-info .hero-tags .tag.teal { background: rgba(6,182,212,0.08); color: var(--electric-teal); border-color: rgba(6,182,212,0.15); }
+    .hero-score { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 16px 20px; background: rgba(11,16,32,0.9); border: 1px solid var(--glass-border); border-radius: 16px; min-width: 100px; margin-top: 80px; }
+    .hero-score .score-num { font-family: var(--font-display); font-size: 28px; font-weight: 800; background: linear-gradient(135deg, var(--hyper-purple), var(--electric-teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-score .score-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--font-mono); }
+
+    .hero-actions { display: flex; gap: 8px; margin-left: auto; align-self: flex-end; padding-bottom: 8px; margin-top: 80px; }
+    .hero-actions button { padding: 8px 16px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; white-space: nowrap; }
+    .hero-actions .btn-primary { background: linear-gradient(135deg, #7c3aed, #06b6d4); color: #fff; }
+    .hero-actions .btn-primary:hover { box-shadow: 0 0 16px rgba(124,58,237,0.4); transform: translateY(-1px); }
+    .hero-actions .btn-secondary { background: rgba(255,255,255,0.06); color: var(--text-secondary); border: 1px solid var(--glass-stroke); }
+    .hero-actions .btn-secondary:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+    /* Content area */
+    .content-area { padding: 20px 28px; }
+
+    /* Stats bar */
+    .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .stat-card { background: rgba(11,16,32,0.8); border: 1px solid var(--glass-stroke); border-radius: 12px; padding: 14px 16px; text-align: center; }
+    .stat-card .stat-num { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--toxic-lime); }
+    .stat-card .stat-num.purple { color: var(--hyper-purple); }
+    .stat-card .stat-num.teal { color: var(--electric-teal); }
+    .stat-card .stat-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+    /* Tabs */
+    .tabs-wrap { display: flex; gap: 2px; border-bottom: 1px solid var(--glass-border); margin-bottom: 20px; overflow-x: auto; }
+    .tab-btn { padding: 10px 16px; border: none; background: transparent; color: var(--text-muted); font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+    .tab-btn:hover { color: var(--text-secondary); }
+    .tab-btn.active { color: var(--toxic-lime); border-bottom-color: var(--toxic-lime); }
+    .tab-btn .material-symbols-outlined { font-size: 16px; }
+
+    /* Section cards */
+    .section-card { background: rgba(11,16,32,0.8); border: 1px solid var(--glass-stroke); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .section-card h3 { font-family: var(--font-display); font-size: 15px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .section-card h3 .material-symbols-outlined { font-size: 18px; color: var(--hyper-purple); }
+    .empty-state { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 32px; color: var(--text-muted); text-align: center; }
+    .empty-state .material-symbols-outlined { font-size: 40px; opacity: 0.3; }
+
+    /* Shortlisted player grid */
+    .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+    .player-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-stroke); border-radius: 10px; padding: 14px; text-align: center; transition: border-color 0.2s; }
+    .player-card:hover { border-color: rgba(168,85,247,0.3); }
+    .player-card img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; margin: 0 auto 8px; border: 2px solid var(--glass-border); }
+    .player-card .p-name { font-weight: 600; font-size: 14px; }
+    .player-card .p-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .player-card .p-esv { font-size: 13px; font-weight: 700; color: var(--toxic-lime); font-family: var(--font-mono); margin-top: 6px; }
+    .player-card .p-actions { display: flex; gap: 6px; justify-content: center; margin-top: 10px; }
+    .player-card .p-actions button { padding: 4px 10px; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .player-card .p-actions .btn-msg { background: rgba(168,85,247,0.15); color: var(--hyper-purple); }
+    .player-card .p-actions .btn-msg:hover { background: rgba(168,85,247,0.25); }
+    .player-card .p-actions .btn-view { background: rgba(6,182,212,0.12); color: var(--electric-teal); }
+    .player-card .p-actions .btn-view:hover { background: rgba(6,182,212,0.2); }
+
+    /* Activity timeline */
+    .activity-list { display: flex; flex-direction: column; gap: 4px; }
+    .activity-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; transition: background 0.2s; }
+    .activity-item:hover { background: rgba(255,255,255,0.02); }
+    .activity-item .act-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
+    .activity-item .act-icon.shortlist { background: rgba(163,255,18,0.1); color: var(--toxic-lime); }
+    .activity-item .act-icon.message { background: rgba(168,85,247,0.1); color: var(--hyper-purple); }
+    .activity-item .act-icon.view { background: rgba(6,182,212,0.1); color: var(--electric-teal); }
+    .activity-item .act-icon.remove { background: rgba(255,59,129,0.1); color: #FF3B81; }
+    .activity-item .act-text { flex: 1; font-size: 13px; }
+    .activity-item .act-text strong { font-weight: 600; }
+    .activity-item .act-time { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); white-space: nowrap; }
+
+    /* History timeline */
+    .history-timeline { position: relative; padding-left: 24px; }
+    .history-timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 1px; background: var(--glass-stroke); }
+    .history-entry { position: relative; margin-bottom: 14px; padding: 12px 14px; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-stroke); border-radius: 8px; transition: border-color 0.2s; }
+    .history-entry:hover { border-color: rgba(168,85,247,0.2); }
+    .history-entry::before { content: ''; position: absolute; left: -20px; top: 16px; width: 10px; height: 10px; border-radius: 50%; background: var(--hyper-purple); border: 2px solid var(--obsidian); }
+    .history-entry .h-title { font-weight: 600; font-size: 14px; }
+    .history-entry .h-sub { color: var(--text-secondary); font-size: 12px; margin-top: 2px; }
+    .history-entry .h-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .history-entry .h-meta .h-year { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+    .history-entry .h-meta .h-type { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 6px; border-radius: 4px; background: rgba(167,139,250,0.15); color: #c4b5fd; }
+    .history-entry .h-del { margin-left: auto; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; padding: 2px; border-radius: 4px; transition: all 0.2s; }
+    .history-entry .h-del:hover { color: #ef4444; background: rgba(239,68,68,0.1); }
+
+    .add-history-btn, .add-history-btn-cancel { padding: 6px 14px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; }
+    .add-history-btn { background: rgba(168,85,247,0.12); color: var(--hyper-purple); }
+    .add-history-btn:hover { background: rgba(168,85,247,0.2); }
+    .add-history-btn-cancel { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+
+    .history-form { background: rgba(0,0,0,0.2); border: 1px solid var(--glass-stroke); border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+    .history-form .hf-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .history-form .hf-row input, .history-form .hf-row select { padding: 8px 10px; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text); font-family: inherit; font-size: 13px; outline: none; flex: 1; min-width: 120px; }
+    .history-form .hf-row input:focus, .history-form .hf-row select:focus { border-color: var(--hyper-purple); }
+    .history-form .hf-row select option { background: var(--graphite); color: var(--text); }
+    .history-form .hf-actions { display: flex; gap: 6px; margin-top: 4px; }
+    .history-form .hf-actions button { padding: 6px 14px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .history-form .hf-actions .hf-save { background: linear-gradient(135deg, #7c3aed, #06b6d4); color: #fff; }
+    .history-form .hf-actions .hf-cancel { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+
+    /* Settings form */
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .settings-grid .full { grid-column: 1 / -1; }
+    .form-group { margin-bottom: 0; }
+    .form-group label { display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: var(--text); font-family: inherit; font-size: 13px; outline: none; transition: border-color 0.2s; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--hyper-purple); box-shadow: 0 0 8px rgba(168,85,247,0.15); }
+    .form-group textarea { resize: vertical; min-height: 60px; }
+    .form-group select option { background: var(--graphite); color: var(--text); }
+
+    .avatar-upload-wrap { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+    .avatar-upload-wrap .au-preview { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid var(--glass-border); cursor: pointer; }
+    .avatar-upload-wrap .au-info { font-size: 12px; color: var(--text-muted); }
+    .avatar-upload-wrap .au-info label { color: var(--electric-teal); cursor: pointer; text-decoration: underline; }
+
+    .msg-success { color: #10b981; font-size: 13px; margin-bottom: 8px; }
+    .msg-error { color: #ef4444; font-size: 13px; margin-bottom: 8px; }
+
+    .btn-save { padding: 10px 24px; border: none; border-radius: 8px; background: linear-gradient(135deg, #7c3aed, #06b6d4); color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+    .btn-save:hover { box-shadow: 0 0 16px rgba(124,58,237,0.3); }
+    .btn-danger { padding: 10px 20px; border: none; border-radius: 8px; background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+    .btn-danger:hover { box-shadow: 0 0 12px rgba(239,68,68,0.3); }
+
+    .settings-divider { border: none; border-top: 1px solid var(--glass-stroke); margin: 20px 0; }
+
+    .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 56px; background: rgba(7,11,20,0.95); backdrop-filter: blur(40px); border-top: 1px solid var(--glass-border); z-index: 200; align-items: center; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom, 0); }
+    .bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 1px; color: var(--text-muted); font-size: 9px; font-weight: 500; letter-spacing: 0.04em; transition: color 0.2s; padding: 4px 0; }
+    .bottom-nav a .material-symbols-outlined { font-size: 20px; }
+    .bottom-nav a.active { color: var(--toxic-lime); }
+
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .section-header h3 { margin-bottom: 0; }
+    .tag-lime { background: rgba(163,255,18,0.08); color: var(--toxic-lime); border: 1px solid rgba(163,255,18,0.15); }
+    .tag-purple { background: rgba(168,85,247,0.12); color: var(--hyper-purple); border: 1px solid rgba(168,85,247,0.2); }
+    .tag-teal { background: rgba(6,182,212,0.08); color: var(--electric-teal); border: 1px solid rgba(6,182,212,0.15); }
+
+    .completion-ring { width: 60px; height: 60px; position: relative; }
+    .completion-ring svg { transform: rotate(-90deg); }
+    .completion-ring .ring-bg { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 4; }
+    .completion-ring .ring-fg { fill: none; stroke: var(--toxic-lime); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.5s; }
+    .completion-ring .ring-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--toxic-lime); }
+
+    @media (max-width: 1024px) {
+      .sidebar { display: none; }
+      .main-area { padding-bottom: 56px; }
+      .bottom-nav { display: flex; }
+      .hero-actions { margin-top: 0; align-self: flex-start; }
+      .hero-section { flex-wrap: wrap; margin-top: -60px; padding: 0 16px; }
+      .hero-info { padding-top: 0; width: 100%; }
+      .hero-score { margin-top: 0; flex-direction: row; gap: 12px; min-width: auto; padding: 12px 16px; }
+      .hero-avatar-wrap { width: 90px; height: 90px; }
+      .settings-grid { grid-template-columns: 1fr; }
+      .content-area { padding: 16px; }
+    }
+    @media (max-width: 600px) {
+      .top-nav .nav-links { display: none; }
+      .player-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .spinner { width: 20px; height: 20px; border: 2px solid var(--glass-stroke); border-top-color: var(--hyper-purple); border-radius: 50%; animation: spin 0.6s linear infinite; display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="shell-scout">
+
+    <main class="main-area" id="mainArea">
+
+      <!-- Cover -->
+      <div class="cover-wrap">
+        <div class="cover-grid"></div>
+      </div>
+
+      <!-- Hero -->
+      <div class="hero-section" id="heroSection">
+        <div class="hero-avatar-wrap">
+          <img id="heroAvatar" src="" alt="">
+          <span class="badge-verified" id="verifiedBadge" style="display:none;">&#10003;</span>
+        </div>
+        <div class="hero-info">
+          <h1 id="heroName">@loading...</h1>
+          <div class="hero-sub" id="heroSub"></div>
+          <div class="hero-bio" id="heroBio"></div>
+          <div class="hero-tags" id="heroTags"></div>
+        </div>
+        <div class="hero-score" id="scoutScore">
+          <span class="score-num">-</span>
+          <span class="score-label">Scout Score</span>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-primary" id="editProfileBtn"><span class="material-symbols-outlined" style="font-size:16px;">edit</span> Edit</button>
+          <button class="btn-secondary" id="liquipediaBtn"><span class="material-symbols-outlined" style="font-size:16px;">travel_explore</span> Import</button>
+        </div>
+      </div>
+
+      <div class="content-area">
+        <!-- Stats Bar -->
+        <div class="stats-bar" id="statsBar"></div>
+
+        <!-- Tabs -->
+        <div class="tabs-wrap" id="tabsWrap">
+          <button class="tab-btn active" data-tab="overview"><span class="material-symbols-outlined">person</span> Overview</button>
+          <button class="tab-btn" data-tab="shortlisted"><span class="material-symbols-outlined">bookmark</span> Shortlisted</button>
+          <button class="tab-btn" data-tab="activity"><span class="material-symbols-outlined">timeline</span> Activity</button>
+          <button class="tab-btn" data-tab="history"><span class="material-symbols-outlined">work_history</span> History</button>
+          <button class="tab-btn" data-tab="settings"><span class="material-symbols-outlined">settings</span> Settings</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div class="tab-pane active" id="tabOverview">
+          <div class="section-card">
+            <h3><span class="material-symbols-outlined">info</span> About</h3>
+            <div id="overviewAbout"><p class="empty-state" style="padding:8px 0;">No bio added yet.</p></div>
+          </div>
+          <div class="section-card">
+            <h3><span class="material-symbols-outlined">workspace_premium</span> Achievements</h3>
+            <div id="overviewAchievements"><div class="empty-state"><span class="material-symbols-outlined">military_tech</span><p>No achievements recorded. Import from Liquipedia or add in History.</p></div></div>
+          </div>
+          <div class="section-card">
+            <h3><span class="material-symbols-outlined">link</span> Social Links</h3>
+            <div id="overviewSocial"><div class="empty-state" style="padding:8px 0;"><p>No social links added.</p></div></div>
+          </div>
+          <div class="section-card">
+            <div style="display:flex;align-items:center;gap:20px;">
+              <div class="completion-ring" id="completionRing">
+                <svg width="60" height="60" viewBox="0 0 60 60">
+                  <circle class="ring-bg" cx="30" cy="30" r="24"/>
+                  <circle class="ring-fg" id="completionCircle" cx="30" cy="30" r="24" stroke-dasharray="150.8" stroke-dashoffset="150.8"/>
+                </svg>
+                <div class="ring-text" id="completionPct">0%</div>
+              </div>
+              <div>
+                <strong style="font-size:14px;">Profile Completion</strong>
+                <p style="font-size:12px;color:var(--text-muted);margin-top:4px;" id="completionDetail">Complete your profile to increase visibility.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shortlisted Tab -->
+        <div class="tab-pane" id="tabShortlisted">
+          <div class="section-card">
+            <div class="section-header">
+              <h3><span class="material-symbols-outlined">bookmark</span> Shortlisted Players</h3>
+              <a href="shortlist.html" style="font-size:12px;color:var(--electric-teal);">View All &rarr;</a>
+            </div>
+            <div id="shortlistedContent"><div class="empty-state"><span class="material-symbols-outlined">bookmark</span><p>No players shortlisted yet. Browse the feed to find talent.</p></div></div>
+          </div>
+        </div>
+
+        <!-- Activity Tab -->
+        <div class="tab-pane" id="tabActivity">
+          <div class="section-card">
+            <h3><span class="material-symbols-outlined">timeline</span> Recent Activity</h3>
+            <div id="activityContent"><div class="empty-state"><span class="material-symbols-outlined">history</span><p>No recent activity.</p></div></div>
+          </div>
+        </div>
+
+        <!-- History Tab -->
+        <div class="tab-pane" id="tabHistory">
+          <div class="section-card">
+            <div class="section-header">
+              <h3><span class="material-symbols-outlined">work_history</span> Career Timeline</h3>
+              <button class="add-history-btn" id="addHistoryBtn"><span class="material-symbols-outlined" style="font-size:14px;">add</span> Add Entry</button>
+            </div>
+            <div id="historyFormContainer"></div>
+            <div id="historyContent"><div class="empty-state"><span class="material-symbols-outlined">timeline</span><p>No career history yet. Add your teams, tournaments, and achievements.</p></div></div>
+          </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="tab-pane" id="tabSettings">
+          <div class="section-card">
+            <h3><span class="material-symbols-outlined">edit</span> Edit Profile</h3>
+            <div id="settingsError" class="msg-error"></div>
+            <div id="settingsSuccess" class="msg-success"></div>
+
+            <div class="avatar-upload-wrap">
+              <img id="settingsAvatarPreview" class="au-preview" src="" alt="">
+              <div class="au-info">
+                <label for="avatarUploadInput">Click to upload new avatar</label>
+                <p style="margin-top:2px;">Recommended: square image, at least 200x200</p>
+                <input type="file" id="avatarUploadInput" accept="image/*" style="display:none;">
+              </div>
+            </div>
+
+            <form id="settingsForm">
+              <div class="settings-grid">
+                <div class="form-group">
+                  <label for="sUsername">Username</label>
+                  <input type="text" id="sUsername" required>
+                </div>
+                <div class="form-group">
+                  <label for="sRealName">Real Name</label>
+                  <input type="text" id="sRealName" placeholder="e.g. Ali Raza">
+                </div>
+                <div class="form-group full">
+                  <label for="sBio">Bio</label>
+                  <textarea id="sBio" rows="3" placeholder="Tell scouts about your experience..."></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="sCity">City</label>
+                  <input type="text" id="sCity">
+                </div>
+                <div class="form-group">
+                  <label for="sCountry">Country</label>
+                  <input type="text" id="sCountry" value="Pakistan">
+                </div>
+                <div class="form-group">
+                  <label for="sOrganization">Organization / Team</label>
+                  <input type="text" id="sOrganization" placeholder="e.g. Karachi Kings Esports">
+                </div>
+                <div class="form-group">
+                  <label for="sSpecialty">Coaching Specialty</label>
+                  <input type="text" id="sSpecialty" placeholder="e.g. Valorant / CS2">
+                </div>
+                <div class="form-group">
+                  <label for="sYearsExp">Years of Experience</label>
+                  <input type="number" id="sYearsExp" min="0">
+                </div>
+                <div class="form-group full">
+                  <label for="sAchievements">Achievements & History</label>
+                  <textarea id="sAchievements" rows="3" placeholder="List key achievements..."></textarea>
+                </div>
+                <div class="form-group full">
+                  <label for="sTeamsCoached">Teams Coached</label>
+                  <input type="text" id="sTeamsCoached" placeholder="e.g. Karachi Kings, Team X">
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;margin-top:16px;">
+                <button type="submit" class="btn-save"><span class="material-symbols-outlined" style="font-size:16px;">save</span> Save Changes</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="section-card">
+            <h3><span class="material-symbols-outlined">lock</span> Password</h3>
+            <div id="pwError" class="msg-error"></div>
+            <div id="pwSuccess" class="msg-success"></div>
+            <form id="passwordForm">
+              <div class="settings-grid">
+                <div class="form-group">
+                  <label for="currentPassword">Current Password</label>
+                  <input type="password" id="currentPassword" required>
+                </div>
+                <div class="form-group">
+                  <label for="newPassword">New Password</label>
+                  <input type="password" id="newPassword" required minlength="6">
+                </div>
+                <div class="form-group">
+                  <label for="confirmPassword">Confirm Password</label>
+                  <input type="password" id="confirmPassword" required>
+                </div>
+              </div>
+              <button type="submit" class="btn-save" style="margin-top:12px;">Update Password</button>
+            </form>
+          </div>
+
+          <div class="section-card">
+            <h3><span class="material-symbols-outlined" style="color:#ef4444;">delete_forever</span> Danger Zone</h3>
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Permanently delete your account and all associated data.</p>
+            <button id="deleteAccountBtn" class="btn-danger"><span class="material-symbols-outlined" style="font-size:16px;">delete_forever</span> Delete Account</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+  <script type="module">
+    import { requireRole } from '../../services/auth.js';
+    import { api, API_URL } from '../../services/api.js';
+    import { initLayout } from '../../components/layout.js';
+    initLayout();
+
+    if (!requireRole('scout', 'admin')) throw new Error('unauthorized');
+
+    const userId = parseInt(localStorage.getItem('userId'), 10);
+    const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+
+    let state = null;
+
+    /* ========== DATA LOADING ========== */
+
+    async function loadAll() {
+      try {
+        const [me, scoutData, shortlisted, activity] = await Promise.all([
+          api('/auth/me'),
+          api(`/scouts/${userId}`),
+          api('/scout/shortlist'),
+          api(`/scouts/${userId}/activity`).catch(() => []),
+        ]);
+        state = { me, scoutData, shortlisted, activity };
+        renderAll();
+      } catch (err) {
+        document.getElementById('mainArea').innerHTML = `<div class="content-area"><p style="color:#ef4444;">Failed to load profile: ${err.message}</p></div>`;
+      }
+    }
+
+    /* ========== RENDER ========== */
+
+    function renderAll() {
+      const { me, scoutData, shortlisted, activity } = state;
+      const s = scoutData.scout || {};
+
+      // Hero
+      document.getElementById('heroAvatar').src = me.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${me.username}`;
+      document.getElementById('heroName').textContent = '@' + (me.username || 'scout');
+
+      const nameParts = [];
+      if (me.real_name) nameParts.push(me.real_name);
+      if (s.organization) nameParts.push(s.organization);
+      if (s.coaching_specialty) nameParts.push(s.coaching_specialty);
+      document.getElementById('heroSub').textContent = nameParts.join(' · ');
+
+      const locParts = [];
+      if (me.city) locParts.push(me.city);
+      if (me.country) locParts.push(me.country);
+      const bioLines = [];
+      if (me.bio) bioLines.push(me.bio);
+      if (locParts.length) bioLines.push('📍 ' + locParts.join(', '));
+      document.getElementById('heroBio').textContent = bioLines.join(' — ');
+
+      // Tags
+      const tags = [];
+      if (s.coaching_specialty) tags.push(`<span class="tag lime"><span class="material-symbols-outlined" style="font-size:12px;">sports_esports</span> ${esc(s.coaching_specialty)}</span>`);
+      if (s.years_experience) tags.push(`<span class="tag teal"><span class="material-symbols-outlined" style="font-size:12px;">calendar_month</span> ${s.years_experience}yr</span>`);
+      if (s.liquipedia_verified) tags.push(`<span class="tag"><span class="material-symbols-outlined" style="font-size:12px;">verified</span> Liquipedia</span>`);
+      if (me.profile_source === 'liquipedia') tags.push(`<span class="tag"><span class="material-symbols-outlined" style="font-size:12px;">download</span> Imported</span>`);
+      document.getElementById('heroTags').innerHTML = tags.join('');
+
+      // Verified badge
+      document.getElementById('verifiedBadge').style.display = s.liquipedia_verified ? 'flex' : 'none';
+
+      // Scout score
+      const score = me.scout_score || 0;
+      document.querySelector('#scoutScore .score-num').textContent = score;
+
+      // Stats bar
+      document.getElementById('statsBar').innerHTML = `
+        <div class="stat-card"><div class="stat-num">${s.years_experience || 0}</div><div class="stat-label">Years Exp</div></div>
+        <div class="stat-card"><div class="stat-num">${scoutData.shortlistedCount || 0}</div><div class="stat-label">Shortlisted</div></div>
+        <div class="stat-card"><div class="stat-num">${scoutData.conversationCount || 0}</div><div class="stat-label">Conversations</div></div>
+        <div class="stat-card"><div class="stat-num purple">${me.scout_score || 0}</div><div class="stat-label">Scout Score</div></div>
+        <div class="stat-card"><div class="stat-num teal">${me.esports_value_score || 0}</div><div class="stat-label">ESV Score</div></div>
+        <div class="stat-card"><div class="stat-num">${scoutData.history ? scoutData.history.length : 0}</div><div class="stat-label">History Items</div></div>
+      `;
+
+      renderOverview(me, s);
+      renderShortlisted(shortlisted);
+      renderActivity(activity);
+      renderHistory(scoutData.history || []);
+      populateSettingsForm(me, s);
+      renderCompletion(me, s);
+    }
+
+    /* ========== OVERVIEW TAB ========== */
+
+    function renderOverview(me, s) {
+      // About
+      const aboutParts = [];
+      if (me.bio) aboutParts.push(`<p style="line-height:1.6;">${esc(me.bio)}</p>`);
+      if (me.city || me.country) {
+        const loc = [me.city, me.country].filter(Boolean).join(', ');
+        aboutParts.push(`<p style="color:var(--text-muted);font-size:13px;margin-top:6px;">📍 ${esc(loc)}</p>`);
+      }
+      if (me.email) aboutParts.push(`<p style="color:var(--text-muted);font-size:13px;margin-top:4px;">✉️ ${esc(me.email)}</p>`);
+      document.getElementById('overviewAbout').innerHTML = aboutParts.length ? aboutParts.join('') : '<p class="empty-state" style="padding:8px 0;">No bio added yet.</p>';
+
+      // Achievements
+      const achText = s.achievements || '';
+      document.getElementById('overviewAchievements').innerHTML = achText
+        ? `<p style="white-space:pre-wrap;line-height:1.6;">${esc(achText)}</p>`
+        : '<div class="empty-state"><span class="material-symbols-outlined">military_tech</span><p>No achievements recorded. Import from Liquipedia or add in History.</p></div>';
+
+      // Social links
+      const socials = me.social_links || {};
+      const socialKeys = Object.keys(socials).filter(k => socials[k] && typeof socials[k] === 'string' && socials[k].trim());
+      const platformLabels = { twitter: '𝕏', x: '𝕏', youtube: 'YouTube', twitch: 'Twitch', discord: 'Discord', instagram: 'Instagram', tiktok: 'TikTok', facebook: 'Facebook', steam: 'Steam' };
+      document.getElementById('overviewSocial').innerHTML = socialKeys.length
+        ? `<div style="display:flex;gap:10px;flex-wrap:wrap;">${socialKeys.map(k => {
+            const url = socials[k].startsWith('http') ? socials[k] : 'https://' + socials[k];
+            return `<a href="${url}" target="_blank" rel="noopener" style="padding:6px 14px;border-radius:6px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-stroke);font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:4px;">${platformLabels[k.toLowerCase()] || k}</a>`;
+          }).join('')}</div>`
+        : '<p style="color:var(--text-muted);font-size:13px;">No social links added.</p>';
+    }
+
+    /* ========== SHORTLISTED TAB ========== */
+
+    function renderShortlisted(list) {
+      if (!list || !list.length) {
+        document.getElementById('shortlistedContent').innerHTML = '<div class="empty-state"><span class="material-symbols-outlined">bookmark</span><p>No players shortlisted yet. Browse the feed to find talent.</p></div>';
+        return;
+      }
+      document.getElementById('shortlistedContent').innerHTML = `<div class="player-grid">${list.map(p => `
+        <div class="player-card">
+          <img src="${p.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + p.username}" alt="" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=${p.username}'">
+          <div class="p-name">${esc(p.username)}</div>
+          <div class="p-meta">${esc(p.game || 'Valorant')} · ${esc(p.rank || 'Unranked')}</div>
+          <div class="p-esv">ESV ${p.esv_score || 0}</div>
+          <div class="p-actions">
+            <button class="btn-msg" data-player-id="${p.id}" data-username="${p.username}">Message</button>
+            <button class="btn-view" onclick="window.location.href='../player/public-profile.html?id=${p.id}'">View</button>
+          </div>
+        </div>
+      `).join('')}</div>`;
+
+      document.querySelectorAll('.btn-msg').forEach(btn => {
+        btn.onclick = () => {
+          window.location.href = `messages.html?conv=new&userId=${btn.dataset.playerId}`;
+        };
+      });
+    }
+
+    /* ========== ACTIVITY TAB ========== */
+
+    function renderActivity(list) {
+      if (!list || !list.length) {
+        document.getElementById('activityContent').innerHTML = '<div class="empty-state"><span class="material-symbols-outlined">history</span><p>No recent activity.</p></div>';
+        return;
+      }
+      const icons = { shortlist_add: 'bookmark', shortlist_remove: 'bookmark_remove', profile_view: 'visibility', message: 'chat' };
+      const labels = { shortlist_add: 'shortlisted', shortlist_remove: 'un-shortlisted', profile_view: 'viewed profile of', message: 'messaged' };
+      const iconColors = { shortlist_add: 'shortlist', shortlist_remove: 'remove', profile_view: 'view', message: 'message' };
+
+      document.getElementById('activityContent').innerHTML = `<div class="activity-list">${list.map(a => {
+        const icon = icons[a.activity_type] || 'circle';
+        const label = labels[a.activity_type] || a.activity_type;
+        const color = iconColors[a.activity_type] || 'view';
+        const time = a.created_at ? formatTimeAgo(a.created_at) : '';
+        return `<div class="activity-item">
+          <div class="act-icon ${color}"><span class="material-symbols-outlined" style="font-size:16px;">${icon}</span></div>
+          <div class="act-text">You <strong>${label}</strong> <strong>${esc(a.username || 'Unknown')}</strong></div>
+          <span class="act-time">${time}</span>
+        </div>`;
+      }).join('')}</div>`;
+    }
+
+    /* ========== HISTORY TAB ========== */
+
+    function renderHistory(history) {
+      if (!history || !history.length) {
+        document.getElementById('historyContent').innerHTML = '<div class="empty-state"><span class="material-symbols-outlined">timeline</span><p>No career history yet. Add your teams, tournaments, and achievements.</p></div>';
+        return;
+      }
+      const typeLabels = { team: 'Team', tournament: 'Tournament', achievement: 'Achievement' };
+      document.getElementById('historyContent').innerHTML = `<div class="history-timeline">${history.map(h => `
+        <div class="history-entry" data-id="${h.id}">
+          <div class="h-title">${esc(h.title || '')}</div>
+          ${h.subtitle ? `<div class="h-sub">${esc(h.subtitle)}</div>` : ''}
+          <div class="h-meta">
+            ${h.entry_year ? `<span class="h-year">${h.entry_year}</span>` : ''}
+            <span class="h-type">${typeLabels[h.entry_type] || h.entry_type}</span>
+            <button class="h-del material-symbols-outlined" data-id="${h.id}" title="Delete entry">delete</button>
+          </div>
+        </div>
+      `).join('')}</div>`;
+
+      document.querySelectorAll('.h-del').forEach(btn => {
+        btn.onclick = async () => {
+          if (!confirm('Delete this history entry?')) return;
+          try {
+            await api(`/scouts/${userId}/history/${btn.dataset.id}`, { method: 'DELETE' });
+            const data = await api(`/scouts/${userId}`);
+            state.scoutData = data;
+            renderHistory(data.history || []);
+          } catch (err) {
+            alert('Delete failed: ' + err.message);
+          }
+        };
+      });
+    }
+
+    document.getElementById('addHistoryBtn').onclick = () => {
+      const container = document.getElementById('historyFormContainer');
+      if (container.innerHTML) { container.innerHTML = ''; return; }
+      container.innerHTML = `
+        <div class="history-form">
+          <div class="hf-row">
+            <select id="hfType">
+              <option value="team">Team</option>
+              <option value="tournament">Tournament</option>
+              <option value="achievement">Achievement</option>
+            </select>
+            <input id="hfTitle" placeholder="Title (e.g. Karachi Kings Esports)" style="flex:2;">
+          </div>
+          <div class="hf-row">
+            <input id="hfSubtitle" placeholder="Subtitle / Role (e.g. Head Scout)" style="flex:2;">
+            <input id="hfYear" type="number" placeholder="Year" style="width:100px;">
+          </div>
+          <div class="hf-actions">
+            <button class="hf-save" id="hfSaveBtn">Save</button>
+            <button class="hf-cancel" id="hfCancelBtn">Cancel</button>
+          </div>
+        </div>
+      `;
+      document.getElementById('hfSaveBtn').onclick = async () => {
+        const entry = {
+          entry_type: document.getElementById('hfType').value,
+          title: document.getElementById('hfTitle').value.trim(),
+          subtitle: document.getElementById('hfSubtitle').value.trim(),
+          entry_year: parseInt(document.getElementById('hfYear').value) || null,
+        };
+        if (!entry.title) { alert('Title is required.'); return; }
+        try {
+          await api(`/scouts/${userId}/history`, { method: 'POST', body: JSON.stringify(entry) });
+          container.innerHTML = '';
+          const data = await api(`/scouts/${userId}`);
+          state.scoutData = data;
+          renderHistory(data.history || []);
+        } catch (err) { alert('Failed: ' + err.message); }
+      };
+      document.getElementById('hfCancelBtn').onclick = () => { container.innerHTML = ''; };
+    };
+
+    /* ========== SETTINGS ========== */
+
+    function populateSettingsForm(me, s) {
+      document.getElementById('settingsAvatarPreview').src = me.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${me.username}`;
+      document.getElementById('sUsername').value = me.username || '';
+      document.getElementById('sRealName').value = me.real_name || '';
+      document.getElementById('sBio').value = me.bio || '';
+      document.getElementById('sCity').value = me.city || '';
+      document.getElementById('sCountry').value = me.country || 'Pakistan';
+      document.getElementById('sOrganization').value = s.organization || '';
+      document.getElementById('sSpecialty').value = s.coaching_specialty || '';
+      document.getElementById('sYearsExp').value = s.years_experience || 0;
+      document.getElementById('sAchievements').value = s.achievements || '';
+      document.getElementById('sTeamsCoached').value = s.teams_coached || '';
+    }
+
+    document.getElementById('avatarUploadInput').onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const fd = new FormData();
+      fd.append('doc', file);
+      try {
+        const res = await api('/auth/upload-doc', { method: 'POST', body: fd });
+        document.getElementById('settingsAvatarPreview').src = res.url;
+      } catch (err) { alert('Upload failed: ' + err.message); }
+    };
+
+    document.getElementById('settingsForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const err = document.getElementById('settingsError');
+      const succ = document.getElementById('settingsSuccess');
+      err.textContent = '';
+      succ.textContent = '';
+
+      try {
+        await api('/auth/profile', {
+          method: 'PUT',
+          body: JSON.stringify({
+            username: document.getElementById('sUsername').value,
+            bio: document.getElementById('sBio').value,
+            city: document.getElementById('sCity').value,
+            country: document.getElementById('sCountry').value,
+            real_name: document.getElementById('sRealName').value,
+            avatar: document.getElementById('settingsAvatarPreview').src,
+          })
+        });
+        await api('/auth/scout-profile', {
+          method: 'PUT',
+          body: JSON.stringify({
+            organization: document.getElementById('sOrganization').value,
+            coaching_specialty: document.getElementById('sSpecialty').value,
+            years_experience: parseInt(document.getElementById('sYearsExp').value) || 0,
+            achievements: document.getElementById('sAchievements').value,
+            teams_coached: document.getElementById('sTeamsCoached').value,
+            experience: document.getElementById('sYearsExp').value + ' years',
+          })
+        });
+        localStorage.setItem('username', document.getElementById('sUsername').value);
+        succ.textContent = 'Profile updated successfully!';
+        setTimeout(() => succ.textContent = '', 3000);
+        loadAll();
+      } catch (ex) { err.textContent = ex.message || 'Update failed'; }
+    };
+
+    document.getElementById('passwordForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const err = document.getElementById('pwError');
+      const succ = document.getElementById('pwSuccess');
+      err.textContent = '';
+      succ.textContent = '';
+      const current = document.getElementById('currentPassword').value;
+      const newPass = document.getElementById('newPassword').value;
+      const confirm = document.getElementById('confirmPassword').value;
+      if (newPass !== confirm) { err.textContent = 'Passwords do not match.'; return; }
+      try {
+        await api('/auth/password', { method: 'PUT', body: JSON.stringify({ currentPassword: current, newPassword: newPass }) });
+        succ.textContent = 'Password updated!';
+        document.getElementById('passwordForm').reset();
+      } catch (ex) { err.textContent = ex.message || 'Update failed'; }
+    };
+
+    document.getElementById('deleteAccountBtn').onclick = async () => {
+      if (!confirm('Permanently delete your account? This cannot be undone.')) return;
+      try {
+        await api('/auth/account', { method: 'DELETE' });
+        alert('Account deleted.');
+        logout();
+      } catch { alert('Delete failed'); }
+    };
+
+    /* ========== TABS ========== */
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        document.getElementById('tab' + btn.dataset.tab.charAt(0).toUpperCase() + btn.dataset.tab.slice(1)).classList.add('active');
+      };
+    });
+
+    /* ========== EDIT BUTTON ========== */
+
+    document.getElementById('editProfileBtn').onclick = () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('[data-tab="settings"]').classList.add('active');
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.getElementById('tabSettings').classList.add('active');
+      document.getElementById('mainArea').scrollTop = 0;
+    };
+
+    /* ========== PROFILE COMPLETION ========== */
+
+    function renderCompletion(me, s) {
+      const fields = [
+        me.avatar && me.avatar.includes('dicebear') === false,
+        me.real_name,
+        me.bio,
+        me.city,
+        s.organization,
+        s.coaching_specialty,
+        s.years_experience > 0,
+        s.achievements,
+        me.email,
+        Object.keys(me.social_links || {}).length > 0,
+      ];
+      const total = fields.length;
+      const done = fields.filter(Boolean).length;
+      const pct = Math.round((done / total) * 100);
+      const circumference = 150.8;
+      const offset = circumference - (pct / 100) * circumference;
+
+      document.getElementById('completionPct').textContent = pct + '%';
+      document.getElementById('completionCircle').style.strokeDashoffset = offset;
+      document.getElementById('completionDetail').textContent = `${done} of ${total} fields completed. ${pct < 100 ? 'Complete your profile to increase visibility to players.' : 'Your profile is complete!'}`;
+    }
+
+    /* ========== LIQUIPEDIA IMPORT ========== */
+
+    document.getElementById('liquipediaBtn').onclick = () => window.location.href = 'profile.html';
+
+    /* ========== UTILITIES ========== */
+
+    function formatTimeAgo(iso) {
+      if (!iso) return '';
+      const diff = Date.now() - new Date(iso).getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'just now';
+      if (mins < 60) return mins + 'm';
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return hrs + 'h';
+      const days = Math.floor(hrs / 24);
+      if (days < 7) return days + 'd';
+      return new Date(iso).toLocaleDateString([], { month: 'short', day: 'numeric' });
+    }
+
+    /* ========== BOOT ========== */
+    loadAll();
+  </script>
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  <script type="module" src="../../services/notification.js"></script>
+</body>
+</html>

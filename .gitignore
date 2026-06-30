@@ -1,0 +1,74 @@
+# ===== Dependencies =====
+node_modules/
+backend/node_modules/
+scout-dashboard-nextjs/node_modules/
+
+# ===== Build Output =====
+.next/
+scout-dashboard-nextjs/.next/
+*.tsbuildinfo
+
+# ===== Environment / Secrets =====
+.env
+.env.local
+.env.*
+!.env.example
+backend/config/opencode.json
+
+# ===== Logs =====
+*.log
+
+# ===== Uploads =====
+uploads/
+backend/uploads/
+
+# ===== Training Data =====
+backend/training/
+
+# ===== ML Artifacts =====
+*.pkl
+__pycache__/
+backend/ml/features.csv
+backend/ml/feature_meta.json
+
+# ===== Coverage =====
+coverage/
+lib-cov/
+.nyc_output/
+
+# ===== Generated Exports =====
+stitch_export/
+
+# ===== Backup / Temp / Artifacts =====
+*.backup
+*.fixed
+*.ps1
+null
+mockLiquipedia*.json
+backend/database.json
+backend/db.js.backup
+backend/db.js.fixed
+backend/database.json.backup
+backend/database.json.fixed
+backend/db.js.fix.ps1
+backend/fix_db.ps1
+
+# ===== Vendor Build Artifacts =====
+backend/pandascore-api-master/build/
+backend/pandascore-api-master/.build/
+backend/pandascore-api-master/Packages/
+backend/pandascore-api-master/docs/
+backend/pandascore-api-master/*.xcodeproj
+
+# ===== OS Files =====
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+~$*
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.sublime-workspace

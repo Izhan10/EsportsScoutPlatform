@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player Profile · PakEsports</title>
+  <link rel="stylesheet" href="../../styles/main.css">
+  <style>
+    .profile-hero { display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap; }
+    .profile-hero img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--neon); flex-shrink: 0; }
+    .profile-hero h1 { font-size: 2rem; margin: 0; }
+    .profile-hero .badge-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0; }
+    .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .stats-bar .stat { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; text-align: center; }
+    .stats-bar .stat strong { display: block; font-size: 1.5rem; color: var(--neon); font-family: 'JetBrains Mono', monospace; }
+    .stats-bar .stat span { font-size: 0.8rem; color: var(--muted); }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+    .timeline-item { position: relative; margin-bottom: 1.5rem; }
+    .timeline-item::before { content: ''; position: absolute; left: -1.65rem; top: 0.4rem; width: 12px; height: 12px; border-radius: 50%; background: var(--neon); border: 2px solid var(--bg); }
+    .timeline-item .year { font-size: 0.8rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+    .timeline-item h4 { margin: 0.25rem 0; }
+    .timeline-item p { color: var(--muted); font-size: 0.9rem; }
+    .clip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+    .clip-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; cursor: pointer; transition: 0.2s; }
+    .clip-card:hover { border-color: var(--neon); transform: translateY(-2px); }
+    .liquipedia-badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.75rem; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; }
+    .scout-actions { display: flex; gap: 0.75rem; margin: 1rem 0; flex-wrap: wrap; }
+    .scout-actions .btn { width: auto; }
+    .note-editor { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; margin-top: 1rem; }
+    .note-editor textarea { min-height: 100px; margin-bottom: 0.5rem; }
+
+    /* ── Status Badges ── */
+    .profile-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+    .imported-badge { background: rgba(100,116,139,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
+    .claimed-badge  { background: rgba(250,204,21,0.12); color: #facc15; border: 1px solid rgba(250,204,21,0.3); }
+    .verified-badge { background: rgba(34,197,94,0.12); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+    .profile-badge .material-symbols-outlined { font-size: 16px; }
+
+    /* ── Claim Button ── */
+    .claim-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; border: none; border-radius: 10px; background: linear-gradient(135deg,var(--neon),#00d4a0); color: #04120c; font-family: var(--font-body); font-size: 14px; font-weight: 600; cursor: pointer; transition: transform 0.15s, box-shadow 0.2s; }
+    .claim-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,245,160,0.3); }
+    .claim-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ── Full-screen Verification Modal ── */
+    .verify-modal { position: fixed; inset: 0; z-index: 10000; background: var(--deep-obsidian); overflow-y: auto; }
+    .verify-container { max-width: 520px; margin: 0 auto; padding: 24px 20px 48px; }
+    .verify-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .verify-header h2 { margin: 0; font-size: 20px; flex: 1; }
+    .verify-close-btn { width: 36px; height: 36px; border: none; border-radius: 50%; background: rgba(255,255,255,0.06); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .verify-close-btn:hover { background: rgba(255,255,255,0.12); }
+    .verify-close-btn .material-symbols-outlined { font-size: 20px; }
+
+    .verify-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .verify-card h3 { margin: 0 0 8px; font-size: 16px; }
+    .verify-hint { margin: 0 0 16px; font-size: 13px; color: var(--muted); }
+    .verify-complete { text-align: center; padding: 40px 20px; }
+    .verify-complete h2 { font-size: 24px; margin-bottom: 12px; }
+    .verify-complete p { color: var(--muted); margin-bottom: 20px; }
+
+    /* Progress */
+    .verify-progress-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
+    .verify-progress-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .verify-progress-header span { font-size: 13px; color: var(--muted); }
+    .verify-progress-bar { height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+    .verify-progress-fill { height: 100%; background: linear-gradient(90deg,var(--neon),#00d4a0); border-radius: 3px; transition: width 0.5s ease; }
+
+    /* Social rows */
+    .social-row { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); gap: 12px; }
+    .social-row:last-child { border-bottom: none; }
+    .social-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .social-name { flex: 1; font-size: 14px; font-weight: 500; }
+    .social-status { font-size: 12px; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+    .social-status.connected { background: rgba(34,197,94,0.12); color: #22c55e; }
+    .social-status.pending { background: rgba(250,204,21,0.12); color: #facc15; }
+    .social-status.not-connected { background: rgba(255,255,255,0.04); color: var(--muted); }
+    .social-action-btn { padding: 5px 14px; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 500; white-space: nowrap; transition: background 0.2s; }
+    .social-action-btn.verify { background: var(--neon); color: #04120c; }
+    .social-action-btn.confirm { background: var(--neon); color: #04120c; }
+    .social-action-btn.cancel { background: rgba(255,255,255,0.08); color: var(--text-muted); }
+    .social-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Verify code panel */
+    .verify-code-panel { margin-top: 8px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 8px; }
+    .verify-code-panel code { display: block; font-family: var(--font-mono); font-size: 18px; text-align: center; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 6px; margin: 8px 0; letter-spacing: 2px; color: var(--neon); }
+    .verify-code-panel p { font-size: 12px; color: var(--muted); margin: 4px 0; }
+    .verify-code-panel input { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: rgba(255,255,255,0.04); color: var(--text); font-family: var(--font-mono); font-size: 14px; outline: none; margin: 8px 0; box-sizing: border-box; }
+    .verify-code-panel input:focus { border-color: var(--neon); }
+
+    /* Selfie */
+    .selfie-preview { width: 200px; height: 200px; border-radius: 50%; overflow: hidden; margin: 16px auto; position: relative; background: #000; }
+    .selfie-preview video, .selfie-preview canvas { width: 100%; height: 100%; object-fit: cover; }
+    .selfie-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .selfie-actions { display: flex; gap: 10px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+    .selfie-btn { padding: 8px 20px; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: transform 0.15s; font-family: var(--font-body); }
+    .selfie-btn:hover { transform: scale(1.05); }
+    .selfie-btn.primary { background: var(--neon); color: #04120c; }
+    .selfie-btn.secondary { background: rgba(255,255,255,0.08); color: var(--text); }
+    .selfie-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .selfie-verified-text { text-align: center; color: #22c55e; font-weight: 600; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <main class="app-main scrollable" style="max-width: 900px; margin: 0 auto;">
+      <div id="profileRoot">
+        <p style="color:var(--muted);">Loading profile...</p>
+      </div>
+    </main>
+  </div>
+  <script type="module">
+    import { requireRole, logout, getRole } from '../../services/auth.js';
+    import { api } from '../../services/api.js';
+    import { claimProfile, getClaimStatus, verifySocial, confirmSocial, uploadSelfie } from '../../services/claim.js';
+    import { initLayout } from '../../components/layout.js';
+    initLayout();
+
+    document.getElementById('logoutBtn')?.addEventListener('click', logout);
+
+    const params = new URLSearchParams(window.location.search);
+    const playerId = params.get('id');
+    const currentUserId = parseInt(localStorage.getItem('userId'), 10);
+    const currentRole = getRole();
+
+    let profileData = null;
+
+    if (!playerId) {
+      document.getElementById('profileRoot').innerHTML = '<p style="color:var(--danger);">No player ID specified.</p>';
+    }
+
+    function getStatusBadgeHTML(status) {
+      if (status === 'verified') return '<span class="profile-badge verified-badge"><span class="material-symbols-outlined">verified</span> Verified Player</span>';
+      if (status === 'claimed') return '<span class="profile-badge claimed-badge"><span class="material-symbols-outlined">hourglass_top</span> Claim Pending</span>';
+      return '<span class="profile-badge imported-badge"><span class="material-symbols-outlined">bookmark</span> Imported Profile</span>';
+    }
+
+    async function load() {
+      try {
+        if (!playerId) return;
+        const data = await api(`/players/${playerId}`);
+        profileData = data;
+        const p = data.player;
+        const stats = data.stats;
+        const history = data.history || [];
+        const videos = data.videos || [];
+
+        // Fetch team info
+        let currentTeam = null;
+        let formerTeams = [];
+        try {
+          currentTeam = await api(`/teams/player/${playerId}/current`);
+        } catch (e) { /* no team */ }
+        try {
+          formerTeams = await api(`/teams/player/${playerId}/former`);
+        } catch (e) { /* no former */ }
+        // fallback: use current_team text from user profile
+        if (!currentTeam && p.current_team) {
+          currentTeam = { team_name: p.current_team };
+        }
+
+        const profileStatus = p.profile_status || 'imported';
+        const isClaimedByMe = p.claimed_by_user_id === currentUserId;
+        const isImported = profileStatus === 'imported' || profileStatus === 'community';
+
+        let claimButtonHTML = '';
+        if (isImported && currentRole === 'player') {
+          claimButtonHTML = `<button class="claim-btn" id="claimBtn"><span class="material-symbols-outlined">how_to_reg</span> Claim This Profile</button>`;
+        } else if (profileStatus === 'claimed' && isClaimedByMe) {
+          claimButtonHTML = `<button class="claim-btn" id="claimBtn"><span class="material-symbols-outlined">verified</span> Complete Verification</button>`;
+        }
+
+        document.getElementById('profileRoot').innerHTML = `
+          <div class="glass-card">
+            <div class="profile-hero">
+              <img src="${p.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + p.username}" alt="">
+              <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+                  <h1>@${p.username}</h1>
+                  ${p.liquipedia_verified ? '<span class="liquipedia-badge">✓ Imported from Liquipedia</span>' : ''}
+                </div>
+                ${p.real_name ? `<p style="color:var(--muted);font-size:0.95rem;margin-bottom:0.25rem;">${p.real_name}</p>` : ''}
+                <div class="badge-row">
+                  ${getStatusBadgeHTML(profileStatus)}
+                </div>
+                <div class="badge-row">
+                  <span class="badge">${p.game || p.main_game || 'Valorant'}</span>
+                  <span class="badge">${p.rank || 'Unranked'}</span>
+                  <span class="badge" style="background:rgba(0,245,160,0.2);color:var(--neon);">ESV ${p.esv_score || 0}</span>
+                  ${currentTeam ? `<span class="badge" style="background:rgba(167,139,250,0.2);color:#c4b5fd;display:inline-flex;align-items:center;gap:4px;">
+                    <span style="font-size:0.7rem;">🏠</span> ${currentTeam.team_name}
+                  </span>` : ''}
+                  ${currentTeam && currentTeam.joined_at ? `<span class="badge" style="background:rgba(6,182,212,0.15);color:#22d3ee;font-size:0.65rem;">Joined ${new Date(currentTeam.joined_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>` : ''}
+                  ${currentTeam && currentTeam.creator ? `<span class="badge" style="background:rgba(168,85,247,0.15);color:#c084fc;font-size:0.65rem;">Managed by ${currentTeam.creator.username}</span>` : ''}
+                  ${currentTeam && currentTeam.role ? `<span class="badge" style="background:rgba(0,245,160,0.1);color:var(--neon);font-size:0.65rem;">${currentTeam.role}</span>` : ''}
+                </div>
+                ${p.bio ? `<p style="color:var(--muted);margin-top:0.75rem;line-height:1.5;">${p.bio}</p>` : ''}
+                <p style="color:var(--muted);font-size:0.85rem;margin-top:0.5rem;">
+                  ${p.city || 'Pakistan'}${p.country ? ', ' + p.country : ''}
+                  ${p.years_experience ? ` · ${p.years_experience}yr experience` : ''}
+                  · ${p.preferred_role || 'Flex'}
+                </p>
+                ${p.liquipedia_url ? `<p style="margin-top:0.5rem;"><a href="${p.liquipedia_url}" target="_blank" rel="noopener" style="color:var(--accent);font-size:0.85rem;">View on Liquipedia ↗</a></p>` : ''}
+                ${claimButtonHTML ? `<div style="margin-top:0.75rem;">${claimButtonHTML}</div>` : ''}
+              </div>
+            </div>
+
+            ${currentRole === 'scout' || currentRole === 'admin' ? `
+              <div class="scout-actions">
+                <button class="btn btn-neon" id="shortlistBtn" style="background:linear-gradient(135deg,#7c3aed,#06b6d4);color:#fff;">☆ Shortlist</button>
+                <button class="btn btn-neon" id="messageBtn" style="background:linear-gradient(135deg,#06b6d4,#7c3aed);color:#fff;"><span style="font-size:1rem;">💬</span> Message</button>
+                <button class="btn btn-ghost" id="reportBtn" style="border:1px solid var(--border);">📄 Scouting Report</button>
+                <button class="btn btn-neon" id="recruitBtn" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;"><span style="font-size:1rem;">🤝</span> Recruit to Team</button>
+              </div>
+              <div class="note-editor">
+                <label style="display:block;margin-bottom:0.5rem;font-size:0.9rem;color:var(--muted);font-weight:500;">Internal Notes (scout-only)</label>
+                <textarea id="noteContent" placeholder="Add your private notes about this player...">${data.internalNote || ''}</textarea>
+                <button class="btn btn-neon" id="saveNoteBtn" style="width:auto;background:linear-gradient(135deg,#7c3aed,#06b6d4);">Save Note</button>
+              </div>
+            ` : ''}
+
+            ${currentUserId == playerId ? `
+              <div style="margin-top:1rem;">
+                <a href="profile.html" class="btn btn-neon" style="display:inline-flex;background:linear-gradient(135deg,#7c3aed,#06b6d4);">Edit My Profile</a>
+              </div>
+            ` : ''}
+          </div>
+
+          ${stats ? `
+            <div class="stats-bar">
+              <div class="stat"><strong>${stats.kd_ratio || '1.0'}</strong><span>K/D Ratio</span></div>
+              <div class="stat"><strong>${stats.win_rate || '0'}%</strong><span>Win Rate</span></div>
+              <div class="stat"><strong>${stats.matches_played || 0}</strong><span>Matches</span></div>
+              <div class="stat"><strong>${stats.tournaments_played || 0}</strong><span>Tournaments</span></div>
+              <div class="stat"><strong>${stats.mvps || 0}</strong><span>MVPs</span></div>
+              <div class="stat"><strong>${stats.highest_rank || '—'}</strong><span>Peak Rank</span></div>
+            </div>
+          ` : '<p style="color:var(--muted);margin:1rem 0;">Competitive stats not yet available.</p>'}
+
+          ${history.length ? `
+            <div class="glass-card" style="margin-top:1.5rem;">
+              <h2 style="margin-bottom:1rem;">Career Timeline</h2>
+              <div class="timeline">
+                ${history.map(h => `
+                  <div class="timeline-item">
+                    <div class="year">${h.entry_year || ''}</div>
+                    <h4>${h.title}</h4>
+                    ${h.subtitle ? `<p>${h.subtitle}</p>` : ''}
+                    <span class="badge" style="font-size:0.7rem;text-transform:capitalize;">${h.entry_type}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          ${p.individual_achievements && p.individual_achievements.length ? `
+            <div class="glass-card" style="margin-top:1.5rem;">
+              <h2 style="margin-bottom:1rem;">Individual Achievements</h2>
+              <div class="timeline">
+                ${p.individual_achievements.sort((a,b) => (b.year||'').localeCompare(a.year||'')).map(a => `
+                  <div class="timeline-item">
+                    <div class="year">${a.year || ''}</div>
+                    <h4>${a.title}</h4>
+                    <p style="color:var(--muted);font-size:0.8rem;">${a.source === 'manual' ? 'Added manually' : 'Imported from Liquipedia'}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          ${videos.length ? `
+            <div class="glass-card" style="margin-top:1.5rem;">
+              <h2 style="margin-bottom:1rem;">Gameplay Clips (${videos.length})</h2>
+              <div class="clip-grid">
+                ${videos.map(v => `
+                  <div class="clip-card" data-video="${v.id}">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                      <span class="badge">ESV ${v.esv_score || '—'}</span>
+                      <span style="font-size:0.75rem;color:var(--muted);">${v.game_title}</span>
+                    </div>
+                    <p style="color:var(--muted);font-size:0.9rem;margin-bottom:0.5rem;">${v.caption || ''}</p>
+                    <p style="font-size:0.8rem;color:var(--muted);">${v.views || 0} views · ${v.likes || 0} likes</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          ${formerTeams.length ? `
+            <div class="glass-card" style="margin-top:1.5rem;">
+              <h2 style="margin-bottom:1rem;">Former Teams</h2>
+              <div class="timeline">
+                ${formerTeams.map(ft => `
+                  <div class="timeline-item">
+                    <div class="year">${ft.left_at ? new Date(ft.left_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : ''}</div>
+                    <h4>${ft.team_name}</h4>
+                    ${ft.role ? `<p>Role: ${ft.role}</p>` : ''}
+                    ${ft.joined_at ? `<p style="font-size:0.8rem;color:var(--muted);">Joined ${new Date(ft.joined_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+        `;
+
+        bindEvents(data);
+      } catch (err) {
+        document.getElementById('profileRoot').innerHTML = `<p style="color:var(--danger);">Failed to load profile: ${err.message}</p>`;
+      }
+    }
+
+    async function bindEvents(data) {
+      const shortlistBtn = document.getElementById('shortlistBtn');
+      if (shortlistBtn) {
+        shortlistBtn.onclick = async () => {
+          try {
+            const res = await api(`/scout/shortlist/${playerId}`, { method: 'POST' });
+            shortlistBtn.textContent = '★ Shortlisted';
+          } catch { shortlistBtn.textContent = '★ Shortlisted'; }
+        };
+      }
+
+      const messageBtn = document.getElementById('messageBtn');
+      if (messageBtn) {
+        messageBtn.onclick = async () => {
+          try {
+            const conv = await api('/conversations/start', { method: 'POST', body: JSON.stringify({ userId: parseInt(playerId) }) });
+            window.location.href = `../scout/messages.html?conv=${conv.id}`;
+          } catch (err) {
+            alert('Failed to start conversation: ' + err.message);
+          }
+        };
+      }
+
+      const reportBtn = document.getElementById('reportBtn');
+      if (reportBtn) {
+        reportBtn.onclick = async () => {
+          try {
+            const report = await api(`/scout/report/${playerId}`);
+            const reportText = `Scouting Report: ${report.player.username}
+ESV: ${report.player.esv_score}
+Rank: ${report.player.rank}
+Game: ${report.player.game}
+K/D: ${report.player.kd_ratio}
+Clips analyzed: ${report.clips.length}
+Generated: ${new Date(report.generatedAt).toLocaleString()}`;
+            const blob = new Blob([reportText], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `scout-report-${report.player.username}.txt`;
+            a.click();
+          } catch { alert('Failed to generate report — no data available'); }
+        };
+      }
+
+      const recruitBtn = document.getElementById('recruitBtn');
+      if (recruitBtn) {
+        recruitBtn.onclick = async () => {
+          try {
+            const convs = await api('/conversations');
+            const existing = convs.find(c => {
+              const otherId = c.participant1_id === currentUserId ? c.participant2_id : c.participant1_id;
+              return otherId === playerId;
+            });
+            if (existing) {
+              window.location.href = `../scout/messages.html?conv=${existing.id}`;
+            } else {
+              window.location.href = `../scout/messages.html?player=${playerId}`;
+            }
+          } catch {
+            window.location.href = `../scout/messages.html?player=${playerId}`;
+          }
+        };
+      }
+
+      const saveNoteBtn = document.getElementById('saveNoteBtn');
+      if (saveNoteBtn) {
+        const noteContent = document.getElementById('noteContent');
+        try {
+          const existing = await api(`/scout/notes/${playerId}`);
+          if (existing.content) noteContent.value = existing.content;
+        } catch {}
+        saveNoteBtn.onclick = async () => {
+          try {
+            await api(`/scout/notes/${playerId}`, { method: 'PUT', body: JSON.stringify({ content: noteContent.value }) });
+            saveNoteBtn.textContent = '✓ Saved';
+            setTimeout(() => { saveNoteBtn.textContent = 'Save Note'; }, 2000);
+          } catch { alert('Failed to save note'); }
+        };
+      }
+
+      /* ── Claim Button ── */
+      const claimBtn = document.getElementById('claimBtn');
+      if (claimBtn) {
+        claimBtn.onclick = () => {
+          const p = profileData.player;
+          const profileStatus = p.profile_status || 'imported';
+          if (profileStatus === 'imported' || profileStatus === 'community') {
+            if (!confirm(`Claim @${p.username} as your profile?\n\nYou'll need to:\n• Connect 2 social accounts\n• Take a live selfie`)) return;
+            handleClaim();
+          } else if (profileStatus === 'claimed') {
+            openVerifyModal();
+          }
+        };
+      }
+    }
+
+    async function handleClaim() {
+      const claimBtn = document.getElementById('claimBtn');
+      if (claimBtn) { claimBtn.disabled = true; claimBtn.textContent = 'Claiming...'; }
+      try {
+        await claimProfile(playerId);
+        await load();
+        const newClaimBtn = document.getElementById('claimBtn');
+        if (newClaimBtn) {
+          newClaimBtn.textContent = 'Complete Verification';
+          newClaimBtn.disabled = false;
+        }
+        openVerifyModal();
+      } catch (err) {
+        alert(err.message);
+        if (claimBtn) { claimBtn.disabled = false; claimBtn.textContent = 'Claim This Profile'; }
+      }
+    }
+
+    /* ═══ VERIFICATION MODAL ═══ */
+    let verifyStream = null;
+
+    function openVerifyModal() {
+      document.getElementById('verifyModal').style.display = '';
+      document.body.style.overflow = 'hidden';
+      loadVerificationStatus();
+    }
+
+    function closeVerifyModal() {
+      stopCamera();
+      document.getElementById('verifyModal').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('verifyCloseBtn').onclick = closeVerifyModal;
+    document.getElementById('verifyViewProfileBtn').onclick = closeVerifyModal;
+
+    async function loadVerificationStatus() {
+      try {
+        const status = await getClaimStatus(playerId);
+        renderVerificationStatus(status);
+      } catch (err) {
+        console.error('Failed to load verification status:', err);
+      }
+    }
+
+    function renderVerificationStatus(status) {
+      const completed = status.total_completed || 0;
+      const required = status.total_required || 3;
+      const pct = Math.round((completed / required) * 100);
+
+      document.getElementById('verifyProgressText').textContent = `${completed} / ${required} Completed`;
+      document.getElementById('verifyProgressFill').style.width = `${pct}%`;
+
+      const badge = document.getElementById('verifyModalBadge');
+      if (status.is_verified) {
+        badge.className = 'profile-badge verified-badge';
+        badge.innerHTML = '<span class="material-symbols-outlined">verified</span> Verified Player';
+      } else {
+        badge.className = 'profile-badge claimed-badge';
+        badge.innerHTML = '<span class="material-symbols-outlined">hourglass_top</span> Claim Pending';
+      }
+
+      document.getElementById('verifyCompleteSection').style.display = status.is_verified ? '' : 'none';
+
+      renderSocialList(status.social_accounts || []);
+      renderSelfieSection(status);
+    }
+
+    function renderSocialList(accounts) {
+      const container = document.getElementById('socialList');
+      const providerIcons = {
+        instagram: '📸', youtube: '🎬', twitter: '🐦', twitch: '📺', discord: '💬'
+      };
+      const providerNames = {
+        instagram: 'Instagram', youtube: 'YouTube', twitter: 'X (Twitter)', twitch: 'Twitch', discord: 'Discord'
+      };
+
+      container.innerHTML = accounts.map(acc => {
+        const icon = providerIcons[acc.provider] || '🔗';
+        const name = providerNames[acc.provider] || acc.provider;
+        let statusHTML, actionHTML;
+
+        if (acc.verified) {
+          statusHTML = '<span class="social-status connected">Connected ✓</span>';
+          actionHTML = '';
+        } else if (acc.verification_code) {
+          statusHTML = '<span class="social-status pending">Pending</span>';
+          actionHTML = `
+            <button class="social-action-btn confirm" onclick="showConfirmCode('${acc.provider}', '${acc.verification_code}')">Confirm Code</button>
+            <button class="social-action-btn cancel" onclick="startSocialVerify('${acc.provider}')">Retry</button>
+          `;
+        } else {
+          statusHTML = '<span class="social-status not-connected">Not Connected</span>';
+          actionHTML = `<button class="social-action-btn verify" onclick="startSocialVerify('${acc.provider}')">Verify</button>`;
+        }
+
+        return `
+          <div class="social-row" id="social-row-${acc.provider}">
+            <div class="social-icon" style="background:rgba(255,255,255,0.04);">${icon}</div>
+            <span class="social-name">${name}</span>
+            ${statusHTML}
+            <div class="social-actions">${actionHTML}</div>
+          </div>
+          <div id="code-panel-${acc.provider}" style="display:none;"></div>
+        `;
+      }).join('');
+    }
+
+    window.startSocialVerify = async (provider) => {
+      const row = document.querySelector(`#social-row-${provider}`);
+      const panel = document.getElementById(`code-panel-${provider}`);
+      if (!panel) return;
+
+      panel.style.display = '';
+      panel.innerHTML = '<p style="font-size:13px;color:var(--muted);padding:8px 0;">Generating code...</p>';
+
+      try {
+        const res = await verifySocial(playerId, provider, '');
+        panel.innerHTML = `
+          <div class="verify-code-panel">
+            <p>Post this code in your ${provider} bio/about section:</p>
+            <code>${res.code}</code>
+            <p style="font-size:11px;color:var(--muted);">After posting, click Confirm below. Code expires in 24 hours.</p>
+            <input type="text" id="confirm-code-input-${provider}" placeholder="Enter code to confirm" value="${res.code}">
+            <div style="display:flex;gap:8px;">
+              <button class="social-action-btn confirm" onclick="confirmSocialCode('${provider}')">Confirm</button>
+              <button class="social-action-btn cancel" onclick="document.getElementById('code-panel-${provider}').style.display='none'">Cancel</button>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        panel.innerHTML = `<p style="color:var(--danger);font-size:13px;padding:8px 0;">${err.message}</p>`;
+      }
+    };
+
+    window.confirmSocialCode = async (provider) => {
+      const input = document.getElementById(`confirm-code-input-${provider}`);
+      const code = input ? input.value.trim() : '';
+      if (!code) return alert('Enter the verification code');
+
+      try {
+        await confirmSocial(playerId, provider, code);
+        await loadVerificationStatus();
+        await load();
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+
+    window.showConfirmCode = (provider, code) => {
+      const panel = document.getElementById(`code-panel-${provider}`);
+      if (!panel) return;
+      panel.style.display = '';
+      panel.innerHTML = `
+        <div class="verify-code-panel">
+          <p>Enter the code you posted on ${provider}:</p>
+          <input type="text" id="confirm-code-input-${provider}" placeholder="Paste verification code" value="${code}">
+          <div style="display:flex;gap:8px;">
+            <button class="social-action-btn confirm" onclick="confirmSocialCode('${provider}')">Confirm</button>
+            <button class="social-action-btn cancel" onclick="document.getElementById('code-panel-${provider}').style.display='none'">Cancel</button>
+          </div>
+        </div>
+      `;
+    };
+
+    function renderSelfieSection(status) {
+      const section = document.getElementById('selfieSection');
+      if (status.selfie_verified) {
+        section.innerHTML = `
+          <div class="selfie-verified-text"><span class="material-symbols-outlined">verified</span> Selfie Verified ✓</div>
+        `;
+        return;
+      }
+      section.innerHTML = `
+        <div class="selfie-preview" id="selfiePreviewInner">
+          <video id="selfieVideo" autoplay playsinline muted style="display:none;"></video>
+          <canvas id="selfieCanvas" style="display:none;"></canvas>
+          <img id="selfieImg" style="display:none;" alt="Selfie">
+          <div id="selfiePlaceholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;">Camera preview</div>
+        </div>
+        <div class="selfie-actions" id="selfieActionsInner">
+          <button class="selfie-btn primary" id="startCameraBtn">📸 Open Camera</button>
+        </div>
+      `;
+      document.getElementById('startCameraBtn').onclick = startCamera;
+    }
+
+    async function startCamera() {
+      try {
+        verifyStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 640 } } });
+        const video = document.getElementById('selfieVideo');
+        video.srcObject = verifyStream;
+        video.style.display = '';
+        document.getElementById('selfiePlaceholder').style.display = 'none';
+        document.getElementById('selfieCanvas').style.display = 'none';
+        document.getElementById('selfieImg').style.display = 'none';
+        await video.play();
+
+        document.getElementById('selfieActionsInner').innerHTML = `
+          <button class="selfie-btn primary" id="captureSelfieBtn">📸 Capture</button>
+          <button class="selfie-btn secondary" id="cancelCameraBtn">Cancel</button>
+        `;
+        document.getElementById('captureSelfieBtn').onclick = captureSelfie;
+        document.getElementById('cancelCameraBtn').onclick = stopCamera;
+      } catch (err) {
+        alert('Camera access denied. Please allow camera permissions.');
+      }
+    }
+
+    function captureSelfie() {
+      const video = document.getElementById('selfieVideo');
+      const canvas = document.getElementById('selfieCanvas');
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 640;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      stopCamera();
+
+      video.style.display = 'none';
+      canvas.style.display = '';
+
+      document.getElementById('selfieActionsInner').innerHTML = `
+        <button class="selfie-btn primary" id="uploadSelfieBtn">⬆ Upload & Verify</button>
+        <button class="selfie-btn secondary" id="retakeSelfieBtn">Retake</button>
+      `;
+      document.getElementById('uploadSelfieBtn').onclick = () => uploadSelfieCapture(canvas);
+      document.getElementById('retakeSelfieBtn').onclick = startCamera;
+    }
+
+    function stopCamera() {
+      if (verifyStream) {
+        verifyStream.getTracks().forEach(t => t.stop());
+        verifyStream = null;
+      }
+      const video = document.getElementById('selfieVideo');
+      if (video) video.srcObject = null;
+    }
+
+    async function uploadSelfieCapture(canvas) {
+      const btn = document.getElementById('uploadSelfieBtn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Uploading...'; }
+      try {
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.85));
+        await uploadSelfie(playerId, blob);
+        await loadVerificationStatus();
+        await load();
+      } catch (err) {
+        alert(err.message);
+        if (btn) { btn.disabled = false; btn.textContent = '⬆ Upload & Verify'; }
+      }
+    }
+
+    load();
+  </script>
+
+  <!-- ═══ VERIFICATION MODAL ═══ -->
+  <div id="verifyModal" class="verify-modal" style="display:none;">
+    <div class="verify-container">
+      <div class="verify-header">
+        <button id="verifyCloseBtn" class="verify-close-btn" aria-label="Close"><span class="material-symbols-outlined">close</span></button>
+        <h2>Verification Dashboard</h2>
+      </div>
+
+      <div class="verify-progress-card">
+        <div class="verify-progress-header">
+          <span id="verifyModalBadge" class="profile-badge claimed-badge"><span class="material-symbols-outlined">hourglass_top</span> Claim Pending</span>
+          <span id="verifyProgressText">0 / 3 Completed</span>
+        </div>
+        <div class="verify-progress-bar">
+          <div id="verifyProgressFill" class="verify-progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="verify-card">
+        <h3>Connect Social Accounts</h3>
+        <p class="verify-hint">Connect at least 2 social accounts and verify ownership by posting a unique code in your bio.</p>
+        <div id="socialList"></div>
+      </div>
+
+      <div class="verify-card">
+        <h3>Selfie Verification</h3>
+        <p class="verify-hint">Take a live selfie to verify your identity.</p>
+        <div id="selfieSection">
+          <div class="selfie-preview" id="selfiePreview">
+            <video id="selfieVideo" autoplay playsinline muted style="display:none;"></video>
+            <canvas id="selfieCanvas" style="display:none;"></canvas>
+            <img id="selfieImg" style="display:none;" alt="Selfie">
+            <div id="selfiePlaceholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;">Camera preview</div>
+          </div>
+          <div class="selfie-actions" id="selfieActions"></div>
+        </div>
+      </div>
+
+      <div id="verifyCompleteSection" style="display:none;" class="verify-card verify-complete">
+        <h2>🎉 You're a Verified Player!</h2>
+        <p>All verification steps completed. Your profile now shows the Verified badge.</p>
+        <button id="verifyViewProfileBtn" class="claim-btn">View Profile</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

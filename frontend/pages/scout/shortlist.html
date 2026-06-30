@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Shortlist · PakEsports Scout PRO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/main.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --obsidian: #070B14;
+      --graphite: #0B1020;
+      --hyper-purple: #A855F7;
+      --toxic-lime: #A3FF12;
+      --electric-teal: #06B6D4;
+      --glass: rgba(255, 255, 255, 0.04);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-stroke: rgba(255, 255, 255, 0.08);
+      --text: #dfe2f0;
+      --text-muted: rgba(255, 255, 255, 0.4);
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --sidebar-w: 260px;
+      --nav-h: 60px;
+      --font-display: 'Sora', system-ui, sans-serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--obsidian);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.5;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body { display: flex; flex-direction: column; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; }
+
+    /* ═══════════ TOP NAV ═══════════ */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      height: var(--nav-h);
+      padding: 0 20px;
+      background: rgba(7, 11, 20, 0.9);
+      backdrop-filter: blur(40px);
+      border-bottom: 1px solid var(--glass-border);
+      flex-shrink: 0;
+      z-index: 100;
+      gap: 0;
+    }
+
+    .top-nav .brand {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, var(--toxic-lime), var(--electric-teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      white-space: nowrap;
+      margin-right: 32px;
+    }
+
+    .top-nav .brand small {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      -webkit-text-fill-color: var(--text-muted);
+      color: var(--text-muted);
+      background: none;
+      margin-left: 4px;
+    }
+
+    .top-nav .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .top-nav .nav-links a {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+
+    .top-nav .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .top-nav .nav-links a.active { color: var(--toxic-lime); background: rgba(163,255,18,0.08); }
+
+    .top-nav .icon-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 16px;
+    }
+
+    .top-nav .icon-btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+    .top-nav .icon-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+
+    .top-nav .icon-btn .material-symbols-outlined { font-size: 20px; }
+
+    .top-nav .notif-dot {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--competitive-red, #FF3B81);
+      box-shadow: 0 0 8px rgba(255,59,129,0.6);
+    }
+
+    .top-nav .notif-btn { position: relative; }
+
+    /* ═══════════ LAYOUT ═══════════ */
+    .layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ═══════════ SIDEBAR ═══════════ */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: rgba(7, 11, 20, 0.95);
+      border-right: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 12px 16px;
+      overflow-y: auto;
+      z-index: 50;
+    }
+
+    .sidebar .scout-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 8px 16px;
+      border-bottom: 1px solid var(--glass-border);
+      margin-bottom: 16px;
+    }
+
+    .sidebar .scout-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--toxic-lime);
+      box-shadow: 0 0 16px rgba(163,255,18,0.25);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .sidebar .scout-info h4 {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .sidebar .scout-info .badge-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .sidebar .scout-info .badge-row .mode-badge {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(168,85,247,0.15);
+      color: var(--hyper-purple);
+      border: 1px solid rgba(168,85,247,0.25);
+    }
+
+    .sidebar .scout-info .badge-row .level-badge {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(6,182,212,0.12);
+      color: var(--electric-teal);
+      border: 1px solid rgba(6,182,212,0.2);
+    }
+
+    .sidebar .nav-section {
+      margin-bottom: 20px;
+    }
+
+    .sidebar .nav-section .section-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 0 8px;
+      margin-bottom: 6px;
+    }
+
+    .sidebar .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      position: relative;
+    }
+
+    .sidebar .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+    .sidebar .nav-item .material-symbols-outlined { font-size: 18px; }
+
+    .sidebar .nav-item.active {
+      background: rgba(163,255,18,0.06);
+      color: var(--toxic-lime);
+      border-left: 2px solid var(--toxic-lime);
+      border-radius: 0 8px 8px 0;
+      margin-left: -2px;
+      padding-left: 12px;
+    }
+
+    .sidebar .nav-item.active .material-symbols-outlined { color: var(--toxic-lime); }
+
+    .sidebar .spacer { flex: 1; }
+
+    .sidebar .bottom-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .sidebar .bottom-item:hover { background: rgba(255,255,255,0.04); color: var(--text-secondary); }
+    .sidebar .bottom-item .material-symbols-outlined { font-size: 18px; }
+
+    /* ═══════════ MAIN CONTENT ═══════════ */
+    .main-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 28px;
+      padding-bottom: 100px;
+      position: relative;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .page-header h1 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    .page-header p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .shortlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+      grid-column: 1 / -1;
+    }
+
+    .empty-state .material-symbols-outlined {
+      font-size: 48px;
+      margin-bottom: 16px;
+      color: var(--glass-border);
+    }
+
+    /* ═══════════ BOTTOM NAV (mobile) ═══════════ */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: rgba(7,11,20,0.95);
+      backdrop-filter: blur(40px);
+      border-top: 1px solid var(--glass-border);
+      z-index: 200;
+      align-items: center;
+      justify-content: space-around;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .bottom-nav a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+      color: var(--text-muted);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+      padding: 4px 0;
+    }
+
+    .bottom-nav a .material-symbols-outlined { font-size: 20px; }
+    .bottom-nav a.active { color: var(--toxic-lime); }
+    .bottom-nav a:hover { color: var(--text-secondary); }
+
+    /* ═══════════ RESPONSIVE ═══════════ */
+    @media (max-width: 1024px) {
+      .sidebar { display: none; }
+      .main-area { padding: 18px 16px; }
+      .bottom-nav { display: flex; }
+    }
+
+    @media (max-width: 600px) {
+      .top-nav .nav-links { display: none; }
+      .page-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+  </style>
+</head>
+<body class="shell-scout">
+
+    <main class="main-area">
+
+      <div class="page-header">
+        <div>
+          <h1>Shortlisted players</h1>
+          <p>Your recruitment pipeline</p>
+        </div>
+      </div>
+
+      <div class="shortlist-grid" id="shortlistGrid"></div>
+
+    </main>
+
+  <script type="module">
+    import { requireRole } from '../../services/auth.js';
+    import { api } from '../../services/api.js';
+    import { initLayout } from '../../components/layout.js';
+    initLayout();
+
+    if (!requireRole('scout', 'admin')) throw new Error('unauthorized');
+
+    async function load() {
+      let list = [];
+      try { list = await api('/scout/shortlist'); } catch { list = []; }
+      const el = document.getElementById('shortlistGrid');
+      if (!list.length) {
+        el.innerHTML = '<p style="color:var(--muted);">No shortlisted players. Use the feed or search to add talent.</p>';
+        return;
+      }
+      el.innerHTML = list.map((p) => `
+        <div class="glass-card">
+          <a href="../player/public-profile.html?id=${p.id}" style="color:inherit;text-decoration:none;">
+            <h3>@${p.username}</h3>
+            <p><span class="badge">${p.game}</span> ${p.rank}</p>
+            <p style="color:#c4b5fd;margin:0.5rem 0;">ESV ${p.esv_score}</p>
+            <p style="color:var(--muted);font-size:0.85rem;">${p.city}</p>
+          </a>
+          <button class="btn btn-ghost" data-remove="${p.id}" style="margin-top:0.75rem;color:var(--danger);">Remove</button>
+        </div>`).join('');
+
+      el.querySelectorAll('[data-remove]').forEach((btn) => {
+        btn.onclick = async () => {
+          try { await api(`/scout/shortlist/${btn.dataset.remove}`, { method: 'DELETE' }); } catch { /* */ }
+          load();
+        };
+      });
+    }
+    load();
+  </script>
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  <script type="module" src="../../services/notification.js"></script>
+</body>
+</html>

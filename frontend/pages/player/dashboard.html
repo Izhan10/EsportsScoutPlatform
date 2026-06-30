@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Dashboard · PakEsports Scout PRO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/main.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--deep-obsidian); color: var(--on-surface); font-family: var(--font-body); font-size: 15px; line-height: 1.5; overflow: hidden; -webkit-font-smoothing: antialiased; }
+    body { display: flex; flex-direction: column; }
+    a { color: inherit; text-decoration: none; }
+    :root { --sidebar-w: 240px; --nav-h: 60px; }
+
+    .top-nav { display: flex; align-items: center; height: var(--nav-h); padding: 0 20px; background: rgba(7,11,20,0.9); backdrop-filter: blur(40px); border-bottom: 1px solid var(--glass-stroke); flex-shrink: 0; z-index: 100; gap: 0; }
+    .top-nav .brand { font-family: var(--font-headline); font-weight: 800; font-size: 15px; letter-spacing: -0.02em; background: linear-gradient(90deg, var(--toxic-lime), var(--electric-teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; white-space: nowrap; margin-right: 32px; }
+    .top-nav .nav-links { display: flex; align-items: center; gap: 4px; }
+    .top-nav .nav-links a { padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--on-surface-variant); border-radius: 8px; transition: background 0.2s, color 0.2s; white-space: nowrap; }
+    .top-nav .nav-links a:hover { color: var(--on-surface); background: rgba(255,255,255,0.04); }
+    .top-nav .nav-links a.active { color: var(--toxic-lime); background: rgba(163,255,18,0.08); }
+    .top-nav .icon-group { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+    .top-nav .icon-btn { width: 36px; height: 36px; border: none; border-radius: 10px; background: transparent; color: var(--on-surface-variant); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, color 0.2s; }
+    .top-nav .icon-btn:hover { background: rgba(255,255,255,0.06); color: var(--on-surface); }
+    .top-nav .icon-btn .material-symbols-outlined { font-size: 20px; }
+
+    .layout { display: flex; flex: 1; overflow: hidden; }
+
+    .sidebar { width: var(--sidebar-w); flex-shrink: 0; background: rgba(7,11,20,0.95); border-right: 1px solid var(--glass-stroke); display: flex; flex-direction: column; padding: 20px 12px 16px; overflow-y: auto; z-index: 50; }
+    .sidebar .sidebar-header { display: flex; align-items: center; gap: 10px; padding: 0 8px 16px; border-bottom: 1px solid var(--glass-stroke); margin-bottom: 16px; }
+    .sidebar .sidebar-header .material-symbols-outlined { font-size: 22px; color: var(--toxic-lime); }
+    .sidebar .sidebar-header .sidebar-title { font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--toxic-lime); }
+    .sidebar .nav-section { margin-bottom: 20px; }
+    .sidebar .nav-section .section-label { font-family: var(--font-mono); font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--on-surface-variant); padding: 0 8px; margin-bottom: 6px; }
+    .sidebar .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--on-surface-variant); cursor: pointer; transition: background 0.2s, color 0.2s; text-decoration: none; }
+    .sidebar .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--on-surface); }
+    .sidebar .nav-item .material-symbols-outlined { font-size: 18px; }
+    .sidebar .nav-item.active { background: rgba(163,255,18,0.06); color: var(--toxic-lime); border-left: 2px solid var(--toxic-lime); border-radius: 0 8px 8px 0; margin-left: -2px; padding-left: 12px; }
+    .sidebar .nav-item.active .material-symbols-outlined { color: var(--toxic-lime); }
+    .sidebar .spacer { flex: 1; }
+    .sidebar .bottom-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; color: var(--on-surface-variant); cursor: pointer; transition: background 0.2s, color 0.2s; text-decoration: none; }
+    .sidebar .bottom-item:hover { background: rgba(255,255,255,0.04); color: var(--on-surface-variant); }
+    .sidebar .bottom-item .material-symbols-outlined { font-size: 18px; }
+
+    .main-area { flex: 1; overflow-y: auto; padding: 28px; padding-bottom: 100px; }
+
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 8px; }
+    .page-header h1 { font-family: var(--font-headline); font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+    .page-header .live-indicator { display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--toxic-lime); }
+    .page-header .live-indicator .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--toxic-lime); box-shadow: 0 0 8px var(--toxic-lime); animation: pulse-dot 1.5s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+    .stat-card { background: rgba(11, 16, 32, 0.6); border: 1px solid var(--glass-stroke); border-radius: 16px; padding: 18px 20px; transition: border-color 0.3s; }
+    .stat-card:hover { border-color: rgba(163,255,18,0.3); }
+    .stat-card .stat-icon { font-size: 20px; margin-bottom: 6px; }
+    .stat-card .stat-value { font-family: var(--font-headline); font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
+    .stat-card .stat-label { font-size: 11px; color: var(--on-surface-variant); font-weight: 500; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .dashboard-grid { display: grid; grid-template-columns: 8fr 4fr; gap: 20px; }
+    .left-col, .right-col { display: flex; flex-direction: column; gap: 20px; }
+
+    .card { background: rgba(11, 16, 32, 0.6); border: 1px solid var(--glass-stroke); border-radius: 16px; padding: 20px; }
+    .card h3 { font-family: var(--font-headline); font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+    .card h3 .material-symbols-outlined { font-size: 18px; color: var(--toxic-lime); }
+
+    .perf-grid { display: grid; gap: 12px; }
+    .perf-bar { display: flex; align-items: center; gap: 12px; }
+    .perf-bar .perf-label { font-size: 12px; font-weight: 600; color: var(--on-surface-variant); width: 100px; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.04em; }
+    .perf-bar .perf-track { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+    .perf-bar .perf-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+    .perf-bar .perf-fill.lime { background: linear-gradient(90deg, var(--toxic-lime), #7acc0e); }
+    .perf-bar .perf-fill.purple { background: linear-gradient(90deg, var(--hyper-purple), #d18cff); }
+    .perf-bar .perf-fill.teal { background: linear-gradient(90deg, var(--electric-teal), #0ef0ff); }
+    .perf-bar .perf-fill.red { background: linear-gradient(90deg, var(--competitive-red), #ff7ca6); }
+    .perf-bar .perf-value { font-family: var(--font-mono); font-size: 13px; font-weight: 600; width: 36px; text-align: right; }
+
+    .clip-list { display: flex; flex-direction: column; gap: 10px; }
+    .clip-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: rgba(255,255,255,0.02); border-radius: 10px; transition: background 0.2s; cursor: pointer; }
+    .clip-item:hover { background: rgba(255,255,255,0.05); }
+    .clip-item .clip-thumb { width: 48px; height: 36px; border-radius: 6px; background: var(--graphite); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--on-surface-variant); font-size: 18px; }
+    .clip-item .clip-info { flex: 1; min-width: 0; }
+    .clip-item .clip-info .clip-caption { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .clip-item .clip-info .clip-meta { font-size: 11px; color: var(--on-surface-variant); }
+    .clip-item .clip-esv { font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--toxic-lime); }
+    .clip-item .clip-delete { width: 32px; height: 32px; border: none; border-radius: 6px; background: transparent; color: var(--on-surface-variant); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, color 0.2s; flex-shrink: 0; }
+    .clip-item .clip-delete:hover { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .clip-item .clip-delete .material-symbols-outlined { font-size: 18px; }
+
+    .activity-list { display: flex; flex-direction: column; gap: 8px; }
+    .activity-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 8px; font-size: 13px; }
+    .activity-item .act-icon { font-size: 16px; color: var(--electric-teal); }
+    .activity-item .act-text { flex: 1; }
+    .activity-item .act-text strong { color: var(--on-surface); font-weight: 600; }
+    .activity-item .act-time { font-size: 11px; color: var(--on-surface-variant); white-space: nowrap; }
+
+    .tournament-list { display: flex; flex-direction: column; gap: 10px; }
+    .tourney-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: rgba(255,255,255,0.02); border-radius: 10px; }
+    .tourney-item .tourney-icon { font-size: 20px; }
+    .tourney-item .tourney-info { flex: 1; }
+    .tourney-item .tourney-info .tourney-name { font-size: 13px; font-weight: 600; }
+    .tourney-item .tourney-info .tourney-meta { font-size: 11px; color: var(--on-surface-variant); }
+    .tourney-item .tourney-prize { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--electric-teal); }
+
+    .no-data { text-align: center; padding: 24px; color: var(--on-surface-variant); font-size: 13px; }
+
+    .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 56px; background: rgba(7,11,20,0.95); backdrop-filter: blur(40px); border-top: 1px solid var(--glass-stroke); z-index: 200; align-items: center; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom, 0); }
+    .bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 1px; color: var(--on-surface-variant); font-size: 9px; font-weight: 500; letter-spacing: 0.04em; transition: color 0.2s; padding: 4px 0; text-decoration: none; }
+    .bottom-nav a .material-symbols-outlined { font-size: 20px; }
+    .bottom-nav a.active { color: var(--toxic-lime); }
+    .bottom-nav a:hover { color: var(--on-surface-variant); }
+
+    @media (max-width: 1024px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .main-area { padding: 18px 16px; }
+      .bottom-nav { display: flex; }
+    }
+    @media (max-width: 600px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .stat-card { padding: 14px 16px; }
+      .stat-card .stat-value { font-size: 20px; }
+      .top-nav .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body class="shell-player">
+
+  <main class="main-area">
+    <div class="page-header">
+      <h1>Player Dashboard</h1>
+      <div class="live-indicator">
+        <span class="live-dot"></span>
+        PROFILE ACTIVE
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon">🧠</div>
+        <div class="stat-value" id="statEsv">—</div>
+        <div class="stat-label">ESV Score</div>
+      </div>
+        <div class="stat-card">
+          <div class="stat-icon">👁️</div>
+          <div class="stat-value" id="statViews">—</div>
+          <div class="stat-label">Total Views</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🎮</div>
+          <div class="stat-value" id="statMatches">—</div>
+          <div class="stat-label">Matches Played</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-value" id="statTourneys">—</div>
+          <div class="stat-label">Tournaments</div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="left-col">
+          <div class="card" id="myTeamCard" style="display:none;">
+            <h3><span class="material-symbols-outlined">groups</span> My Team</h3>
+            <div id="myTeamContent"></div>
+          </div>
+
+          <div class="card" id="formerTeamsCard" style="display:none;">
+            <h3><span class="material-symbols-outlined">history</span> Former Teams</h3>
+            <div id="formerTeamsContent"></div>
+          </div>
+
+          <div class="card" id="pendingPermCard" style="display:none;">
+            <h3><span class="material-symbols-outlined">policy</span> Pending Permissions</h3>
+            <div id="pendingPermContent"></div>
+          </div>
+
+          <div class="card" id="offersCard" style="display:none;">
+            <h3><span class="material-symbols-outlined">mail</span> Pending Offers</h3>
+            <div id="offersContent"></div>
+          </div>
+
+          <div class="card">
+            <h3><span class="material-symbols-outlined">neurology</span> Performance Overview</h3>
+            <div class="perf-grid" id="perfGrid">
+              <div class="perf-bar"><span class="perf-label">Authenticity</span><div class="perf-track"><div class="perf-fill lime" style="width:0%"></div></div><span class="perf-value">0</span></div>
+              <div class="perf-bar"><span class="perf-label">Action</span><div class="perf-track"><div class="perf-fill purple" style="width:0%"></div></div><span class="perf-value">0</span></div>
+              <div class="perf-bar"><span class="perf-label">Clarity</span><div class="perf-track"><div class="perf-fill teal" style="width:0%"></div></div><span class="perf-value">0</span></div>
+              <div class="perf-bar"><span class="perf-label">Crosshair</span><div class="perf-track"><div class="perf-fill lime" style="width:0%"></div></div><span class="perf-value">0</span></div>
+              <div class="perf-bar"><span class="perf-label">Quality</span><div class="perf-track"><div class="perf-fill red" style="width:0%"></div></div><span class="perf-value">0</span></div>
+            </div>
+            <div class="perf-grid" id="skillGrid" style="margin-top:1rem;display:none;">
+              <h4 style="grid-column:1/-1;font-size:0.85rem;color:var(--text-muted);margin:0.5rem 0;">Game-Specific Skill</h4>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3><span class="material-symbols-outlined">videocam</span> My Videos <span id="videoCount" style="font-size:0.7rem;font-weight:400;color:var(--on-surface-variant);margin-left:auto;"></span></h3>
+            <div style="margin-bottom:0.75rem;"><a href="upload.html" style="font-size:0.8rem;color:var(--electric-teal);display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-outlined" style="font-size:16px;">add_circle</span> Upload New Video</a></div>
+            <div class="clip-list" id="clipList">
+              <div class="no-data">No clips uploaded yet. <a href="upload.html" style="color:var(--toxic-lime);">Upload your first clip</a></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-col">
+          <div class="card">
+            <h3><span class="material-symbols-outlined">radar</span> Scout Activity</h3>
+            <div class="activity-list" id="activityList">
+              <div class="no-data">Scout activity will appear here when scouts interact with your profile.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3><span class="material-symbols-outlined">emoji_events</span> Upcoming Tournaments</h3>
+            <div class="tournament-list" id="tourneyList">
+              <div class="no-data">No upcoming tournaments found.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+  <script type="module">
+    import { initLayout } from '../../components/layout.js';
+    initLayout();
+    import { requireRole, logout } from '../../services/auth.js';
+    import { api, API_URL } from '../../services/api.js';
+    import { getSocket } from '../../services/socket.js';
+
+    if (!requireRole('player')) throw new Error('unauthorized');
+
+    async function loadDashboard() {
+      try {
+        const me = await api('/auth/me');
+        const pp = me;
+
+        document.getElementById('statEsv').textContent = pp.esv_score != null ? pp.esv_score : '—';
+        document.getElementById('statViews').textContent = '—';
+        document.getElementById('statMatches').textContent = pp.matches_played != null ? pp.matches_played : '—';
+        document.getElementById('statTourneys').textContent = pp.tournaments_played != null ? pp.tournaments_played : '—';
+
+        const SCORE_FIELDS = [
+          { key: 'aim_score', label: 'Authenticity', cls: 'lime' },
+          { key: 'positioning_score', label: 'Action', cls: 'purple' },
+          { key: 'teamwork_score', label: 'Clarity', cls: 'teal' },
+          { key: 'consistency_score', label: 'Crosshair', cls: 'lime' },
+          { key: 'decision_score', label: 'Quality', cls: 'red' },
+        ];
+        const hasAnalysis = SCORE_FIELDS.some(f => pp[f.key] != null);
+        const perfBars = document.querySelectorAll('#perfGrid .perf-bar');
+        if (!hasAnalysis) {
+          perfBars.forEach(bar => {
+            const valEl = bar.querySelector('.perf-value');
+            const fill = bar.querySelector('.perf-fill');
+            if (valEl) valEl.textContent = '—';
+            if (fill) fill.style.width = '0%';
+            const label = bar.querySelector('.perf-label');
+            if (label) label.textContent += ' (no data)';
+          });
+        } else {
+          perfBars.forEach((bar, i) => {
+            const f = SCORE_FIELDS[i] || {};
+            const val = pp[f.key] != null ? pp[f.key] : null;
+            const fill = bar.querySelector('.perf-fill');
+            const valEl = bar.querySelector('.perf-value');
+            if (val != null) {
+              if (fill) fill.style.width = `${Math.min(val, 100)}%`;
+              if (valEl) valEl.textContent = val;
+            } else {
+              if (fill) fill.style.width = '0%';
+              if (valEl) valEl.textContent = '—';
+            }
+          });
+        }
+
+      } catch (e) {
+        console.error('Failed to load profile:', e);
+      }
+
+      // Load team info - determine if player has active team FIRST
+      let hasActiveTeam = false;
+      let teamData = null;
+      try {
+        teamData = await api('/recruitment/my-team/player');
+        const teamCard = document.getElementById('myTeamCard');
+        const teamContent = document.getElementById('myTeamContent');
+        if (teamData) {
+          hasActiveTeam = true;
+          teamCard.style.display = 'block';
+
+          // Fetch full team details with roster
+          let teamRoster = null;
+          try {
+            const fullTeam = await api(`/teams/${teamData.team_id}`);
+            teamRoster = fullTeam.active_members || [];
+          } catch (e) { /* non-critical */ }
+
+          // Check if just recruited (via offer accept)
+      const wasJustRecruited = localStorage.getItem('justRecruited') === 'true' || new URLSearchParams(window.location.search).get('recruited') === 'true';
+      if (wasJustRecruited) {
+        localStorage.removeItem('justRecruited');
+      }
+
+      let html = '';
+      if (wasJustRecruited) {
+        html += `
+          <div style="padding:0.75rem 1rem;margin-bottom:0.75rem;background:rgba(163,255,18,0.1);border:1px solid rgba(163,255,18,0.3);border-radius:10px;display:flex;align-items:center;gap:0.75rem;animation:fadeIn 0.3s ease;">
+            <span class="material-symbols-outlined" style="color:var(--toxic-lime);font-size:24px;">celebration</span>
+            <div>
+              <div style="font-weight:600;font-size:0.9rem;color:var(--toxic-lime);">You've been recruited!</div>
+              <div style="font-size:0.8rem;color:var(--text-muted);">You have joined <strong>${teamData.team_name}</strong> as <strong>${teamData.offer?.role || teamData.role || 'Player'}</strong></div>
+            </div>
+            <button onclick="this.closest('div[style*=\"padding\"]').remove()" style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;">&times;</button>
+          </div>`;
+      }
+
+      html += `
+            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--glass-border);margin-bottom:0.75rem;">
+              <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.2rem;color:#fff;flex-shrink:0;">
+                ${(teamData.team_name || '?')[0].toUpperCase()}
+              </div>
+              <div>
+                <div style="font-weight:600;font-size:1.05rem;">${teamData.team_name}</div>
+                <div style="font-size:0.8rem;color:var(--text-muted);">
+                  ${teamData.role || teamData.offer?.role || 'Player'} · Active
+                </div>
+                ${teamData.creator ? `<div style="font-size:0.8rem;color:var(--text-muted);">Managed by ${teamData.creator.username}</div>` : ''}
+              </div>
+            </div>`;
+
+          // Show roster if we have it
+          if (teamRoster && teamRoster.length) {
+            html += `<div style="font-size:0.85rem;font-weight:600;margin-bottom:0.5rem;color:var(--text-secondary);">Team Roster (${teamRoster.length})</div>`;
+            html += teamRoster.map(m => `
+              <div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0;border-bottom:1px solid var(--glass-border);">
+                <img src="${m.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + m.username}" alt="" style="width:28px;height:28px;border-radius:50%;">
+                <span style="flex:1;font-size:0.85rem;">${m.username}</span>
+                <span style="font-size:0.7rem;color:var(--text-muted);background:rgba(255,255,255,0.06);padding:0.15rem 0.5rem;border-radius:4px;">${m.role || 'player'}</span>
+                <span style="font-size:0.7rem;color:var(--text-muted);">${m.status}</span>
+              </div>
+            `).join('');
+          }
+
+          teamContent.innerHTML = html;
+        } else {
+          teamCard.style.display = 'none';
+        }
+      } catch (e) { console.error('Failed to load team:', e); }
+
+      // Load former teams
+      try {
+        const former = await api('/recruitment/former-teams/player');
+        const formerCard = document.getElementById('formerTeamsCard');
+        const formerContent = document.getElementById('formerTeamsContent');
+        if (former.length) {
+          formerCard.style.display = 'block';
+          formerContent.innerHTML = former.map(f => `
+            <div style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0;border-bottom:1px solid var(--glass-border);opacity:0.7;">
+              <span class="material-symbols-outlined" style="font-size:18px;color:var(--text-muted);">groups</span>
+              <span style="flex:1;font-size:0.85rem;">${f.team_name || 'Unknown Team'}</span>
+              <span style="font-size:0.75rem;color:var(--text-muted);">${f.role || 'Player'} · Former</span>
+            </div>
+          `).join('');
+        }
+      } catch (e) { console.error('Failed to load former teams:', e); }
+
+      // Only show Pending Permissions if player has NO active team
+      const permCard = document.getElementById('pendingPermCard');
+      const offersCard = document.getElementById('offersCard');
+
+      if (!hasActiveTeam) {
+        // Load pending permissions
+        try {
+          const perms = await api('/recruitment/permissions/pending-player');
+          const permContent = document.getElementById('pendingPermContent');
+          if (perms.length) {
+            permCard.style.display = 'block';
+            permContent.innerHTML = perms.map(p => `
+              <div style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0;border-bottom:1px solid var(--glass-border);">
+                <img src="${p.scout_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + p.scout_username}" alt="" style="width:32px;height:32px;border-radius:50%;">
+                <div style="flex:1;font-size:0.85rem;">
+                  <strong>${p.scout_username}</strong> wants recruiting permission
+                </div>
+                <span class="perm-badge pending" style="font-size:8px;">Pending</span>
+              </div>
+            `).join('');
+          }
+        } catch (e) { console.error('Failed to load permissions:', e); }
+
+        // Load pending offers
+        try {
+          const offers = await api('/recruitment/offers/pending-player');
+          const offersContent = document.getElementById('offersContent');
+          if (offers.length) {
+            offersCard.style.display = 'block';
+            offersContent.innerHTML = offers.map(o => `
+              <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 0;border-bottom:1px solid var(--glass-border);">
+                <img src="${o.scout_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + o.scout_username}" alt="" style="width:36px;height:36px;border-radius:50%;">
+                <div style="flex:1;font-size:0.85rem;">
+                  <div style="font-weight:600;">${o.team_name}</div>
+                  <div style="color:var(--text-muted);font-size:0.8rem;">${o.role} · by ${o.scout_username}${o.notes ? ` · "${o.notes}"` : ''}</div>
+                  ${o.contract_duration ? `<div style="color:var(--text-muted);font-size:0.75rem;">Contract: ${o.contract_duration}${o.prize_share ? ` · ${o.prize_share}% prize share` : ''}</div>` : ''}
+                </div>
+                <div style="display:flex;gap:0.5rem;">
+                  <button class="btn btn-neon offer-accept" data-id="${o.id}" style="font-size:0.75rem;padding:0.3rem 0.75rem;">Accept</button>
+                  <button class="btn btn-ghost offer-reject" data-id="${o.id}" style="font-size:0.75rem;padding:0.3rem 0.75rem;">Decline</button>
+                </div>
+              </div>
+            `).join('');
+
+            offersContent.querySelectorAll('.offer-accept').forEach(btn => {
+              btn.addEventListener('click', async () => {
+                try {
+                  await api(`/recruitment/offers/${btn.dataset.id}/accept`, { method: 'PUT' });
+                  localStorage.setItem('justRecruited', 'true');
+                  btn.closest('div[style*="display:flex"]').remove();
+                  setTimeout(() => loadDashboard(), 300);
+                } catch (err) { alert('Failed to accept: ' + err.message); }
+              });
+            });
+            offersContent.querySelectorAll('.offer-reject').forEach(btn => {
+              btn.addEventListener('click', async () => {
+                try {
+                  await api(`/recruitment/offers/${btn.dataset.id}/decline`, { method: 'PUT' });
+                  btn.closest('div[style*="display:flex"]').remove();
+                } catch (err) { alert('Failed to decline: ' + err.message); }
+              });
+            });
+          }
+        } catch (e) { console.error('Failed to load offers:', e); }
+      } else {
+        // Player has active team - hide pending permissions and offers
+        permCard.style.display = 'none';
+        offersCard.style.display = 'none';
+      }
+
+      try {
+        const myId = localStorage.getItem('userId');
+        const myClips = await api(`/videos/player/${myId}`);
+        const clipList = document.getElementById('clipList');
+
+        if (myClips.length) {
+          document.getElementById('videoCount').textContent = `(${myClips.length} total)`;
+          clipList.innerHTML = myClips.map(c => {
+            const date = new Date(c.uploadedAt).toLocaleDateString();
+            return `<div class="clip-item" data-video-id="${c.id}">
+              <div class="clip-thumb"><span class="material-symbols-outlined">play_circle</span></div>
+              <div class="clip-info">
+                <div class="clip-caption">${c.caption || 'Untitled clip'}</div>
+                <div class="clip-meta">${c.views || 0} views · ${c.gameTitle || ''} · ${date}${c.gameSkill && c.gameSkill.skillScore ? ` · Skill ${c.gameSkill.skillScore}` : ''}</div>
+              </div>
+              <div class="clip-esv">ESV ${c.esvScore || '—'}</div>
+              <button class="clip-delete" title="Delete video"><span class="material-symbols-outlined">delete</span></button>
+            </div>`;
+          }).join('');
+
+          const totalViews = myClips.reduce((s, c) => s + (c.views || 0), 0);
+          document.getElementById('statViews').textContent = totalViews > 999 ? `${(totalViews / 1000).toFixed(1)}K` : totalViews;
+
+          // Populate game-specific skill metrics from clips
+          const skillClips = myClips.filter(c => c.gameSkill && c.gameSkill.metrics);
+          if (skillClips.length > 0) {
+            const gameTitle = skillClips[0].gameTitle;
+            const skillGrid = document.getElementById('skillGrid');
+            skillGrid.style.display = 'grid';
+
+            const agg = {};
+            let count = 0;
+            skillClips.forEach(c => {
+              if (c.gameSkill.metrics) {
+                Object.entries(c.gameSkill.metrics).forEach(([k, v]) => {
+                  agg[k] = (agg[k] || 0) + v;
+                });
+                count++;
+              }
+            });
+
+            const metricLabels = {
+              'Valorant': ['Crosshair Smoothness', 'Kill Activity', 'Crosshair Placement', 'Ability Usage', 'Game Knowledge'],
+              'PUBG Mobile': ['Combat Activity', 'Survival Awareness', 'Weapon Handling', 'Movement Quality'],
+              'Tekken 8': ['Combo Execution', 'Defense', 'Damage Output', 'Match Pacing'],
+            };
+
+            const labels = metricLabels[gameTitle] || Object.keys(agg);
+            const colorClasses = ['lime', 'purple', 'teal', 'red', 'lime'];
+
+            skillGrid.innerHTML = `<h4 style="grid-column:1/-1;font-size:0.85rem;color:var(--text-muted);margin:0.5rem 0;">${gameTitle} Skill Metrics</h4>` +
+              Object.keys(agg).map((key, i) => {
+                const avgVal = Math.round(agg[key] / count);
+                const label = labels[i] || key;
+                const cls = colorClasses[i % colorClasses.length];
+                return `
+                  <div class="perf-bar">
+                    <span class="perf-label">${label}</span>
+                    <div class="perf-track">
+                      <div class="perf-fill ${cls}" style="width:${Math.min(avgVal, 100)}%"></div>
+                    </div>
+                    <span class="perf-value">${avgVal}</span>
+                  </div>
+                `;
+              }).join('');
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load clips:', e);
+      }
+
+      try {
+        const tourneys = await api('/tournaments');
+        const tourneyList = document.getElementById('tourneyList');
+        if (tourneys.length) {
+          tourneyList.innerHTML = tourneys.slice(0, 4).map(t => `
+            <div class="tourney-item">
+              <div class="tourney-icon">🏆</div>
+              <div class="tourney-info">
+                <div class="tourney-name">${t.name || 'Tournament'}</div>
+                <div class="tourney-meta">${t.city || ''} · ${t.date ? new Date(t.date).toLocaleDateString() : ''}</div>
+              </div>
+              <div class="tourney-prize">${t.prize || ''}</div>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        console.error('Failed to load tournaments:', e);
+      }
+
+      try {
+        const myId = localStorage.getItem('userId');
+        const activities = await api(`/activities/${myId}`);
+        const activityList = document.getElementById('activityList');
+        if (activities.length) {
+          activityList.innerHTML = activities.map(a => {
+            const labels = { profile_view: 'viewed your profile', shortlist_add: 'shortlisted you', shortlist_remove: 'removed you from shortlist' };
+            const time = new Date(a.created_at).toLocaleDateString();
+            return `<div class="activity-item">
+              <span class="material-symbols-outlined act-icon">radar</span>
+              <div class="act-text"><strong>${a.scout_name}</strong> ${labels[a.activity_type] || a.activity_type}</div>
+              <span class="act-time">${time}</span>
+            </div>`;
+          }).join('');
+        }
+      } catch (e) {
+        console.error('Failed to load activities:', e);
+      }
+    }
+
+    loadDashboard();
+
+    // Delete video handler (event delegation)
+    document.getElementById('clipList').addEventListener('click', async (e) => {
+      const btn = e.target.closest('.clip-delete');
+      if (!btn) return;
+      const item = btn.closest('.clip-item');
+      const videoId = item?.dataset.videoId;
+      if (!videoId) return;
+      if (!confirm('Delete this video? This cannot be undone.')) return;
+      try {
+        await api(`/videos/${videoId}`, { method: 'DELETE' });
+        item.remove();
+        const remaining = document.querySelectorAll('#clipList .clip-item').length;
+        document.getElementById('videoCount').textContent = remaining ? `(${remaining} total)` : '';
+        if (!remaining) {
+          document.getElementById('clipList').innerHTML = '<div class="no-data">No clips uploaded yet. <a href="upload.html" style="color:var(--toxic-lime);">Upload your first clip</a></div>';
+        }
+      } catch { alert('Failed to delete video'); }
+    });
+
+    // ─── Socket.io real-time updates ───
+    const socket = typeof io !== 'undefined' ? getSocket() : null;
+    if (socket) {
+      socket.on('connect', () => {
+        console.log('[Player Dashboard] Socket connected');
+      });
+      socket.on('offerResponse', () => loadDashboard());
+      socket.on('rosterUpdate', () => loadDashboard());
+      socket.on('notification_created', () => loadDashboard());
+      socket.on('recruitmentRequest', () => loadDashboard());
+      socket.on('permissionRequest', () => loadDashboard());
+      socket.on('permissionResponse', () => loadDashboard());
+      socket.on('teamOffer', () => loadDashboard());
+      socket.on('statsUpdate', (data) => {
+        if (data?.type === 'team_changed') {
+          localStorage.setItem('justRecruited', 'true');
+          loadDashboard();
+        }
+      });
+    }
+
+    // Poll every 30s as fallback
+    const pollInterval = setInterval(loadDashboard, 30000);
+    window.addEventListener('beforeunload', () => clearInterval(pollInterval));
+  </script>
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  <script type="module" src="../../services/notification.js"></script>
+</body>
+</html>

@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player Profile · PakEsports Scout PRO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/main.css">
+  <style>
+    :root {
+      --profile-tab-bg: rgba(255,255,255,0.04);
+      --profile-tab-active: rgba(163,255,18,0.12);
+      --profile-card-bg: rgba(11,16,32,0.75);
+    }
+    .app-body { display:flex; flex:1; overflow:hidden; }
+    .app-nav { padding:0 1.5rem; z-index:20; }
+    .app-nav .logo { font-size:1.05rem; }
+    .nav-actions { display:flex; align-items:center; gap:0.75rem; }
+    .nav-actions .material-symbols-outlined { font-size:22px; color:var(--on-surface-variant); cursor:pointer; transition:color 0.2s; }
+    .nav-actions .material-symbols-outlined:hover { color:var(--toxic-lime); }
+    .nav-avatar { width:30px; height:30px; border-radius:50%; object-fit:cover; border:1.5px solid var(--glass-stroke); cursor:pointer; }
+    .sidebar { width:240px; flex-shrink:0; background:rgba(7,11,20,0.95); backdrop-filter:blur(40px); border-right:1px solid var(--glass-stroke); display:flex; flex-direction:column; padding:1.25rem 0.75rem; overflow-y:auto; }
+    .sidebar-scout { display:flex; flex-direction:column; align-items:center; gap:0.5rem; padding:1rem 0.5rem; margin-bottom:0.75rem; border-bottom:1px solid var(--glass-stroke); text-align:center; }
+    .sidebar-scout-avatar { width:56px; height:56px; border-radius:50%; padding:2px; background:linear-gradient(135deg,var(--hyper-purple),var(--electric-teal)); }
+    .sidebar-scout-avatar img { width:100%; height:100%; border-radius:50%; object-fit:cover; background:var(--deep-obsidian); }
+    .sidebar-scout-name { font-family:var(--font-headline); font-weight:700; font-size:0.9rem; }
+    .sidebar-scout-role { font-size:0.7rem; color:var(--muted); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.05em; }
+    .sidebar-nav { display:flex; flex-direction:column; gap:0.15rem; flex:1; }
+    .sidebar-nav a { display:flex; align-items:center; gap:0.65rem; padding:0.55rem 0.75rem; border-radius:6px; font-size:0.8rem; font-weight:500; color:var(--on-surface-variant); transition:all 0.2s; text-decoration:none; }
+    .sidebar-nav a:hover { background:rgba(255,255,255,0.04); color:var(--on-surface); }
+    .sidebar-nav a .material-symbols-outlined { font-size:20px; }
+    .sidebar-nav a.active { background:rgba(163,255,18,0.08); color:var(--toxic-lime); border-left:2px solid var(--toxic-lime); padding-left:calc(0.75rem - 2px); }
+    .sidebar-nav a.active .material-symbols-outlined { color:var(--toxic-lime); }
+    .sidebar-footer { padding-top:0.75rem; border-top:1px solid var(--glass-stroke); display:flex; flex-direction:column; gap:0.15rem; }
+    .sidebar-footer a { display:flex; align-items:center; gap:0.65rem; padding:0.55rem 0.75rem; border-radius:6px; font-size:0.8rem; font-weight:500; color:var(--on-surface-variant); transition:all 0.2s; text-decoration:none; }
+    .sidebar-footer a:hover { background:rgba(255,255,255,0.04); color:var(--on-surface); }
+    .sidebar-footer a .material-symbols-outlined { font-size:20px; }
+
+    .profile-hero { position:relative; border-radius:16px; overflow:hidden; margin-bottom:1.5rem; border:1px solid var(--glass-stroke); min-height:420px; }
+    .profile-hero-cover { position:absolute; inset:0; background-size:cover; background-position:center; }
+    .profile-hero-gradient { position:absolute; inset:0; background:linear-gradient(180deg,rgba(7,11,20,0.15) 0%,rgba(7,11,20,0.5) 35%,rgba(7,11,20,0.95) 75%,#070B14 100%); }
+    .profile-hero-content { position:absolute; bottom:0; left:0; right:0; padding:2rem 2.5rem; display:flex; align-items:flex-end; gap:2rem; }
+    .profile-hero-avatar { width:100px; height:100px; border-radius:50%; border:3px solid var(--toxic-lime); object-fit:cover; object-position:center 20%; flex-shrink:0; box-shadow:0 0 30px rgba(163,255,18,0.2); }
+    .profile-hero-info { flex:1; min-width:0; }
+    .profile-hero-name { display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; }
+    .profile-hero-name h1 { font-size:2rem; font-family:var(--font-headline); font-weight:800; margin:0; letter-spacing:-0.02em; }
+    .profile-hero-realname { color:var(--on-surface-variant); font-size:0.9rem; margin:0.15rem 0; }
+    .profile-hero-tags { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem; }
+    .profile-hero-actions { display:flex; gap:0.5rem; align-items:center; flex-shrink:0; padding-bottom:0.5rem; flex-wrap:wrap; }
+
+    .verification-badge { display:inline-flex; align-items:center; gap:0.35rem; padding:0.25rem 0.75rem; border-radius:20px; font-family:var(--font-mono); font-size:0.65rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; border:1px solid; }
+    .verification-badge.community { background:rgba(148,163,184,0.15); border-color:rgba(148,163,184,0.3); color:#94a3b8; }
+    .verification-badge.imported { background:rgba(59,130,246,0.15); border-color:rgba(59,130,246,0.3); color:#60a5fa; }
+    .verification-badge.verified_player { background:rgba(34,197,94,0.15); border-color:rgba(34,197,94,0.3); color:#22c55e; }
+    .verification-badge.verified_player::before { content:'\u2713'; font-size:0.8rem; }
+    .verification-badge.verified_organization { background:rgba(234,179,8,0.15); border-color:rgba(234,179,8,0.3); color:#eab308; }
+    .verification-badge.verified_organization::before { content:'\u2713'; font-size:0.8rem; }
+
+    .hero-stat { display:flex; flex-direction:column; align-items:center; padding:0.5rem 1rem; background:rgba(255,255,255,0.04); border-radius:8px; border:1px solid var(--glass-stroke); min-width:70px; }
+    .hero-stat-value { font-family:var(--font-headline); font-weight:800; font-size:1.2rem; }
+    .hero-stat-value.lime { color:var(--toxic-lime); }
+    .hero-stat-value.purple { color:var(--hyper-purple); }
+    .hero-stat-value.teal { color:var(--electric-teal); }
+    .hero-stat-value.gold { color:#eab308; }
+    .hero-stat-label { font-size:0.6rem; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); }
+
+    .profile-tabs { display:flex; gap:0.25rem; margin-bottom:1.5rem; overflow-x:auto; padding-bottom:0.25rem; scrollbar-width:thin; }
+    .profile-tabs::-webkit-scrollbar { height:3px; }
+    .profile-tabs::-webkit-scrollbar-thumb { background:var(--glass-stroke); border-radius:4px; }
+    .profile-tab { padding:0.6rem 1.25rem; border-radius:8px; font-size:0.8rem; font-weight:600; color:var(--on-surface-variant); cursor:pointer; transition:all 0.2s; white-space:nowrap; border:none; background:transparent; font-family:var(--font-body); }
+    .profile-tab:hover { background:var(--profile-tab-bg); color:var(--on-surface); }
+    .profile-tab.active { background:var(--profile-tab-active); color:var(--toxic-lime); }
+
+    .tab-content { display:none; }
+    .tab-content.active { display:block; animation:fadeIn 0.3s ease; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+    .section-card { background:var(--profile-card-bg); backdrop-filter:blur(40px); border:1px solid var(--glass-stroke); border-radius:12px; padding:1.5rem; margin-bottom:1rem; }
+    .section-card h3 { font-family:var(--font-headline); font-size:0.75rem; font-weight:700; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+    .section-card h3 .material-symbols-outlined { font-size:16px; color:var(--hyper-purple); }
+
+    .info-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; }
+    .info-item { }
+    .info-item label { font-size:0.65rem; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); display:block; margin-bottom:0.2rem; }
+    .info-item span { font-size:0.9rem; font-weight:500; }
+
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:0.75rem; }
+    .stat-card { padding:1rem; border-radius:10px; background:rgba(255,255,255,0.02); border:1px solid var(--glass-stroke); text-align:center; transition:border-color 0.2s; }
+    .stat-card:hover { border-color:rgba(163,255,18,0.2); }
+    .stat-card .stat-icon { font-size:1.5rem; margin-bottom:0.25rem; }
+    .stat-card .stat-value { font-family:var(--font-headline); font-weight:800; font-size:1.4rem; line-height:1.2; }
+    .stat-card .stat-value.lime { color:var(--toxic-lime); }
+    .stat-card .stat-value.purple { color:var(--hyper-purple); }
+    .stat-card .stat-value.teal { color:var(--electric-teal); }
+    .stat-card .stat-value.gold { color:#eab308; }
+    .stat-card .stat-value.pink { color:var(--competitive-red); }
+    .stat-card .stat-label { font-size:0.65rem; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-top:0.2rem; }
+
+    .stat-chart-section { margin-top:1rem; }
+    .stat-bars { display:flex; flex-direction:column; gap:0.6rem; }
+    .stat-bar-row { display:flex; align-items:center; gap:0.75rem; }
+    .stat-bar-label { width:90px; font-size:0.7rem; font-family:var(--font-mono); color:var(--muted); text-align:right; flex-shrink:0; }
+    .stat-bar-track { flex:1; height:8px; background:rgba(255,255,255,0.05); border-radius:8px; overflow:hidden; }
+    .stat-bar-fill { height:100%; border-radius:8px; transition:width 0.8s ease; }
+    .stat-bar-fill.lime { background:linear-gradient(90deg,var(--toxic-lime),#8bdc00); }
+    .stat-bar-fill.purple { background:linear-gradient(90deg,var(--hyper-purple),#7c3aed); }
+    .stat-bar-fill.teal { background:linear-gradient(90deg,var(--electric-teal),#06b6d4); }
+    .stat-bar-fill.pink { background:linear-gradient(90deg,var(--competitive-red),#FF3B81); }
+    .stat-bar-fill.gold { background:linear-gradient(90deg,#eab308,#f59e0b); }
+    .stat-bar-num { width:40px; font-size:0.75rem; font-family:var(--font-mono); font-weight:700; text-align:right; }
+
+    .tournament-table-wrap { overflow-x:auto; }
+    .tournament-table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+    .tournament-table th { text-align:left; padding:0.6rem 0.75rem; font-size:0.65rem; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); border-bottom:1px solid var(--glass-stroke); font-weight:500; cursor:pointer; user-select:none; }
+    .tournament-table th:hover { color:var(--on-surface); }
+    .tournament-table td { padding:0.6rem 0.75rem; border-bottom:1px solid rgba(255,255,255,0.03); }
+    .tournament-table tr:hover td { background:rgba(255,255,255,0.02); }
+    .placement-badge { display:inline-block; padding:0.15rem 0.5rem; border-radius:4px; font-size:0.7rem; font-weight:600; font-family:var(--font-mono); }
+    .placement-badge.gold { background:rgba(234,179,8,0.15); color:#eab308; }
+    .placement-badge.silver { background:rgba(148,163,184,0.15); color:#94a3b8; }
+    .placement-badge.bronze { background:rgba(205,127,50,0.15); color:#cd7f32; }
+    .placement-badge.default { background:rgba(255,255,255,0.05); color:var(--on-surface-variant); }
+
+    .timeline-professional { position:relative; padding-left:2rem; }
+    .timeline-professional::before { content:''; position:absolute; left:9px; top:4px; bottom:4px; width:2px; background:linear-gradient(180deg,var(--toxic-lime),var(--hyper-purple),var(--electric-teal)); border-radius:2px; }
+    .timeline-org-entry { position:relative; margin-bottom:1.25rem; padding:0.75rem 1rem; background:rgba(255,255,255,0.02); border-radius:8px; border:1px solid var(--glass-stroke); }
+    .timeline-org-entry::before { content:''; position:absolute; left:-1.65rem; top:1rem; width:14px; height:14px; border-radius:50%; background:var(--toxic-lime); box-shadow:0 0 8px rgba(163,255,18,0.3); border:2px solid var(--deep-obsidian); }
+    .timeline-org-entry h4 { font-size:0.9rem; font-weight:600; margin:0 0 0.15rem; }
+    .timeline-org-entry p { font-size:0.8rem; color:var(--muted); margin:0; }
+    .timeline-org-entry .org-dates { font-size:0.7rem; font-family:var(--font-mono); color:var(--hyper-purple); }
+
+    .achievement-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:0.75rem; }
+    .achievement-card { padding:1rem; border-radius:10px; background:rgba(255,255,255,0.02); border:1px solid var(--glass-stroke); text-align:center; transition:all 0.2s; }
+    .achievement-card:hover { border-color:rgba(168,85,247,0.3); transform:translateY(-2px); }
+    .achievement-card .ach-icon { font-size:2rem; margin-bottom:0.5rem; }
+    .achievement-card .ach-title { font-size:0.8rem; font-weight:600; }
+    .achievement-card .ach-subtitle { font-size:0.7rem; color:var(--muted); }
+
+    .media-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:0.75rem; }
+    .media-card { border-radius:10px; overflow:hidden; border:1px solid var(--glass-stroke); cursor:pointer; transition:all 0.2s; }
+    .media-card:hover { transform:translateY(-3px); border-color:var(--toxic-lime); }
+    .media-card img { width:100%; height:130px; object-fit:cover; display:block; }
+    .media-card .media-body { padding:0.6rem 0.75rem; }
+    .media-card .media-body p { font-size:0.8rem; font-weight:600; margin:0 0 0.15rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .media-card .media-body span { font-size:0.65rem; color:var(--muted); }
+
+
+    .scout-attr-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:0.75rem; margin-top:1rem; }
+    .scout-attr-card { padding:1rem; border-radius:8px; background:rgba(255,255,255,0.02); border:1px solid var(--glass-stroke); }
+    .scout-attr-card h4 { font-size:0.8rem; font-weight:600; margin:0 0 0.3rem; display:flex; align-items:center; gap:0.4rem; }
+    .scout-attr-card p { font-size:0.8rem; color:var(--on-surface-variant); line-height:1.5; margin:0; }
+
+    .claim-btn { padding:0.5rem 1.5rem; border:none; border-radius:8px; font-family:var(--font-headline); font-size:0.7rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; background:linear-gradient(135deg,var(--hyper-purple),var(--electric-teal)); color:#fff; transition:all 0.2s; }
+    .claim-btn:hover { box-shadow:0 0 25px rgba(168,85,247,0.35); transform:translateY(-1px); }
+
+    .verification-panel { margin-top:1rem; }
+    .verification-methods { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:0.75rem; margin-top:1rem; }
+    .verification-method-card { padding:1rem; border-radius:10px; background:rgba(255,255,255,0.02); border:1px solid var(--glass-stroke); text-align:center; cursor:pointer; transition:all 0.2s; }
+    .verification-method-card:hover { border-color:var(--hyper-purple); }
+    .verification-method-card .vm-icon { font-size:2rem; margin-bottom:0.5rem; }
+    .verification-method-card h4 { font-size:0.8rem; font-weight:600; margin:0 0 0.25rem; }
+    .verification-method-card p { font-size:0.7rem; color:var(--muted); margin:0; }
+
+    .code-display { padding:1rem; background:rgba(7,11,20,0.8); border-radius:8px; border:1px solid var(--hyper-purple); text-align:center; margin:1rem 0; }
+    .code-display .code { font-family:var(--font-mono); font-size:1.5rem; font-weight:700; color:var(--toxic-lime); letter-spacing:0.1em; }
+
+    .empty-state { text-align:center; padding:2rem 1rem; color:var(--muted); }
+    .empty-state .material-symbols-outlined { font-size:2.5rem; margin-bottom:0.5rem; }
+
+    .btn-connect { padding:0.5rem 1.5rem; border:none; border-radius:6px; font-family:var(--font-headline); font-size:0.75rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; background:linear-gradient(135deg,var(--toxic-lime),#8bdc00); color:#102000; transition:box-shadow 0.2s, transform 0.2s; }
+    .btn-connect:hover { box-shadow:0 0 25px rgba(163,255,18,0.35); transform:translateY(-1px); }
+    .btn-icon { padding:0.5rem 1rem; border:1px solid var(--glass-stroke); border-radius:6px; font-family:var(--font-body); font-size:0.75rem; font-weight:600; cursor:pointer; background:rgba(255,255,255,0.06); color:var(--on-surface); backdrop-filter:blur(8px); transition:all 0.2s; display:flex; align-items:center; gap:0.35rem; }
+    .btn-icon:hover { background:rgba(255,255,255,0.1); border-color:var(--toxic-lime); }
+    .btn-icon .material-symbols-outlined { font-size:16px; }
+
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:1000; display:none; align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal-content { background:var(--surface-container-high, #1b2029); border:1px solid var(--glass-stroke); border-radius:16px; padding:2rem; max-width:500px; width:90%; max-height:80vh; overflow-y:auto; }
+    .modal-content h2 { font-family:var(--font-headline); font-size:1.2rem; font-weight:700; margin-bottom:0.5rem; }
+    .modal-content p { color:var(--muted); font-size:0.9rem; margin-bottom:1rem; }
+    .modal-close { float:right; background:none; border:none; color:var(--on-surface-variant); cursor:pointer; font-size:1.5rem; }
+    .modal-actions { display:flex; gap:0.75rem; margin-top:1.5rem; }
+    .modal-actions .btn { width:auto; }
+
+    .form-group { margin-bottom:1rem; }
+    .form-group label { display:block; margin-bottom:0.35rem; font-size:0.8rem; font-weight:500; color:var(--muted); }
+    .form-group input, .form-group textarea, .form-group select { width:100%; padding:0.65rem 0.75rem; border-radius:6px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:inherit; font-size:0.9rem; }
+    .form-group input:focus, .form-group textarea:focus { outline:none; border-color:var(--electric-teal); box-shadow:0 0 8px rgba(6,182,212,0.3); }
+
+    @media (max-width:1024px) {
+      .sidebar { display:none; }
+      .profile-hero-content { flex-direction:column; align-items:flex-start; gap:1rem; padding:1.5rem; }
+      .profile-hero-actions { padding-bottom:0; }
+      .profile-hero { min-height:360px; }
+    }
+    @media (max-width:640px) {
+      .profile-hero-name h1 { font-size:1.4rem; }
+      .profile-hero-avatar { width:72px; height:72px; }
+      .profile-hero { min-height:320px; }
+      .stats-grid { grid-template-columns:repeat(2,1fr); }
+      .info-grid { grid-template-columns:1fr; }
+      .achievement-grid { grid-template-columns:repeat(2,1fr); }
+      .app-nav .nav-tabs { display:none; }
+      #tabContentContainer > div { grid-template-columns:1fr !important; }
+    }
+  </style>
+</head>
+<body class="shell-player">
+  <div class="app-shell">
+    <main class="app-main scrollable">
+        <div id="profileLoading" style="text-align:center;padding:3rem;color:var(--muted);">Loading profile...</div>
+        <div id="profileRoot" style="display:none;"></div>
+        <div id="editSection" style="display:none;" class="section-card">
+          <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1rem;">Edit Profile</h2>
+          <form id="editProfileForm">
+            <div style="display:flex;gap:1.5rem;align-items:center;margin-bottom:1.5rem;">
+              <div style="position:relative;width:80px;height:80px;border-radius:50%;overflow:hidden;border:2px solid var(--electric-teal);">
+                <img id="avatarPreview" src="" alt="" style="width:100%;height:100%;object-fit:cover;">
+                <input type="file" id="avatarUpload" accept="image/*" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;">
+              </div>
+              <input type="hidden" id="avatarUrlField">
+              <span style="font-size:0.8rem;color:var(--muted);cursor:pointer;" onclick="document.getElementById('avatarUpload').click()">Click to upload new avatar</span>
+            </div>
+            <div class="form-group"><label>Username</label><input type="text" id="pUsername" required></div>
+            <div class="form-group"><label>Email</label><input type="email" id="pEmail"></div>
+            <div class="form-group"><label>Real Name</label><input type="text" id="pRealName" placeholder="e.g. Ahmed Khan"></div>
+            <div class="form-group"><label>Bio</label><textarea id="pBio" rows="3" placeholder="Tell us about yourself..."></textarea></div>
+            <div class="form-group"><label>Country</label><input type="text" id="pCountry" value="Pakistan"></div>
+            <div class="form-group"><label>Nationality</label><input type="text" id="pNationality" placeholder="e.g. Pakistani"></div>
+            <div class="form-group"><label>Current Team</label><input type="text" id="pCurrentTeam" placeholder="e.g. Portal Esports"></div>
+            <div class="form-group"><label>Main Game</label><input type="text" id="pMainGame" placeholder="e.g. Valorant, CS2"></div>
+            <div class="form-group"><label>Role</label><input type="text" id="pPreferredRole" placeholder="e.g. Duelist, Flex"></div>
+            <div class="form-group"><label>Years Experience</label><input type="number" id="pYearsExp" min="0"></div>
+            <h3 style="margin:1rem 0 0.75rem;font-size:0.85rem;color:var(--muted);border-top:1px solid var(--glass-stroke);padding-top:0.75rem;">Statistics</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+              <div class="form-group"><label>K/D Ratio</label><input type="number" id="pKdRatio" step="0.01" min="0"></div>
+              <div class="form-group"><label>Win Rate (%)</label><input type="number" id="pWinRate" step="0.1" min="0" max="100"></div>
+              <div class="form-group"><label>ACS</label><input type="number" id="pAcs" step="0.1" min="0"></div>
+              <div class="form-group"><label>ADR</label><input type="number" id="pAdr" step="0.1" min="0"></div>
+              <div class="form-group"><label>Headshot %</label><input type="number" id="pHeadshot" step="0.1" min="0" max="100"></div>
+              <div class="form-group"><label>Clutch %</label><input type="number" id="pClutch" step="0.1" min="0" max="100"></div>
+              <div class="form-group"><label>Matches Played</label><input type="number" id="pMatchesPlayed" min="0"></div>
+              <div class="form-group"><label>Highest Rank</label><input type="text" id="pHighestRank" placeholder="e.g. Radiant"></div>
+            </div>
+            <div class="form-group"><label>Achievements</label><textarea id="pAchievements" rows="3" placeholder="List your achievements..."></textarea></div>
+            <h3 style="margin:1rem 0 0.75rem;font-size:0.85rem;color:var(--muted);border-top:1px solid var(--glass-stroke);padding-top:0.75rem;">Individual Awards &#x2B50;</h3>
+            <div id="editIndAchList" style="margin-bottom:0.75rem;">
+              <p style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem;">Achievements like MVP, Most Kills, Player of the Tournament</p>
+            </div>
+            <div style="display:flex;gap:0.5rem;margin-bottom:1rem;">
+              <input type="text" id="editNewAchTitle" style="flex:2;padding:0.5rem 0.65rem;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:inherit;font-size:0.8rem;" placeholder="e.g. MVP \u2014 Red Bull Campus Clutch">
+              <input type="text" id="editNewAchYear" style="flex:1;padding:0.5rem 0.65rem;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:inherit;font-size:0.8rem;" placeholder="Year">
+              <button class="btn btn-ghost" id="editAddAchBtn" style="font-size:0.75rem;padding:0.5rem 0.75rem;white-space:nowrap;">Add</button>
+            </div>
+            <div id="formError" class="error-msg" style="margin-bottom:0.5rem;"></div>
+            <div id="formSuccess" class="success-msg" style="margin-bottom:0.5rem;color:#10b981;"></div>
+            <div style="display:flex;gap:0.5rem;margin-top:1rem;">
+              <button type="submit" class="btn btn-neon" style="background:linear-gradient(135deg,#7c3aed,#06b6d4);color:#fff;">Save Changes</button>
+              <button type="button" class="btn btn-ghost" id="cancelEditBtn">Cancel</button>
+              <button type="button" class="btn btn-danger" id="deleteAccountBtn" style="margin-left:auto;">Delete Account</button>
+            </div>
+          </form>
+        </div>
+        <div class="section-card" id="passwordSection" style="margin-top:1rem;">
+          <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1rem;">Change Password</h2>
+          <form id="passwordForm">
+            <div class="form-group"><label>Current Password</label><input type="password" id="currentPassword" required></div>
+            <div class="form-group"><label>New Password</label><input type="password" id="newPassword" required minlength="6"></div>
+            <div class="form-group"><label>Confirm New Password</label><input type="password" id="confirmPassword" required></div>
+            <div id="pwError" class="error-msg" style="margin-bottom:0.5rem;"></div>
+            <div id="pwSuccess" class="success-msg" style="margin-bottom:0.5rem;color:#10b981;"></div>
+            <button type="submit" class="btn btn-neon" style="width:auto;">Update Password</button>
+          </form>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="claimModal">
+    <div class="modal-content">
+      <button class="modal-close" id="claimModalClose">&times;</button>
+      <h2>Claim This Player Profile</h2>
+      <p>Prove ownership of this profile to earn a <strong>Verified Player</strong> badge.</p>
+      <div class="verification-methods">
+        <div class="verification-method-card" data-method="social">
+          <div class="vm-icon">&#x1F426;</div>
+          <h4>Social Media</h4>
+          <p>Verify via X/Twitter, Twitch, YouTube, or Discord</p>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="socialVerifyModal">
+    <div class="modal-content">
+      <button class="modal-close" id="socialVerifyClose">&times;</button>
+      <h2>Social Media Verification</h2>
+      <p>Step 1: Choose a platform to verify with.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin:1rem 0;">
+        <button class="btn btn-ghost platform-btn" data-platform="twitter" style="border:1px solid var(--glass-stroke);padding:0.75rem;">&#x1F426; X/Twitter</button>
+        <button class="btn btn-ghost platform-btn" data-platform="twitch" style="border:1px solid var(--glass-stroke);padding:0.75rem;">&#x1F3AE; Twitch</button>
+        <button class="btn btn-ghost platform-btn" data-platform="youtube" style="border:1px solid var(--glass-stroke);padding:0.75rem;">&#x1F4F9; YouTube</button>
+        <button class="btn btn-ghost platform-btn" data-platform="discord" style="border:1px solid var(--glass-stroke);padding:0.75rem;">&#x1F5E3;&#xFE0F; Discord</button>
+      </div>
+      <div id="codeDisplayArea" style="display:none;"></div>
+      <div id="verifyCodeArea" style="display:none;margin-top:1rem;">
+        <div class="form-group"><label>Enter the verification code</label><input type="text" id="verifyCodeInput" placeholder="PAKSCOUT-XXXXX"></div>
+        <button class="btn btn-neon" id="verifyCodeBtn" style="width:100%;background:linear-gradient(135deg,#7c3aed,#06b6d4);">Verify Code</button>
+        <p style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem;">Make sure the code is visible in your profile, then click verify.</p>
+      </div>
+      <div id="socialVerifyStatus" style="margin-top:0.5rem;"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { requireRole } from '../../services/auth.js';
+    import { api } from '../../services/api.js';
+    import { initLayout } from '../../components/layout.js';
+    initLayout();
+
+    if (!requireRole('player')) throw new Error('unauthorized');
+
+    const userId = localStorage.getItem('userId');
+    const profileRoot = document.getElementById('profileRoot');
+    const profileLoading = document.getElementById('profileLoading');
+
+    const searchCache = new Map();
+    let lpAbortController = null;
+
+    function debounce(fn, delay) {
+      let timer;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+      };
+    }
+
+    let profileState = {
+      hero: {},
+      overview: {},
+      statistics: {},
+      teams: { entries: [] },
+      tournaments: { entries: [] },
+      achievements: { entries: [], text: '' },
+      media: { videos: [] },
+      socials: { links: {}, liquipedia_url: '' },
+      player_history: { entries: [] },
+    };
+    let activeTab = 'overview';
+
+    function getBadgeHTML(status) {
+      const statusMap = {
+        community: { label: 'Community Profile', cls: 'community' },
+        imported: { label: 'Imported Profile', cls: 'imported' },
+        verified_player: { label: 'Verified Player', cls: 'verified_player' },
+        verified_organization: { label: 'Verified Organization', cls: 'verified_organization' },
+      };
+      const s = statusMap[status] || statusMap.community;
+      return `<span class="verification-badge ${s.cls}">${s.label}</span>`;
+    }
+
+    function getPlacementClass(placement) {
+      if (!placement) return 'default';
+      const p = placement.toString().toLowerCase();
+      if (p.includes('1st') || p.includes('champion') || p.includes('winner')) return 'gold';
+      if (p.includes('2nd') || p.includes('runner')) return 'silver';
+      if (p.includes('3rd') || p.includes('semi')) return 'bronze';
+      return 'default';
+    }
+
+    function mergeIndividualAchievements(...sources) {
+      const seen = new Set();
+      const merged = [];
+      for (const source of sources) {
+        if (!Array.isArray(source)) continue;
+        for (const item of source) {
+          if (!item || !item.title) continue;
+          const key = (item.title || '') + '|' + (item.year || '');
+          if (!seen.has(key)) {
+            seen.add(key);
+            merged.push({
+              title: item.title,
+              year: item.year || '',
+              type: item.type || 'individual',
+              source: item.source || 'auto-derived',
+            });
+          }
+        }
+      }
+      merged.sort((a, b) => (b.year || '').localeCompare(a.year || ''));
+      return merged;
+    }
+
+    function mergeTournaments(apiTournaments) {
+      return [...(apiTournaments || [])].sort((a, b) => ((b.date || b.year || '')).localeCompare(a.date || a.year || ''));
+    }
+
+    function buildProfileState(me, pData) {
+      const lpData = me.liquipedia_data || {};
+      const ps = pData?.stats || {};
+      const pp = pData?.player || {};
+      return {
+        hero: {
+          avatar: me.avatar || '',
+          username: me.username || '',
+          real_name: me.real_name || pp.real_name || '',
+          country: me.country || '',
+          nationality: me.nationality || '',
+          current_team: me.current_team || '',
+          main_game: me.main_game || '',
+          preferred_role: me.preferred_role || '',
+          profile_status: me.profile_status || 'community',
+          profile_source: me.profile_source || 'manual',
+          scout_score: me.scout_score || 0,
+          esv_score: me.esv_score || me.esports_value_score || 0,
+          esports_value_score: me.esports_value_score || 0,
+          liquipedia_url: me.liquipedia_url || '',
+          city: me.city || '',
+          cover_image: me.cover_image || '',
+        },
+        overview: {
+          bio: me.bio || '',
+          city: me.city || '',
+          years_experience: me.years_experience || 0,
+          social_links: me.social_links || {},
+        },
+        statistics: {
+          kd_ratio: ps.kd_ratio || me.kd_ratio || 0,
+          win_rate: ps.win_rate || me.win_rate || 0,
+          matches_played: ps.matches_played || me.matches_played || 0,
+          highest_rank: ps.highest_rank || me.highest_rank || '',
+          tournaments_played: ps.tournaments_played || 0,
+          mvps: ps.mvps || (lpData.individual_achievements || []).length || 0,
+          acs: ps.acs || me.acs || 0,
+          adr: ps.adr || me.adr || 0,
+          headshot_percent: ps.headshot_percent || me.headshot_percent || 0,
+          clutch_percent: ps.clutch_percent || me.clutch_percent || 0,
+          opening_duel_percent: ps.opening_duel_percent || me.opening_duel_percent || 0,
+          tournament_win_percent: ps.tournament_win_percent || me.tournament_win_percent || 0,
+        },
+        teams: {
+          entries: lpData.teams || [],
+        },
+        tournaments: {
+          entries: mergeTournaments(lpData.tournaments || []),
+        },
+        achievements: {
+          entries: lpData.achievements || [],
+          text: me.player_achievements || '',
+          individual: mergeIndividualAchievements(
+            me.individual_achievements,
+            pData?.player?.individual_achievements,
+            lpData.individual_achievements
+          ),
+          _rawMeIndividual: me.individual_achievements || [],
+        },
+        media: {
+          videos: pData?.videos || [],
+        },
+        socials: {
+          links: me.social_links || {},
+          liquipedia_url: me.liquipedia_url || '',
+        },
+
+        player_history: {
+          entries: pData?.history || [],
+        },
+      };
+    }
+
+    function verifyDataFlow(state) {
+      console.log('[VERIFY] === POST-IMPORT VERIFICATION REPORT ===');
+      const schema = {
+        hero: ['avatar','username','real_name','country','nationality','current_team','main_game','preferred_role','profile_status','profile_source','scout_score','esv_score','liquipedia_url','city'],
+        overview: ['bio','city','years_experience','social_links'],
+        statistics: ['kd_ratio','win_rate','matches_played','highest_rank','tournaments_played','mvps','acs','adr','headshot_percent','clutch_percent','opening_duel_percent','tournament_win_percent'],
+        teams: ['entries'],
+        tournaments: ['entries'],
+        achievements: ['entries','text'],
+        media: ['videos'],
+        socials: ['links','liquipedia_url'],
+        player_history: ['entries'],
+      };
+      let totalFields = 0;
+      let populatedFields = 0;
+      for (const [section, fields] of Object.entries(schema)) {
+        const sectionData = state[section];
+        for (const field of fields) {
+          totalFields++;
+          const val = sectionData ? sectionData[field] : undefined;
+          const isPopulated = Array.isArray(val) ? val.length > 0 :
+            typeof val === 'object' && val !== null ? Object.keys(val).length > 0 :
+            val !== undefined && val !== null && val !== '' && val !== 0;
+          if (isPopulated) populatedFields++;
+        }
+      }
+      console.log(`[VERIFY] Fields defined in schema: ${totalFields}`);
+      console.log(`[VERIFY] Fields with data: ${populatedFields}`);
+      console.log(`[VERIFY] Fields missing: ${totalFields - populatedFields}`);
+      console.log(`[VERIFY] Teams entries: ${state.teams.entries.length}`);
+      console.log(`[VERIFY] Tournaments entries: ${state.tournaments.entries.length}`);
+      console.log(`[VERIFY] Achievements entries: ${state.achievements.entries.length}`);
+      console.log(`[VERIFY] Media videos: ${state.media.videos.length}`);
+      console.log(`[VERIFY] Player history entries: ${state.player_history.entries.length}`);
+      console.log(`[VERIFY] Social links: ${Object.keys(state.socials.links).length}`);
+      console.log('[VERIFY] === END REPORT ===');
+    }
+
+    async function loadProfile() {
+      try {
+        const me = await api('/auth/me');
+        console.log('[LOAD PROFILE] /auth/me keys:', Object.keys(me));
+        console.log('[LOAD PROFILE] /auth/me liquipedia_data:', me.liquipedia_data);
+        console.log('[LOAD PROFILE] /auth/me win_rate:', me.win_rate, 'matches_played:', me.matches_played, 'highest_rank:', me.highest_rank);
+
+        const pData = await api(`/players/${userId}`);
+        console.log('[LOAD PROFILE] /players/:id stats:', pData.stats);
+        console.log('[LOAD PROFILE] /players/:id history count:', (pData.history || []).length);
+        console.log('[LOAD PROFILE] /players/:id videos count:', (pData.videos || []).length);
+
+        profileState = buildProfileState(me, pData);
+        console.log('[LOAD PROFILE] profileState sections:', Object.keys(profileState));
+        console.log('[LOAD PROFILE] profileState statistics:', JSON.stringify(profileState.statistics));
+        console.log('[LOAD PROFILE] profileState liquipedia_data teams:', profileState.teams.entries.length, 'tournaments:', profileState.tournaments.entries.length, 'achievements:', profileState.achievements.entries.length);
+        console.log('[LOAD PROFILE] profileState social links:', Object.keys(profileState.socials.links).length);
+
+        verifyDataFlow(profileState);
+
+        renderHero(profileState);
+        renderTabs(profileState);
+        renderTabContent(profileState, 'overview');
+        activeTab = 'overview';
+
+        profileLoading.style.display = 'none';
+        profileRoot.style.display = 'block';
+
+        setupEditForm(me);
+      } catch (err) {
+        profileLoading.innerHTML = `<p style="color:var(--danger);">Failed to load profile: ${err.message}</p>`;
+      }
+    }
+
+    function renderHero(state) {
+      const h = state.hero;
+      const cover = h.cover_image || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1600&q=80';
+      const avatar = h.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${h.username}`;
+
+      profileRoot.innerHTML = `
+        <div class="profile-hero">
+          <div class="profile-hero-cover" style="background-image:url('${cover}')"></div>
+          <div class="profile-hero-gradient"></div>
+          <div class="profile-hero-content">
+            <img class="profile-hero-avatar" src="${avatar}" alt="" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=${h.username}'">
+            <div class="profile-hero-info">
+              <div class="profile-hero-name">
+                <h1>${h.username || '@player'}</h1>
+                ${getBadgeHTML(h.profile_status)}
+              </div>
+              ${h.real_name ? `<p class="profile-hero-realname">${h.real_name}${h.nationality ? ' \u2022 ' + h.nationality : ''}</p>` : ''}
+              <div class="profile-hero-tags">
+                ${h.current_team ? `<span class="badge" style="background:rgba(167,139,250,0.2);color:#c4b5fd;">${h.current_team}</span>` : ''}
+                ${h.main_game ? `<span class="badge">${h.main_game}</span>` : ''}
+                ${h.preferred_role ? `<span class="badge" style="background:rgba(6,182,212,0.2);color:#22d3ee;">${h.preferred_role}</span>` : ''}
+                ${h.city || h.country ? `<span class="location-tag" style="font-size:0.75rem;color:var(--on-surface-variant);display:flex;align-items:center;gap:0.25rem;">
+                  <span class="material-symbols-outlined" style="font-size:14px;">location_on</span> ${h.city || ''}${h.city && h.country ? ', ' : ''}${h.country || ''}
+                </span>` : ''}
+              </div>
+            </div>
+            <div class="profile-hero-actions">
+              ${h.scout_score ? `<div class="hero-stat">
+                <div class="hero-stat-value lime">${h.scout_score}</div>
+                <div class="hero-stat-label">Scout Score</div>
+              </div>` : ''}
+              ${h.esv_score || h.esports_value_score ? `<div class="hero-stat">
+                <div class="hero-stat-value teal">${h.esv_score || h.esports_value_score}</div>
+                <div class="hero-stat-label">ESV Score</div>
+              </div>` : ''}
+              <button class="btn-connect" id="connectBtn">Connect</button>
+              <button class="btn-icon" id="shareBtn"><span class="material-symbols-outlined">ios_share</span> Share</button>
+              ${h.liquipedia_url ? `<a href="${h.liquipedia_url}" target="_blank" class="btn-icon" style="text-decoration:none;">View Liquipedia</a>` : ''}
+              ${(h.profile_status === 'imported' || h.profile_status === 'community') ? `<button class="claim-btn" id="claimBtn">Claim Profile</button>` : ''}
+              ${(h.profile_status === 'community' || h.profile_status === 'imported') ? `<button class="btn-icon" id="liquipediaImportHeroBtn" style="background:linear-gradient(135deg,#7c3aed,#06b6d4);color:#fff;font-size:0.7rem;font-weight:700;padding:0.5rem 1rem;border:none;border-radius:8px;cursor:pointer;font-family:var(--font-headline);letter-spacing:0.05em;text-transform:uppercase;"><span class="material-symbols-outlined" style="font-size:16px;">travel_explore</span> Import</button>` : ''}
+              <button class="btn btn-neon" id="editProfileBtn" style="background:linear-gradient(135deg,#7c3aed,#06b6d4);color:#fff;width:auto;font-size:0.75rem;padding:0.5rem 1rem;">Edit Profile</button>
+              <button class="btn-icon" id="changePhotoBtn" style="font-size:0.75rem;padding:0.4rem 0.75rem;" title="Change Photo"><span class="material-symbols-outlined" style="font-size:16px;">photo_camera</span></button>
+            </div>
+          </div>
+        </div>
+        <div class="profile-tabs" id="profileTabs"></div>
+        <div id="tabContentContainer"></div>
+      `;
+
+      document.getElementById('connectBtn').onclick = () => alert('Connect feature coming soon!');
+      document.getElementById('shareBtn').onclick = () => {
+        if (navigator.share) {
+          navigator.share({ title: `@${h.username} on PakEsports`, url: window.location.href });
+        } else { navigator.clipboard.writeText(window.location.href); alert('Profile URL copied!'); }
+      };
+
+      const claimBtn = document.getElementById('claimBtn');
+      if (claimBtn) claimBtn.onclick = () => openClaimModal();
+
+      const lpHeroBtn = document.getElementById('liquipediaImportHeroBtn');
+      if (lpHeroBtn) lpHeroBtn.onclick = () => openLiquipediaImport();
+
+      document.getElementById('editProfileBtn').onclick = () => {
+        document.getElementById('editSection').style.display = 'block';
+        document.getElementById('passwordSection').style.display = 'none';
+        profileRoot.style.display = 'none';
+      };
+
+      const changePhotoBtn = document.getElementById('changePhotoBtn');
+      if (changePhotoBtn) {
+        changePhotoBtn.onclick = () => {
+          document.getElementById('editProfileBtn').click();
+          setTimeout(() => document.getElementById('avatarUpload')?.click(), 300);
+        };
+      }
+
+    }
+
+    function showToast(message, type = 'success') {
+      const existing = document.querySelector('.toast-notif');
+      if (existing) existing.remove();
+      const toast = document.createElement('div');
+      toast.className = 'toast-notif';
+      toast.style.cssText = `position:fixed;bottom:2rem;right:2rem;padding:0.75rem 1.25rem;border-radius:8px;font-size:0.85rem;font-weight:500;z-index:9999;animation:fadeIn 0.3s ease;background:${type === 'success' ? 'rgba(34,197,94,0.9)' : 'rgba(239,68,68,0.9)'};color:#fff;border:none;max-width:400px;backdrop-filter:blur(8px);box-shadow:0 4px 20px rgba(0,0,0,0.3);`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 3500);
+    }
+
+    function renderTabs(state) {
+      const tabs = document.getElementById('profileTabs');
+      const tabList = [
+        { id: 'overview', icon: 'person', label: 'Overview' },
+        { id: 'statistics', icon: 'bar_chart', label: 'Statistics' },
+        { id: 'tournaments', icon: 'emoji_events', label: 'Tournament History' },
+        { id: 'teams', icon: 'groups', label: 'Team History' },
+        { id: 'achievements', icon: 'military_tech', label: 'Achievements' },
+        { id: 'media', icon: 'play_circle', label: 'Media' },
+
+      ];
+      tabs.innerHTML = tabList.map(t => `
+        <button class="profile-tab ${t.id === 'overview' ? 'active' : ''}" data-tab="${t.id}">
+          <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;margin-right:4px;">${t.icon}</span>
+          ${t.label}
+        </button>
+      `).join('');
+      tabs.querySelectorAll('.profile-tab').forEach(btn => {
+        btn.onclick = () => {
+          tabs.querySelectorAll('.profile-tab').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderTabContent(state, btn.dataset.tab);
+        };
+      });
+    }
+
+    function renderTabContent(state, tabId) {
+      activeTab = tabId;
+      const container = document.getElementById('tabContentContainer');
+
+      if (tabId === 'overview') renderOverview(state, container);
+      else if (tabId === 'statistics') renderStatistics(state, container);
+      else if (tabId === 'tournaments') renderTournaments(state, container);
+      else if (tabId === 'teams') renderTeamHistory(state, container);
+      else if (tabId === 'achievements') renderAchievements(state, container);
+      else if (tabId === 'media') renderMedia(state, container);
+    }
+
+    function hasData(val) {
+      if (val === undefined || val === null) return false;
+      if (typeof val === 'string') return val.trim().length > 0;
+      if (typeof val === 'number') return val > 0;
+      if (Array.isArray(val)) return val.length > 0;
+      if (typeof val === 'object') return Object.keys(val).length > 0;
+      return !!val;
+    }
+
+    function renderOverview(state, container) {
+      const h = state.hero;
+      const ov = state.overview;
+      const hasBio = hasData(ov.bio);
+      const yearsActive = ov.years_experience ? `${ov.years_experience} years` : null;
+      const careerSummary = state.statistics.matches_played > 0 ? `${state.statistics.matches_played} matches played across ${state.teams.entries.length || 1} teams.` : '';
+      const hasSocialLinks = hasData(ov.social_links);
+
+      let html = '';
+      if (hasBio) {
+        html += `
+        <div class="section-card">
+          <h3><span class="material-symbols-outlined">person</span> Biography</h3>
+          <p style="line-height:1.6;font-size:0.9rem;">${ov.bio}</p>
+        </div>`;
+      }
+      const infoDefs = [
+        { label: 'Real Name', value: h.real_name },
+        { label: 'Country', value: h.country },
+        { label: 'Nationality', value: h.nationality },
+        { label: 'City', value: h.city },
+        { label: 'Current Team', value: h.current_team },
+        { label: 'Main Game', value: h.main_game },
+        { label: 'Main Role', value: h.preferred_role || (h.preferred_role !== undefined ? '' : ''), always: true },
+        { label: 'Years Active', value: yearsActive },
+        { label: 'Profile Source', value: h.profile_source ? h.profile_source.charAt(0).toUpperCase() + h.profile_source.slice(1) : '' },
+        { label: 'Profile Status', value: h.profile_status ? h.profile_status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '' },
+      ];
+      const infoItems = infoDefs.filter(item => item.always || item.value);
+      html += `
+        <div class="section-card">
+          <h3><span class="material-symbols-outlined">info</span> Personal Information</h3>
+          <div class="info-grid">
+            ${infoItems.map(item => `
+              <div class="info-item"><label>${item.label}</label><span>${item.label === 'Main Role' && !h.preferred_role ? 'Not Specified' : item.value}</span></div>
+            `).join('')}
+          </div>
+        </div>`;
+      if (careerSummary) {
+        html += `
+        <div class="section-card">
+          <h3><span class="material-symbols-outlined">work_history</span> Career Summary</h3>
+          <p style="line-height:1.6;font-size:0.9rem;">${careerSummary}</p>
+        </div>`;
+      }
+      if (hasSocialLinks) {
+        html += `
+        <div class="section-card">
+          <h3><span class="material-symbols-outlined">link</span> Social Links</h3>
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+            ${renderSocialLinks(ov.social_links)}
+          </div>
+        </div>`;
+      }
+      container.innerHTML = html;
+    }
+
+    function renderSocialLinks(links) {
+      if (!links || Object.keys(links).length === 0) {
+        return '<span style="color:var(--muted);font-size:0.9rem;">No social links added.</span>';
+      }
+      const platformLabels = {
+        twitter: '𝕏', x: '𝕏', youtube: '▶ YouTube', twitch: '📺 Twitch',
+        discord: '💬 Discord', instagram: '📸 Instagram', tiktok: '🎵 TikTok',
+        facebook: '📘 Facebook', steam: '🎮 Steam',
+      };
+      return Object.entries(links).filter(([, url]) => url && typeof url === 'string' && url.trim()).map(([platform, url]) => {
+        const label = platformLabels[platform.toLowerCase()] || platform;
+        const safeUrl = url.startsWith('http://') || url.startsWith('https://') ? url : 'https://' + url;
+        return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="btn-icon" style="text-decoration:none;font-size:0.8rem;">${label}</a>`;
+      }).join('');
+    }
+
+    function renderStatistics(state, container) {
+      const s = state.statistics;
+
+      const tournaments = state.tournaments.entries || [];
+      let wins = 0, top3 = 0, totalPrize = 0;
+      for (const t of tournaments) {
+        const p = (t.placement || '').toLowerCase();
+        if (['1st', 'winner', 'champion', 'gold'].some(k => p.includes(k))) { wins++; top3++; }
+        else if (['2nd', '3rd', 'runner', 'silver', 'bronze'].some(k => p.includes(k))) top3++;
+        if (t.prize) {
+          const num = parseFloat(String(t.prize).replace(/[^0-9.]/g, ''));
+          if (!isNaN(num)) totalPrize += num;
+        }
+      }
+
+      const mvps = s.mvps || (state.achievements.individual || []).length || 0;
+      const effectiveWinRate = s.win_rate || (wins > 0 && tournaments.length > 0 ? Math.round((wins / tournaments.length) * 100) : 0);
+
+      const statCards = [
+        { label: 'Tournament Wins', value: wins, icon: '\u{1F3C6}', cls: 'gold', fmt: (v) => v },
+        { label: 'Win Rate', value: effectiveWinRate, icon: '\u{1F4CA}', cls: 'lime', fmt: (v) => v + '%' },
+        { label: 'MVP Awards', value: mvps, icon: '\u{2B50}', cls: 'purple', fmt: (v) => v },
+        { label: 'Top 3 Finishes', value: top3, icon: '\u{1F949}', cls: 'teal', fmt: (v) => v },
+      ].filter(c => c.value > 0);
+
+      const barData = [
+        { label: 'Win Rate', val: effectiveWinRate, max: 100, color: 'gold', display: effectiveWinRate + '%' },
+        { label: 'Tournament Wins', val: wins, max: Math.max(wins || 1, tournaments.length || 1), color: 'lime', display: String(wins) },
+      ].filter(b => b.val > 0);
+
+      const summaryItems = [
+        { label: 'Matches Played', value: tournaments.length || s.matches_played },
+        { label: 'Tournaments', value: s.tournaments_played },
+        { label: 'Peak Rank', value: s.highest_rank },
+      ].filter(item => item.label === 'Peak Rank' ? item.value : item.value > 0);
+
+      if (totalPrize > 0) {
+        const formatted = '$' + totalPrize.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        summaryItems.push({ label: 'Total Prize', value: formatted });
+      }
+
+      const hasStats = statCards.length > 0 || summaryItems.length > 0;
+      if (!hasStats) {
+        container.innerHTML = `
+        <div class="section-card">
+          <h3><span class="material-symbols-outlined">bar_chart</span> Competitive Statistics</h3>
+          <div class="empty-state"><span class="material-symbols-outlined">bar_chart</span><p>No statistics data available. Import from Liquipedia.</p></div>
+        </div>`;
+        return;
+      }
+
+      let html = `
+        <div class="section-card">
+          <h3><span class="material-symbols-outlined">bar_chart</span> Competitive Statistics</h3>`;
+
+      if (statCards.length > 0) {
+        html += `<div class="stats-grid">${statCards.map(c => `
+            <div class="stat-card">
+              <div class="stat-icon">${c.icon}</div>
+              <div class="stat-value ${c.cls}">${c.fmt(c.value)}</div>
+              <div class="stat-label">${c.label}</div>
+            </div>`).join('')}</div>`;
+      }
+
+      if (barData.length > 0) {
+        html += `
+          <div class="stat-chart-section" style="margin-top:1.5rem;">
+            <h3 style="font-family:var(--font-headline);font-size:0.7rem;font-weight:700;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase;margin-bottom:0.75rem;">
+              <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">trending_up</span> Performance Bars
+            </h3>
+            <div class="stat-bars">${barData.map(b => {
+              const pct = Math.min((b.val / b.max) * 100, 100);
+              const colorVar = b.color === 'lime' ? 'var(--toxic-lime)' : b.color === 'purple' ? 'var(--hyper-purple)' : b.color === 'teal' ? 'var(--electric-teal)' : b.color === 'gold' ? '#eab308' : 'var(--competitive-red)';
+              return `<div class="stat-bar-row">
+                    <div class="stat-bar-label">${b.label}</div>
+                    <div class="stat-bar-track"><div class="stat-bar-fill ${b.color}" style="width:${pct}%"></div></div>
+                    <div class="stat-bar-num" style="color:${colorVar}">${b.display}</div>
+                  </div>`;
+            }).join('')}</div>
+          </div>`;
+      }
+
+      if (summaryItems.length > 0) {
+        html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--glass-stroke);">
+            ${summaryItems.map(item => item.label === 'Peak Rank' ? `
+              <div class="info-item"><label>${item.label}</label><span>${item.value || ''}</span></div>` : `
+              <div class="info-item"><label>${item.label}</label><span>${item.value}</span></div>`).join('')}
+          </div>`;
+      }
+
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    function renderTournaments(state, container) {
+      const tournaments = [...(state.tournaments.entries || [])].sort((a, b) => {
+        const dateA = a.date || a.year || '';
+        const dateB = b.date || b.year || '';
+        return dateB.localeCompare(dateA);
+      });
+      const hasData = tournaments.length > 0;
+      const h = state.hero;
+
+      container.innerHTML = `
+        <div class="section-card">
+          <h3><span class="material-symbols-outlined">emoji_events</span> Tournament History</h3>
+          ${hasData ? `
+          <div class="tournament-table-wrap">
+            <table class="tournament-table">
+              <thead><tr>
+                <th onclick="sortTable(this,0)">Tournament &#x25B4;&#x25BE;</th>
+                <th onclick="sortTable(this,1)">Date &#x25B4;&#x25BE;</th>
+                <th onclick="sortTable(this,2)">Team &#x25B4;&#x25BE;</th>
+                <th onclick="sortTable(this,3)">Placement &#x25B4;&#x25BE;</th>
+                <th onclick="sortTable(this,4)">Prize &#x25B4;&#x25BE;</th>
+                <th onclick="sortTable(this,5)">Tier &#x25B4;&#x25BE;</th>
+              </tr></thead>
+              <tbody>
+                ${tournaments.map((t) => {
+                  return `
+                  <tr>
+                    <td><strong>${t.name || t.title || ''}</strong></td>
+                    <td>${t.date || t.year || ''}</td>
+                    <td>${t.team || h.current_team || ''}</td>
+                    <td><span class="placement-badge ${getPlacementClass(t.placement)}">${t.placement || '—'}</span></td>
+                    <td>${t.prize || '—'}</td>
+                    <td>${t.tier || '—'}</td>
+                  </tr>`;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+          ` : `<div class="empty-state"><span class="material-symbols-outlined">emoji_events</span><p>No tournament history yet.</p></div>`}
+        </div>
+      `;
+    }
+
+    function renderTeamHistory(state, container) {
+      const teams = state.teams.entries;
+      const hasData = teams.length > 0;
+
+      container.innerHTML = `
+        <div class="section-card">
+          <h3><span class="material-symbols-outlined">groups</span> Team History</h3>
+          ${hasData ? `
+          <div class="timeline-professional">
+            ${teams.map(t => `
+              <div class="timeline-org-entry">
+                <h4>${t.name || t.title || ''}</h4>
+                <p>${t.role || ''}</p>
+                <div class="org-dates">${t.start_date || '?'} — ${t.end_date || 'Present'}</div>
+              </div>
+            `).join('')}
+          </div>
+          ` : `
+          <div class="empty-state"><span class="material-symbols-outlined">groups</span><p>No team history yet.</p></div>
+          `}
+        </div>
+      `;
+    }
+
+    function renderAchievements(state, container) {
+      const tournaments = state.tournaments.entries || [];
+
+      let individualAchievements = [...(state.achievements.individual || [])];
+      let tournamentAchievements = [...(state.achievements.entries || [])];
+      const rawMeIndAch = state.achievements._rawMeIndividual || [];
+
+      if (tournamentAchievements.length === 0 && tournaments.length > 0) {
+        const winKeywords = ['1st', 'winner', 'champion', 'gold'];
+        const significant = ['2nd', '3rd', 'runner', 'semi', 'bronze', 'silver'];
+        tournaments.forEach(t => {
+          const placement = (t.placement || '').toLowerCase();
+          if (winKeywords.some(k => placement.includes(k))) {
+            tournamentAchievements.push({
+              title: `${t.name || t.title || 'Tournament'} Champion`,
+              placement: t.placement || '1st',
+              year: t.date || t.year || '',
+            });
+          } else if (significant.some(k => placement.includes(k))) {
+            tournamentAchievements.push({
+              title: t.name || t.title || '',
+              placement: t.placement || '',
+              year: t.date || t.year || '',
+            });
+          }
+        });
+      }
+
+      const hasIndividual = individualAchievements.length > 0;
+      const hasTournament = tournamentAchievements.length > 0;
+
+      const INDIVIDUAL_ACH_URL = `/players/${userId}/individual-achievements`;
+
+      container.innerHTML = `
+        <div style="display:grid;grid-template-columns:${hasIndividual && hasTournament ? '1fr 1fr' : '1fr'};gap:1rem;align-items:start;">
+          <div class="section-card">
+            <h3><span class="material-symbols-outlined">star</span> Individual Awards</h3>
+            ${hasIndividual ? `
+            <div class="achievement-grid" id="individualAchGrid">
+              ${individualAchievements.map((a, i) => {
+                const origIdx = a.source === 'manual' ? rawMeIndAch.findIndex(m => m.title === a.title && m.year === a.year) : -1;
+                return `
+                <div class="achievement-card" style="position:relative;">
+                  <div class="ach-icon">&#x2B50;</div>
+                  <div class="ach-title">${a.title || ''}</div>
+                  <div class="ach-subtitle">${a.year || ''}</div>
+                  ${a.source === 'manual' ? `
+                    <button class="del-ind-ach" data-index="${origIdx}" style="position:absolute;top:4px;right:4px;background:none;border:none;color:var(--competitive-red);cursor:pointer;font-size:14px;padding:2px;line-height:1;">&times;</button>
+                  ` : `
+                    <div style="font-size:0.55rem;font-family:var(--font-mono);color:var(--muted);margin-top:0.25rem;">IMPORTED</div>
+                  `}
+                </div>
+              `}).join('')}
+            </div>
+            ` : `
+            <div class="empty-state" style="padding:1rem 0.5rem;"><span class="material-symbols-outlined" style="font-size:1.8rem;">star</span><p style="font-size:0.8rem;">No individual awards yet.</p></div>
+            `}
+            <button class="btn btn-ghost" id="addIndividualAchBtn" style="margin-top:0.75rem;width:100%;font-size:0.75rem;padding:0.4rem;border:1px dashed var(--glass-stroke);">
+              + Add Individual Achievement
+            </button>
+            <div id="addAchForm" style="display:none;margin-top:0.75rem;padding:0.75rem;background:rgba(255,255,255,0.02);border-radius:8px;">
+              <div class="form-group" style="margin-bottom:0.5rem;">
+                <label style="font-size:0.7rem;">Title (e.g. MVP — Tournament Name)</label>
+                <input type="text" id="newAchTitle" style="padding:0.4rem 0.5rem;font-size:0.8rem;">
+              </div>
+              <div class="form-group" style="margin-bottom:0.5rem;">
+                <label style="font-size:0.7rem;">Year</label>
+                <input type="text" id="newAchYear" style="padding:0.4rem 0.5rem;font-size:0.8rem;" placeholder="e.g. 2025">
+              </div>
+              <div style="display:flex;gap:0.5rem;">
+                <button class="btn btn-neon" id="saveNewAchBtn" style="width:auto;font-size:0.75rem;padding:0.4rem 0.75rem;background:linear-gradient(135deg,#7c3aed,#06b6d4);">Save</button>
+                <button class="btn btn-ghost" id="cancelNewAchBtn" style="font-size:0.75rem;padding:0.4rem 0.75rem;">Cancel</button>
+              </div>
+              <div id="addAchError" style="color:var(--competitive-red);font-size:0.75rem;margin-top:0.35rem;"></div>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h3><span class="material-symbols-outlined">emoji_events</span> Tournament Results</h3>
+            ${hasTournament ? `
+            <div class="achievement-grid">
+              ${tournamentAchievements.map((a, i) => {
+                const icon = i % 3 === 0 ? '&#x1F3C6;' : i % 3 === 1 ? '&#x1F947;' : '&#x1F3C5;';
+                return `
+                  <div class="achievement-card">
+                    <div class="ach-icon">${icon}</div>
+                    <div class="ach-title">${a.title || ''}</div>
+                    <div class="ach-subtitle">${a.placement ? a.placement + ' \u2022 ' : ''}${a.year || ''}</div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+            ` : `
+            <div class="empty-state" style="padding:1rem 0.5rem;"><span class="material-symbols-outlined" style="font-size:1.8rem;">emoji_events</span><p style="font-size:0.8rem;">No tournament results yet.</p></div>
+            `}
+          </div>
+        </div>
+      `;
+
+      const addBtn = document.getElementById('addIndividualAchBtn');
+      const addForm = document.getElementById('addAchForm');
+      if (addBtn) {
+        addBtn.onclick = () => { addForm.style.display = 'block'; addBtn.style.display = 'none'; };
+      }
+      document.getElementById('cancelNewAchBtn').onclick = () => {
+        addForm.style.display = 'none'; addBtn.style.display = 'block';
+      };
+      document.getElementById('saveNewAchBtn').onclick = async () => {
+        const title = document.getElementById('newAchTitle').value.trim();
+        const year = document.getElementById('newAchYear').value.trim();
+        const err = document.getElementById('addAchError');
+        if (!title) { err.textContent = 'Title is required'; return; }
+        err.textContent = '';
+        try {
+          await api(INDIVIDUAL_ACH_URL, {
+            method: 'POST',
+            body: JSON.stringify({ title, year })
+          });
+          loadProfile();
+        } catch (ex) { err.textContent = ex.message || 'Failed to save'; }
+      };
+      document.querySelectorAll('.del-ind-ach').forEach(btn => {
+        btn.onclick = async () => {
+          const index = btn.dataset.index;
+          if (index === '-1') return;
+          try {
+            await api(`${INDIVIDUAL_ACH_URL}/${index}`, { method: 'DELETE' });
+            loadProfile();
+          } catch (ex) { console.error('Delete failed', ex); }
+        };
+      });
+    }
+
+    function renderMedia(state, container) {
+      const videos = state.media.videos;
+      const hasData = videos.length > 0;
+
+      container.innerHTML = `
+        <div class="section-card">
+          <h3><span class="material-symbols-outlined">play_circle</span> Media Gallery</h3>
+          ${hasData ? `
+          <div class="media-grid">
+            ${videos.map(v => `
+              <div class="media-card" onclick="window.location.href='../player/feed.html?video=${v.id}'">
+                <img src="${v.thumbnail_url || 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=400&q=60'}" alt="">
+                <div class="media-body">
+                  <p>${v.caption || 'Untitled Clip'}</p>
+                  <span>ESV ${v.esv_score || 0} \u2022 ${v.views || 0} views</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          ` : `
+          <div class="empty-state"><span class="material-symbols-outlined">videocam</span><p>No media uploaded yet.</p></div>
+          `}
+        </div>
+      `;
+    }
+
+
+
+    function openClaimModal() {
+      document.getElementById('claimModal').classList.add('open');
+    }
+
+    function openSocialVerifyModal() {
+      document.getElementById('claimModal').classList.remove('open');
+      document.getElementById('socialVerifyModal').classList.add('open');
+      document.getElementById('codeDisplayArea').style.display = 'none';
+      document.getElementById('verifyCodeArea').style.display = 'none';
+      document.getElementById('socialVerifyStatus').textContent = '';
+    }
+
+    function openLiquipediaImport() {
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay open';
+      modal.innerHTML = `
+        <div class="modal-content">
+          <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+          <h2>Import From Liquipedia</h2>
+          <p>Search for your player profile on Liquipedia to import verified data.</p>
+          <div style="display:flex;gap:0.5rem;position:relative;">
+            <input type="text" id="lpSearchInput" placeholder="Enter player name..." style="flex:1;padding:0.65rem 0.75rem;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:inherit;">
+            <span id="lpSpinner" style="display:none;position:absolute;right:6rem;top:50%;transform:translateY(-50%);font-size:0.75rem;color:var(--muted);">searching...</span>
+            <button class="btn btn-neon" id="lpSearchBtn" style="width:auto;background:linear-gradient(135deg,#7c3aed,#06b6d4);">Search</button>
+          </div>
+          <div id="lpResults" style="margin-top:1rem;"></div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      const input = document.getElementById('lpSearchInput');
+      const searchBtn = document.getElementById('lpSearchBtn');
+      const resultsDiv = document.getElementById('lpResults');
+      const spinner = document.getElementById('lpSpinner');
+
+      async function performSearch(name, autocomplete) {
+        if (!name || name.trim().length < 2) { resultsDiv.innerHTML = ''; return; }
+        const trimmed = name.trim();
+
+        if (lpAbortController) lpAbortController.abort();
+        lpAbortController = new AbortController();
+
+        const cacheKey = trimmed.toLowerCase() + ':' + autocomplete;
+        const cached = searchCache.get(cacheKey);
+        if (cached) { renderResults(cached); return; }
+
+        spinner.style.display = 'inline';
+        try {
+          const data = await api('/liquipedia/search-player', {
+            method: 'POST',
+            body: JSON.stringify({ name: trimmed, autocomplete }),
+            signal: lpAbortController.signal,
+          });
+          if (lpAbortController.signal.aborted) return;
+          searchCache.set(cacheKey, data.results);
+          renderResults(data.results);
+        } catch (err) {
+          if (err.name === 'AbortError') return;
+          if (lpAbortController.signal.aborted) return;
+          resultsDiv.innerHTML = '<p style="color:var(--competitive-red);">Search failed: ' + err.message + '</p>';
+        } finally {
+          spinner.style.display = 'none';
+        }
+      }
+
+      function renderResults(results) {
+        if (!results.length) { resultsDiv.innerHTML = '<p style="color:var(--muted);">No results found.</p>'; return; }
+        resultsDiv.innerHTML = results.map(r => `
+          <div style="display:flex;align-items:center;gap:1rem;padding:0.75rem;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:0.5rem;border:1px solid var(--glass-stroke);">
+            <img src="${r.image || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + r.name}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=${r.name}'">
+            <div style="flex:1;">
+              <strong>${r.real_name || r.name}</strong>
+              <p style="font-size:0.8rem;color:var(--muted);">${r.country || ''} \u00B7 ${r.game || ''} \u00B7 ${r.role || ''}</p>
+            </div>
+            <button class="btn btn-neon" data-lp-import="${r.id}" data-lp-wiki="${r.wiki || 'valorant'}" style="width:auto;font-size:0.8rem;padding:0.4rem 0.75rem;background:linear-gradient(135deg,#7c3aed,#06b6d4);">Import</button>
+          </div>
+        `).join('');
+        resultsDiv.querySelectorAll('[data-lp-import]').forEach(btn => {
+          btn.onclick = async () => {
+            try {
+              const importData = await api('/liquipedia/import-player', { method: 'POST', body: JSON.stringify({ liquipediaId: btn.dataset.lpImport, wiki: btn.dataset.lpWiki }) });
+              const p = importData.profile;
+              console.log('[FRONTEND IMPORT] Full API response:', importData);
+              console.log('[FRONTEND IMPORT] Profile object keys:', Object.keys(p));
+
+              const profile = {
+                hero: {
+                  real_name: p.real_name || '',
+                  country: p.country || '',
+                  nationality: p.nationality || '',
+                  main_game: p.main_game || '',
+                  preferred_role: p.preferred_role || '',
+                  avatar: p.avatar || '',
+                  liquipedia_url: p.liquipedia_url || '',
+                  current_team: (p.teams?.entries || p.liquipedia_data?.teams || [])[0]?.name || '',
+                  profile_status: 'imported',
+                  profile_source: 'liquipedia',
+                },
+                overview: {
+                  bio: p.bio || '',
+                  social_links: p.social_links || p.liquipedia_data?.social_links || {},
+                },
+                statistics: {
+                  kd_ratio: p.kd_ratio || p.statistics?.kd_ratio || 0,
+                  win_rate: p.win_rate || p.statistics?.win_rate || 0,
+                  matches_played: p.matches_played || p.statistics?.matches_played || 0,
+                  highest_rank: p.highest_rank || p.statistics?.highest_rank || '',
+                  tournaments_played: (p.tournaments?.entries || p.liquipedia_data?.tournaments || []).length,
+                  mvps: p.statistics?.mvps || 0,
+                  acs: p.statistics?.acs || 0,
+                  adr: p.statistics?.adr || 0,
+                  headshot_percent: p.statistics?.headshot_percent || 0,
+                  clutch_percent: p.statistics?.clutch_percent || 0,
+                  opening_duel_percent: p.statistics?.opening_duel_percent || 0,
+                  tournament_win_percent: p.statistics?.tournament_win_percent || 0,
+                },
+                teams: {
+                  entries: p.teams?.entries || p.liquipedia_data?.teams || [],
+                },
+                tournaments: {
+                  entries: p.tournaments?.entries || p.liquipedia_data?.tournaments || [],
+                },
+                achievements: {
+                  entries: p.achievements?.entries || p.liquipedia_data?.achievements || [],
+                  text: Array.isArray(p.achievements?.entries || p.liquipedia_data?.achievements || [])
+                    ? (p.achievements?.entries || p.liquipedia_data?.achievements || []).map(a => `\u2022 ${a.title || a.name || ''} (${a.year || a.date || ''})`).join('\n')
+                    : (p.achievements || ''),
+                  individual: p.achievements?.individual || p.liquipedia_data?.individual_achievements || [],
+                },
+                socials: {
+                  links: p.social_links || p.liquipedia_data?.social_links || {},
+                  liquipedia_url: p.liquipedia_url || '',
+                },
+                media: { videos: [] },
+                player_history: { entries: [] },
+              };
+
+              console.log('[FRONTEND IMPORT] Structured profile:', JSON.stringify(profile));
+
+              const result = await api('/players/import', {
+                method: 'POST',
+                body: JSON.stringify({ profile })
+              });
+              console.log('[FRONTEND IMPORT] Import result:', result);
+
+              resultsDiv.innerHTML = '<p style="color:var(--toxic-lime);">\u2713 Imported! Refreshing profile...</p>';
+              setTimeout(() => { modal.remove(); window.location.reload(); }, 1200);
+            } catch (err) { resultsDiv.innerHTML = '<p style="color:var(--competitive-red);">Import failed: ' + err.message + '</p>'; }
+          };
+        });
+      }
+
+      const debouncedSearch = debounce((name) => performSearch(name, true), 400);
+
+      input.oninput = () => {
+        const val = input.value;
+        if (val.trim().length < 3) { resultsDiv.innerHTML = ''; spinner.style.display = 'none'; return; }
+        debouncedSearch(val);
+      };
+
+      searchBtn.onclick = async () => {
+        if (lpAbortController) lpAbortController.abort();
+        lpAbortController = new AbortController();
+        await performSearch(input.value, false);
+      };
+
+      input.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (lpAbortController) lpAbortController.abort();
+          lpAbortController = new AbortController();
+          performSearch(input.value, false);
+        }
+      };
+    }
+
+    document.getElementById('claimModalClose').onclick = () => document.getElementById('claimModal').classList.remove('open');
+    document.getElementById('socialVerifyClose').onclick = () => document.getElementById('socialVerifyModal').classList.remove('open');
+    document.querySelectorAll('[data-method="social"]').forEach(el => el.onclick = openSocialVerifyModal);
+
+    document.querySelectorAll('.platform-btn').forEach(btn => {
+      btn.onclick = async () => {
+        const platform = btn.dataset.platform;
+        const codeArea = document.getElementById('codeDisplayArea');
+        const verifyArea = document.getElementById('verifyCodeArea');
+        const status = document.getElementById('socialVerifyStatus');
+        status.textContent = 'Generating code...';
+        try {
+          const res = await api('/verification/generate-code', {
+            method: 'POST',
+            body: JSON.stringify({ platform })
+          });
+          codeArea.style.display = 'block';
+          codeArea.innerHTML = `
+            <div class="code-display">
+              <p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.5rem;">Your verification code for <strong>${platform}</strong>:</p>
+              <div class="code">${res.code}</div>
+            </div>
+            <div style="background:rgba(6,182,212,0.08);padding:0.75rem;border-radius:8px;border:1px solid rgba(6,182,212,0.2);font-size:0.8rem;color:var(--on-surface-variant);line-height:1.5;">
+              ${res.instructions.replace(/\n/g, '<br>')}
+            </div>
+          `;
+          verifyArea.style.display = 'block';
+          document.getElementById('verifyCodeInput').value = res.code;
+          status.textContent = '';
+        } catch (err) { status.innerHTML = `<p style="color:var(--competitive-red);">${err.message}</p>`; }
+      };
+    });
+
+    document.getElementById('verifyCodeBtn').onclick = async () => {
+      const code = document.getElementById('verifyCodeInput').value;
+      const status = document.getElementById('socialVerifyStatus');
+      if (!code) { status.innerHTML = '<p style="color:var(--competitive-red);">Enter a verification code.</p>'; return; }
+      status.innerHTML = '<p style="color:var(--muted);">Verifying...</p>';
+      try {
+        const res = await api('/verification/verify-code', {
+          method: 'POST',
+          body: JSON.stringify({ code })
+        });
+        status.innerHTML = `<p style="color:var(--toxic-lime);">&#x2713; ${res.message || 'Verified!'}</p>`;
+        setTimeout(() => { document.getElementById('socialVerifyModal').classList.remove('open'); window.location.reload(); }, 2000);
+      } catch (err) { status.innerHTML = `<p style="color:var(--competitive-red);">${err.message}</p>`; }
+    };
+
+    let editIndividualAchievements = [];
+
+    function renderEditIndAchList() {
+      const list = document.getElementById('editIndAchList');
+      if (editIndividualAchievements.length === 0) {
+        list.innerHTML = '<p style="font-size:0.75rem;color:var(--muted);font-style:italic;">No individual awards added yet.</p>';
+        return;
+      }
+      list.innerHTML = editIndividualAchievements.map((a, i) => `
+        <div style="display:flex;align-items:center;gap:0.5rem;padding:0.35rem 0.5rem;background:rgba(255,255,255,0.02);border-radius:6px;margin-bottom:0.3rem;font-size:0.85rem;">
+          <span style="flex:1;">${a.title}${a.year ? ' \u2022 ' + a.year : ''}</span>
+          <button class="del-edit-ach" data-index="${i}" style="background:none;border:none;color:var(--competitive-red);cursor:pointer;font-size:16px;padding:2px;line-height:1;">&times;</button>
+        </div>
+      `).join('');
+      list.querySelectorAll('.del-edit-ach').forEach(btn => {
+        btn.onclick = () => {
+          editIndividualAchievements.splice(parseInt(btn.dataset.index, 10), 1);
+          renderEditIndAchList();
+        };
+      });
+    }
+
+    function setupEditForm(me) {
+      console.log('[SETUP EDIT FORM] me keys:', Object.keys(me));
+      console.log('[SETUP EDIT FORM] Field values:', {
+        pUsername: me.username, pEmail: me.email, pRealName: me.real_name,
+        pBio: me.bio, pCountry: me.country, pNationality: me.nationality,
+        pCurrentTeam: me.current_team, pMainGame: me.main_game,
+        pPreferredRole: me.preferred_role, pYearsExp: me.years_experience,
+        pKdRatio: me.kd_ratio, pWinRate: me.win_rate,
+        pAcs: me.acs, pAdr: me.adr,
+        pHeadshot: me.headshot_percent, pClutch: me.clutch_percent,
+        pMatchesPlayed: me.matches_played, pHighestRank: me.highest_rank,
+        pAchievements: me.player_achievements,
+      });
+      document.getElementById('avatarPreview').src = me.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${me.username}`;
+      document.getElementById('avatarUrlField').value = me.avatar || '';
+      document.getElementById('pUsername').value = me.username || '';
+      document.getElementById('pEmail').value = me.email || '';
+      document.getElementById('pRealName').value = me.real_name || '';
+      document.getElementById('pBio').value = me.bio || '';
+      document.getElementById('pCountry').value = me.country || '';
+      document.getElementById('pNationality').value = me.nationality || '';
+      document.getElementById('pCurrentTeam').value = me.current_team || '';
+      document.getElementById('pMainGame').value = me.main_game || '';
+      document.getElementById('pPreferredRole').value = me.preferred_role || '';
+      document.getElementById('pYearsExp').value = me.years_experience || 0;
+      document.getElementById('pKdRatio').value = me.kd_ratio || '';
+      document.getElementById('pWinRate').value = me.win_rate || '';
+      document.getElementById('pAcs').value = me.acs || '';
+      document.getElementById('pAdr').value = me.adr || '';
+      document.getElementById('pHeadshot').value = me.headshot_percent || '';
+      document.getElementById('pClutch').value = me.clutch_percent || '';
+      document.getElementById('pMatchesPlayed').value = me.matches_played || '';
+      document.getElementById('pHighestRank').value = me.highest_rank || '';
+      document.getElementById('pAchievements').value = me.player_achievements || '';
+
+      const existing = me.individual_achievements || [];
+      editIndividualAchievements = existing.filter(a => a.source === 'manual').map(a => ({ title: a.title, year: a.year }));
+      renderEditIndAchList();
+    }
+
+    document.getElementById('editAddAchBtn').onclick = () => {
+      const title = document.getElementById('editNewAchTitle').value.trim();
+      const year = document.getElementById('editNewAchYear').value.trim();
+      if (!title) return;
+      editIndividualAchievements.push({ title, year, type: 'individual', source: 'manual' });
+      renderEditIndAchList();
+      document.getElementById('editNewAchTitle').value = '';
+      document.getElementById('editNewAchYear').value = '';
+    };
+
+    document.getElementById('avatarUpload').onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append('doc', file);
+      try {
+        const res = await api('/auth/upload-doc', { method: 'POST', body: formData });
+        document.getElementById('avatarPreview').src = res.url;
+        document.getElementById('avatarUrlField').value = res.url;
+      } catch (err) { alert('Upload failed: ' + err.message); }
+    };
+
+    document.getElementById('editProfileForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const err = document.getElementById('formError');
+      const succ = document.getElementById('formSuccess');
+      err.textContent = '';
+      succ.textContent = '';
+      try {
+        await api('/auth/profile', {
+          method: 'PUT',
+          body: JSON.stringify({
+            username: document.getElementById('pUsername').value,
+            email: document.getElementById('pEmail').value,
+            real_name: document.getElementById('pRealName').value,
+            bio: document.getElementById('pBio').value,
+            avatar: document.getElementById('avatarUrlField').value,
+            country: document.getElementById('pCountry').value,
+            nationality: document.getElementById('pNationality').value,
+            current_team: document.getElementById('pCurrentTeam').value,
+            main_game: document.getElementById('pMainGame').value,
+            years_experience: parseInt(document.getElementById('pYearsExp').value) || 0,
+          })
+        });
+        const meIndAch = profileState.achievements._rawMeIndividual || [];
+        const nonManualAch = meIndAch.filter(a => a.source !== 'manual');
+        const mergedAch = [...nonManualAch, ...editIndividualAchievements];
+        await api('/auth/player-profile', {
+          method: 'PUT',
+          body: JSON.stringify({
+            game: profileState.hero.main_game || '',
+            rank: profileState.statistics.highest_rank || '',
+            kd_ratio: parseFloat(document.getElementById('pKdRatio').value) || 1.0,
+            preferred_role: document.getElementById('pPreferredRole').value,
+            achievements: document.getElementById('pAchievements').value,
+            acs: parseFloat(document.getElementById('pAcs').value) || 0,
+            adr: parseFloat(document.getElementById('pAdr').value) || 0,
+            headshot_percent: parseFloat(document.getElementById('pHeadshot').value) || 0,
+            clutch_percent: parseFloat(document.getElementById('pClutch').value) || 0,
+            individual_achievements: mergedAch,
+          })
+        });
+        await api(`/players/${userId}/stats`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            kd_ratio: parseFloat(document.getElementById('pKdRatio').value) || 1.0,
+            win_rate: parseFloat(document.getElementById('pWinRate').value) || 0,
+            matches_played: parseInt(document.getElementById('pMatchesPlayed').value) || 0,
+            highest_rank: document.getElementById('pHighestRank').value || '',
+            acs: parseFloat(document.getElementById('pAcs').value) || 0,
+            adr: parseFloat(document.getElementById('pAdr').value) || 0,
+            headshot_percent: parseFloat(document.getElementById('pHeadshot').value) || 0,
+            clutch_percent: parseFloat(document.getElementById('pClutch').value) || 0,
+          })
+        });
+        succ.textContent = 'Profile updated!';
+        setTimeout(() => { document.getElementById('editSection').style.display = 'none'; profileRoot.style.display = 'block'; loadProfile(); }, 1200);
+      } catch (ex) { err.textContent = ex.message || 'Update failed'; }
+    };
+
+    document.getElementById('cancelEditBtn').onclick = () => {
+      document.getElementById('editSection').style.display = 'none';
+      profileRoot.style.display = 'block';
+    };
+
+    document.getElementById('deleteAccountBtn').onclick = async () => {
+      if (!confirm('\u26A0\uFE0F Delete your account permanently? This cannot be undone.')) return;
+      try {
+        await api('/auth/account', { method: 'DELETE' });
+        alert('Account deleted.');
+        logout();
+      } catch (err) { alert('Failed: ' + err.message); }
+    };
+
+    document.getElementById('passwordForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const err = document.getElementById('pwError');
+      const succ = document.getElementById('pwSuccess');
+      err.textContent = '';
+      succ.textContent = '';
+      const current = document.getElementById('currentPassword').value;
+      const newPass = document.getElementById('newPassword').value;
+      const confirm = document.getElementById('confirmPassword').value;
+      if (newPass !== confirm) { err.textContent = 'Passwords do not match.'; return; }
+      try {
+        await api('/auth/password', { method: 'PUT', body: JSON.stringify({ currentPassword: current, newPassword: newPass }) });
+        succ.textContent = 'Password updated!';
+        document.getElementById('passwordForm').reset();
+      } catch (ex) { err.textContent = ex.message || 'Password update failed'; }
+    };
+
+    window.sortTable = function(th, col) {
+      const table = th.closest('table');
+      const tbody = table.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      const dir = th.dataset.dir !== 'asc' ? 'asc' : 'desc';
+      th.dataset.dir = dir;
+      rows.sort((a, b) => {
+        const va = a.children[col].textContent.trim();
+        const vb = b.children[col].textContent.trim();
+        const na = parseFloat(va), nb = parseFloat(vb);
+        if (!isNaN(na) && !isNaN(nb)) return dir === 'asc' ? na - nb : nb - na;
+        return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    };
+
+    loadProfile();
+  </script>
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  <script type="module" src="../../services/notification.js"></script>
+</body>
+</html>

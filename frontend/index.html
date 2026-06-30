@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>PakEsports Scout PRO</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <style>
+    /* ===== STITCH LANDING OVERRIDES ===== */
+    :root {
+      --nav-h-override: 68px;
+      --bottom-nav-h: 64px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--deep-obsidian);
+      overflow-x: hidden;
+    }
+
+    /* ---------- TOP NAV ---------- */
+    .stitch-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      height: var(--nav-h-override);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(1rem, 3vw, 2.5rem);
+      background: rgba(7, 11, 20, 0.82);
+      backdrop-filter: blur(32px);
+      border-bottom: 1px solid var(--glass-stroke);
+    }
+
+    .stitch-nav .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-headline);
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: 0.04em;
+      background: linear-gradient(135deg, var(--toxic-lime), var(--electric-teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stitch-nav .nav-brand .brand-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--toxic-lime);
+      box-shadow: 0 0 8px var(--toxic-lime);
+      -webkit-text-fill-color: initial;
+    }
+
+    .stitch-nav .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .stitch-nav .nav-links a {
+      padding: 0.4rem 0.85rem;
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--on-surface-variant);
+      border-radius: 0.5rem;
+      transition: background 0.2s, color 0.2s;
+      letter-spacing: 0.02em;
+    }
+
+    .stitch-nav .nav-links a:hover,
+    .stitch-nav .nav-links a.active {
+      color: var(--on-surface);
+      background: rgba(255,255,255,0.06);
+    }
+    .stitch-nav .nav-links a.active { color: var(--toxic-lime); }
+
+    .stitch-nav .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .stitch-nav .nav-search {
+      display: flex;
+      align-items: center;
+      background: var(--surface-container-lowest);
+      border: 1px solid var(--glass-stroke);
+      border-radius: 9999px;
+      padding: 0.35rem 0.85rem;
+      gap: 0.4rem;
+      transition: border-color 0.2s;
+    }
+
+    .stitch-nav .nav-search:focus-within {
+      border-color: var(--toxic-lime);
+      box-shadow: 0 0 0 2px rgba(163,255,18,0.1);
+    }
+
+    .stitch-nav .nav-search input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      padding: 0;
+      margin: 0;
+      width: 140px;
+    }
+
+    .stitch-nav .nav-search input::placeholder { color: var(--outline); }
+    .stitch-nav .nav-search .material-symbols-outlined {
+      font-size: 18px;
+      color: var(--on-surface-variant);
+    }
+
+    .stitch-nav .nav-icon-btn {
+      background: none;
+      border: none;
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      padding: 0.35rem;
+      border-radius: 50%;
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stitch-nav .nav-icon-btn:hover {
+      background: rgba(255,255,255,0.08);
+      color: var(--on-surface);
+    }
+
+    .stitch-nav .nav-icon-btn .material-symbols-outlined {
+      font-size: 22px;
+    }
+
+    .stitch-nav .nav-icon-btn.nav-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--surface-container-high);
+      border: 1px solid var(--glass-stroke);
+      overflow: hidden;
+    }
+
+    .stitch-nav .nav-icon-btn.nav-avatar .material-symbols-outlined {
+      font-size: 18px;
+    }
+
+    /* ---------- HERO ---------- */
+    .stitch-hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: calc(var(--nav-h-override) + 2rem) clamp(1rem, 5vw, 4rem) 4rem;
+      overflow: hidden;
+    }
+
+    .stitch-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 30% 40%, rgba(168, 85, 247, 0.12), transparent),
+        radial-gradient(ellipse 50% 50% at 70% 60%, rgba(163, 255, 18, 0.06), transparent),
+        radial-gradient(ellipse 40% 40% at 50% 20%, rgba(6, 182, 212, 0.05), transparent);
+      pointer-events: none;
+    }
+
+    .stitch-hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    .hero-left { position: relative; }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem 0.4rem 0.75rem;
+      border-radius: 9999px;
+      background: rgba(163, 255, 18, 0.08);
+      border: 1px solid rgba(163, 255, 18, 0.25);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--toxic-lime);
+      margin-bottom: 1.5rem;
+    }
+
+    .live-badge .live-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--competitive-red);
+      animation: livePulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255, 59, 129, 0.4); }
+      50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(255, 59, 129, 0); }
+    }
+
+    .hero-headline {
+      font-family: var(--font-headline);
+      font-size: clamp(2.5rem, 5.5vw, 4rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+
+    .hero-headline .gradient-text {
+      background: linear-gradient(135deg, var(--toxic-lime) 0%, var(--electric-teal) 50%, var(--hyper-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--on-surface-variant);
+      max-width: 480px;
+      margin-bottom: 2rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-stitch-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 2rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--toxic-lime), #8bdc00);
+      color: #0a1a00;
+      box-shadow: 0 0 24px rgba(163, 255, 18, 0.25);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-stitch-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 40px rgba(163, 255, 18, 0.4);
+    }
+
+    .btn-stitch-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 2rem;
+      border: 1px solid var(--glass-stroke);
+      border-radius: 0.5rem;
+      font-family: var(--font-headline);
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      background: rgba(11, 16, 32, 0.6);
+      backdrop-filter: blur(12px);
+      color: var(--on-surface);
+      transition: border-color 0.2s, transform 0.2s, background 0.2s;
+    }
+
+    .btn-stitch-secondary:hover {
+      border-color: var(--hyper-purple);
+      background: rgba(168, 85, 247, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* ---------- AUTH MODAL ---------- */
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .auth-overlay.open { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .auth-modal {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(11, 16, 32, 0.96);
+      backdrop-filter: blur(40px);
+      border: 1px solid var(--glass-stroke);
+      border-radius: var(--radius-xl);
+      padding: 2rem;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6), 0 0 40px rgba(168,85,247,0.08);
+      position: relative;
+      animation: slideUp 0.3s ease-out;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-modal .auth-close {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: none;
+      border: none;
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 50%;
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-modal .auth-close:hover {
+      background: rgba(255,255,255,0.08);
+      color: var(--on-surface);
+    }
+
+    .auth-modal h2 {
+      font-family: var(--font-headline);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .auth-modal .auth-subtitle {
+      font-size: 0.9rem;
+      color: var(--on-surface-variant);
+      margin-bottom: 1.5rem;
+    }
+
+    .auth-modal .demo-accounts {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--glass-stroke);
+      text-align: center;
+    }
+
+    .auth-modal .demo-accounts p {
+      font-size: 0.72rem;
+      color: var(--on-surface-variant);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .auth-modal .demo-tags {
+      display: flex;
+      gap: 0.4rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .auth-modal .demo-tag {
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      background: rgba(163,255,18,0.08);
+      color: var(--toxic-lime);
+      border: 1px solid rgba(163,255,18,0.15);
+    }
+
+    .auth-modal .demo-tag.scout-tag {
+      background: rgba(168,85,247,0.08);
+      color: #c4b5fd;
+      border-color: rgba(168,85,247,0.2);
+    }
+
+    .auth-modal .demo-tag.admin-tag {
+      background: rgba(255,59,129,0.08);
+      color: #fca5a5;
+      border-color: rgba(255,59,129,0.2);
+    }
+
+    /* ---------- HERO RIGHT (auth panel) ---------- */
+    .hero-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-auth-panel {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    /* ---------- STATS ---------- */
+    .stats-section {
+      position: relative;
+      z-index: 1;
+      padding: 1rem clamp(1rem, 5vw, 4rem) 3rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      background: rgba(11, 16, 32, 0.5);
+      border: 1px solid var(--glass-stroke);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(12px);
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .stat-card:hover {
+      border-color: rgba(163, 255, 18, 0.2);
+      transform: translateY(-4px);
+    }
+
+    .stat-number {
+      font-family: var(--font-headline);
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--toxic-lime), var(--electric-teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 0.35rem;
+    }
+
+    .stat-label {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--on-surface-variant);
+      font-weight: 500;
+    }
+
+    /* ---------- AI SCOUTING SHOWCASE ---------- */
+    .showcase-section {
+      position: relative;
+      z-index: 1;
+      padding: 4rem clamp(1rem, 5vw, 4rem);
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--hyper-purple);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .section-title {
+      font-family: var(--font-headline);
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-desc {
+      text-align: center;
+      color: var(--on-surface-variant);
+      max-width: 560px;
+      margin: 0 auto 2.5rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      align-items: center;
+    }
+
+    .radar-container {
+      position: relative;
+      width: 100%;
+      max-width: 380px;
+      margin: 0 auto;
+      aspect-ratio: 1;
+    }
+
+    .radar-container svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .showcase-features {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .showcase-feature {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      background: rgba(11, 16, 32, 0.5);
+      border: 1px solid var(--glass-stroke);
+      border-radius: var(--radius);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .showcase-feature:hover {
+      border-color: rgba(168, 85, 247, 0.25);
+      transform: translateX(4px);
+    }
+
+    .showcase-feature .feat-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.2rem;
+    }
+
+    .showcase-feature .feat-icon.purple {
+      background: rgba(168, 85, 247, 0.12);
+      color: var(--hyper-purple);
+    }
+    .showcase-feature .feat-icon.lime {
+      background: rgba(163, 255, 18, 0.12);
+      color: var(--toxic-lime);
+    }
+    .showcase-feature .feat-icon.teal {
+      background: rgba(6, 182, 212, 0.12);
+      color: var(--electric-teal);
+    }
+    .showcase-feature .feat-icon.red {
+      background: rgba(255, 59, 129, 0.12);
+      color: var(--competitive-red);
+    }
+
+    .showcase-feature .feat-text h4 {
+      font-family: var(--font-headline);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.15rem;
+    }
+
+    .showcase-feature .feat-text p {
+      font-size: 0.82rem;
+      color: var(--on-surface-variant);
+      line-height: 1.4;
+    }
+
+    /* ---------- FEATURED PLAYERS ---------- */
+    .players-section {
+      position: relative;
+      z-index: 1;
+      padding: 3rem clamp(1rem, 5vw, 4rem) 4rem;
+    }
+
+    .players-carousel-wrapper {
+      position: relative;
+      max-width: 1100px;
+      margin: 2rem auto 0;
+    }
+
+    .players-carousel {
+      display: flex;
+      gap: 1.25rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding: 0.5rem 0.25rem 1rem;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .players-carousel::-webkit-scrollbar { display: none; }
+
+    .player-card {
+      flex: 0 0 240px;
+      scroll-snap-align: start;
+      background: rgba(11, 16, 32, 0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-stroke);
+      border-radius: var(--radius-xl);
+      padding: 1.25rem;
+      text-align: center;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .player-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--toxic-lime), var(--electric-teal), var(--hyper-purple));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .player-card:hover {
+      border-color: rgba(168, 85, 247, 0.3);
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+
+    .player-card:hover::before { opacity: 1; }
+
+    .player-card .player-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      margin: 0 auto 0.75rem;
+      border: 2px solid var(--glass-stroke);
+      object-fit: cover;
+      background: var(--surface-container-high);
+    }
+
+    .player-card .player-name {
+      font-family: var(--font-headline);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.15rem;
+    }
+
+    .player-card .player-game {
+      font-size: 0.78rem;
+      color: var(--on-surface-variant);
+      margin-bottom: 0.5rem;
+    }
+
+    .player-card .player-esv {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: rgba(163, 255, 18, 0.1);
+      color: var(--toxic-lime);
+      border: 1px solid rgba(163, 255, 18, 0.2);
+    }
+
+    .player-card .player-location {
+      font-size: 0.72rem;
+      color: var(--on-surface-variant);
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+    }
+
+    .player-card .player-location .material-symbols-outlined {
+      font-size: 14px;
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+    }
+
+    .carousel-arrows {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .carousel-arrow {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--glass-stroke);
+      background: rgba(11, 16, 32, 0.7);
+      backdrop-filter: blur(8px);
+      color: var(--on-surface);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .carousel-arrow:hover {
+      border-color: var(--toxic-lime);
+      background: rgba(163,255,18,0.1);
+    }
+
+    .carousel-arrow .material-symbols-outlined {
+      font-size: 20px;
+    }
+
+    /* ---------- FOOTER CTA ---------- */
+    .footer-cta {
+      position: relative;
+      z-index: 1;
+      padding: 4rem clamp(1rem, 5vw, 4rem);
+      text-align: center;
+      border-top: 1px solid var(--glass-stroke);
+    }
+
+    .footer-cta-inner {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .footer-cta h2 {
+      font-family: var(--font-headline);
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .footer-cta p {
+      color: var(--on-surface-variant);
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+
+    .footer-cta .cta-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .footer-bottom {
+      position: relative;
+      z-index: 1;
+      padding: 1.5rem clamp(1rem, 5vw, 4rem);
+      border-top: 1px solid var(--glass-stroke);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .footer-bottom p {
+      font-size: 0.78rem;
+      color: var(--on-surface-variant);
+    }
+
+    .footer-bottom .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-bottom .footer-links a {
+      font-size: 0.78rem;
+      color: var(--on-surface-variant);
+      transition: color 0.2s;
+    }
+
+    .footer-bottom .footer-links a:hover { color: var(--on-surface); }
+
+    /* ---------- ABOUT / CONTACT SECTIONS ---------- */
+    .about-section, .contact-section {
+      padding: 4rem clamp(1rem, 5vw, 4rem);
+      max-width: 1100px;
+      margin: 0 auto;
+      scroll-margin-top: 80px;
+    }
+
+    .about-section h2, .contact-section h2 {
+      font-family: var(--font-headline);
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--toxic-lime), var(--electric-teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .about-section .section-desc, .contact-section .section-desc {
+      color: var(--on-surface-variant);
+      font-size: 1rem;
+      line-height: 1.7;
+      max-width: 700px;
+      margin-bottom: 2rem;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .about-card {
+      background: rgba(11, 16, 32, 0.6);
+      border: 1px solid var(--glass-stroke);
+      border-radius: var(--radius-xl, 16px);
+      padding: 1.75rem;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .about-card:hover {
+      border-color: var(--toxic-lime);
+      transform: translateY(-4px);
+    }
+
+    .about-card .card-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .about-card h3 {
+      font-family: var(--font-headline);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--on-surface);
+      margin-bottom: 0.5rem;
+    }
+
+    .about-card p {
+      font-size: 0.88rem;
+      color: var(--on-surface-variant);
+      line-height: 1.6;
+    }
+
+    .contact-section .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      background: rgba(11, 16, 32, 0.6);
+      border: 1px solid var(--glass-stroke);
+      border-radius: var(--radius-xl, 16px);
+      padding: 1.5rem;
+    }
+
+    .contact-item .material-symbols-outlined {
+      font-size: 1.5rem;
+      color: var(--toxic-lime);
+    }
+
+    .contact-item h4 {
+      font-family: var(--font-headline);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--on-surface);
+      margin-bottom: 0.25rem;
+    }
+
+    .contact-item p, .contact-item a {
+      font-size: 0.88rem;
+      color: var(--on-surface-variant);
+      line-height: 1.5;
+    }
+
+    .contact-item a {
+      color: var(--electric-teal);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .contact-item a:hover { color: var(--toxic-lime); }
+
+    /* ---------- MOBILE BOTTOM NAV ---------- */
+    .mobile-bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 999;
+      height: var(--bottom-nav-h);
+      background: rgba(7, 11, 20, 0.92);
+      backdrop-filter: blur(24px);
+      border-top: 1px solid var(--glass-stroke);
+      padding: 0 0.5rem;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .mobile-bottom-nav .mob-nav-items {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 100%;
+    }
+
+    .mobile-bottom-nav .mob-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      background: none;
+      border: none;
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      padding: 0.35rem 0.5rem;
+      transition: color 0.2s;
+      font-size: 0.6rem;
+      font-family: var(--font-body);
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    .mobile-bottom-nav .mob-nav-item .material-symbols-outlined {
+      font-size: 22px;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .mobile-bottom-nav .mob-nav-item:hover,
+    .mobile-bottom-nav .mob-nav-item.active { color: var(--toxic-lime); }
+
+    .mobile-bottom-nav .mob-nav-item.active .material-symbols-outlined {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .mobile-bottom-nav .mob-nav-item.mob-auth-btn {
+      position: relative;
+    }
+
+    .mobile-bottom-nav .mob-nav-item.mob-auth-btn .mob-auth-ring {
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px solid var(--toxic-lime);
+      opacity: 0.4;
+    }
+
+    /* ---------- HERO AUTH (side panel) ---------- */
+    .hero-auth-panel .auth-card {
+      background: rgba(11, 16, 32, 0.7);
+      backdrop-filter: blur(32px);
+      border: 1px solid var(--glass-stroke);
+      border-radius: var(--radius-xl);
+      padding: 1.75rem;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+    }
+
+    .hero-auth-panel .auth-card h2 {
+      font-size: 1.5rem;
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+    @media (max-width: 900px) {
+      .stitch-hero-grid { grid-template-columns: 1fr; text-align: center; }
+      .hero-sub { margin-left: auto; margin-right: auto; }
+      .hero-actions { justify-content: center; }
+      .hero-right { display: none; }
+
+      .stats-grid { grid-template-columns: 1fr; max-width: 320px; }
+
+      .showcase-grid { grid-template-columns: 1fr; }
+      .radar-container { max-width: 280px; }
+
+      .stitch-nav .nav-links { display: none; }
+      .stitch-nav .nav-search { display: none; }
+
+      .mobile-bottom-nav { display: block; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+
+      .player-card { flex: 0 0 200px; }
+    }
+
+    @media (max-width: 480px) {
+      .stitch-nav { padding: 0 1rem; }
+      .stitch-hero { padding-top: calc(var(--nav-h-override) + 1rem); }
+      .hero-headline { font-size: clamp(1.8rem, 8vw, 2.5rem); }
+      .player-card { flex: 0 0 170px; }
+    }
+
+    /* ---------- OVERRIDE AUTH CARD INSIDE MODAL ---------- */
+    .auth-modal .error-msg,
+    .auth-modal .success-msg { font-size: 0.82rem; }
+
+    /* ---------- PASSWORD FIELD CONTAINER + EYE TOGGLE ---------- */
+    .pw-field { position: relative; }
+    .pw-field input { width: 100%; padding-right: 2.5rem; }
+    .pw-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      font-size: 1.2rem;
+      transition: color 0.2s;
+    }
+    .pw-toggle:hover { color: var(--on-surface); }
+
+    /* ---------- PASSWORD CHECKLIST ---------- */
+    .pw-checklist {
+      margin-bottom: 0.5rem;
+      padding: 0.35rem 0.5rem;
+      background: rgba(255,255,255,0.03);
+      border-radius: 6px;
+    }
+    .pw-criteria {
+      font-size: 0.7rem;
+      color: var(--muted);
+      transition: color 0.2s;
+      margin-bottom: 0.1rem;
+    }
+    .pw-criteria::before {
+      content: '✕ ';
+      color: var(--competitive-red);
+      transition: color 0.2s;
+    }
+    .pw-criteria.met {
+      color: var(--toxic-lime);
+    }
+    .pw-criteria.met::before {
+      content: '✓ ';
+      color: var(--toxic-lime);
+    }
+  </style>
+</head>
+<body>
+  <!-- ===== BACKGROUND ===== -->
+  <div class="landing-bg"></div>
+
+  <!-- ===== TOP NAV ===== -->
+  <nav class="stitch-nav">
+    <div class="nav-brand">
+      <span class="brand-dot"></span>
+      PAKESPORTS
+    </div>
+    <div class="nav-links">
+      <a href="#" class="active">HOME</a>
+      <a href="#about">ABOUT US</a>
+      <a href="#contact">CONTACT US</a>
+    </div>
+    <div class="nav-right">
+      <button class="nav-icon-btn nav-avatar" title="Account" id="openAuthBtn">
+        <span class="material-symbols-outlined">person</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section class="stitch-hero">
+    <div class="stitch-hero-grid">
+      <div class="hero-left">
+        <div class="live-badge">
+          <span class="live-dot"></span>
+          LIVE SCOUTING ACTIVE
+        </div>
+        <h1 class="hero-headline">
+          Discover Pakistan's<br>
+          <span class="gradient-text">Next Esports Star</span>
+        </h1>
+        <p class="hero-sub">
+          AI-powered talent identification platform connecting scouts with Pakistan's most promising competitive gamers.
+        </p>
+        <div class="hero-actions">
+          <button class="btn-stitch-primary" id="openAuthBtn2">
+            <span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL'0,'wght'500,'GRAD'0,'opsz'20;">rocket_launch</span>
+            START SCOUTING
+          </button>
+          <button class="btn-stitch-secondary">
+            <span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL'0,'wght'400,'GRAD'0,'opsz'20;">database</span>
+            PLAYER DATABASE
+          </button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="hero-auth-panel">
+          <!-- LOGIN CARD (shown by default on desktop) -->
+          <div class="auth-card" id="loginCard" style="animation:slideIn 0.4s ease-out;">
+            <h2>Welcome back</h2>
+            <p style="color:var(--on-surface-variant);font-size:0.9rem;margin-bottom:1.5rem;">Sign in to your dashboard</p>
+            <div id="authError" class="error-msg"></div>
+            <form id="loginForm">
+              <input type="text" id="username" placeholder="Username" required autocomplete="username">
+              <div class="pw-field">
+                <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+                <button type="button" class="pw-toggle" tabindex="-1" aria-label="Toggle password visibility">
+                  <span class="material-symbols-outlined">visibility</span>
+                </button>
+              </div>
+              <div class="role-select">
+                <label class="role-option selected" data-role="player">
+                  <input type="radio" name="loginRole" value="player" checked>
+                  <span style="display:block;font-size:1.5rem;margin-bottom:0.25rem;">🎮</span>
+                  Player
+                </label>
+                <label class="role-option" data-role="scout">
+                  <input type="radio" name="loginRole" value="scout">
+                  <span style="display:block;font-size:1.5rem;margin-bottom:0.25rem;">🔍</span>
+                  Scout
+                </label>
+              </div>
+              <div class="pw-checklist" id="loginPwChecklist">
+                <div class="pw-criteria" data-criteria="length">At least 8 characters</div>
+                <div class="pw-criteria" data-criteria="number">Contains a number (0-9)</div>
+                <div class="pw-criteria" data-criteria="special">Contains a special character (!@#$%^&*)</div>
+              </div>
+              <button type="submit" class="btn btn-neon">Login</button>
+            </form>
+            <p style="margin-top:0.5rem;text-align:center;color:var(--muted);font-size:0.85rem;">
+              <button type="button" class="btn btn-ghost" id="showForgotBtn" style="font-size:0.85rem;">Forgot password?</button>
+            </p>
+            <p style="margin-top:0.5rem;text-align:center;color:var(--muted);font-size:0.9rem;">
+              New here? <button type="button" class="btn btn-ghost" id="showRegisterBtn">Create account</button>
+            </p>
+            <div class="demo-accounts">
+              <p>Demo accounts</p>
+              <div class="demo-tags">
+                <span class="demo-tag">pro_player / demo123</span>
+                <span class="demo-tag scout-tag">scout_ali / demo123</span>
+                <span class="demo-tag admin-tag">admin / admin123</span>
+              </div>
+            </div>
+          </div>
+          <!-- REGISTER CARD (hidden by default) -->
+          <div class="auth-card" id="registerCard" style="display:none;animation:slideIn 0.4s ease-out;">
+            <h2>Join PakEsports</h2>
+            <p style="color:var(--on-surface-variant);font-size:0.9rem;margin-bottom:1.5rem;">Register as a player or scout</p>
+            <div id="regError" class="error-msg"></div>
+            <form id="registerForm">
+              <input type="text" id="regUsername" placeholder="Username" required>
+              <input type="email" id="regEmail" placeholder="Email (optional)">
+              <input type="text" id="regCity" placeholder="City">
+              <div class="role-select">
+                <label class="role-option selected" data-role="player">
+                  <input type="radio" name="role" value="player" checked>
+                  <span style="display:block;font-size:1.5rem;margin-bottom:0.25rem;">🎮</span>
+                  Player
+                </label>
+                <label class="role-option" data-role="scout">
+                  <input type="radio" name="role" value="scout">
+                  <span style="display:block;font-size:1.5rem;margin-bottom:0.25rem;">🔍</span>
+                  Scout
+                </label>
+              </div>
+              <div class="pw-field">
+                <input type="password" id="regPassword" placeholder="Password" required pattern="(?=.*\d)(?=.*[!@#$%^&*]).{8,}">
+                <button type="button" class="pw-toggle" tabindex="-1" aria-label="Toggle password visibility">
+                  <span class="material-symbols-outlined">visibility</span>
+                </button>
+              </div>
+              <div class="pw-checklist" id="regPwChecklist">
+                <div class="pw-criteria" data-criteria="length">At least 8 characters</div>
+                <div class="pw-criteria" data-criteria="number">Contains a number (0-9)</div>
+                <div class="pw-criteria" data-criteria="special">Contains a special character (!@#$%^&*)</div>
+              </div>
+              <button type="submit" class="btn btn-neon">Register</button>
+            </form>
+            <p style="margin-top:1rem;text-align:center;color:var(--muted);font-size:0.9rem;">
+              Have an account? <button type="button" class="btn btn-ghost" id="showLoginBtn">Login</button>
+            </p>
+          </div>
+          <!-- FORGOT PASSWORD CARD (hidden by default) -->
+          <div class="auth-card" id="forgotCard" style="display:none;animation:slideIn 0.4s ease-out;">
+            <h2>Reset Password</h2>
+            <p style="color:var(--on-surface-variant);font-size:0.9rem;margin-bottom:1.5rem;">Enter your username, email, and a new password</p>
+            <div id="forgotError" class="error-msg"></div>
+            <div id="forgotSuccess" class="success-msg" style="display:none;"></div>
+            <form id="forgotForm">
+              <input type="text" id="forgotUsername" placeholder="Username" required autocomplete="off">
+              <input type="email" id="forgotEmail" placeholder="Email" required autocomplete="off">
+              <div class="pw-field">
+                <input type="password" id="forgotPassword" placeholder="New password" required pattern="(?=.*\d)(?=.*[!@#$%^&*]).{8,}">
+                <button type="button" class="pw-toggle" tabindex="-1" aria-label="Toggle password visibility">
+                  <span class="material-symbols-outlined">visibility</span>
+                </button>
+              </div>
+              <div class="pw-checklist" id="forgotPwChecklist">
+                <div class="pw-criteria" data-criteria="length">At least 8 characters</div>
+                <div class="pw-criteria" data-criteria="number">Contains a number (0-9)</div>
+                <div class="pw-criteria" data-criteria="special">Contains a special character (!@#$%^&*)</div>
+              </div>
+              <input type="password" id="forgotConfirmPassword" placeholder="Confirm password" required>
+              <button type="submit" class="btn btn-neon">Reset Password</button>
+            </form>
+            <p style="margin-top:1rem;text-align:center;color:var(--muted);font-size:0.9rem;">
+              <button type="button" class="btn btn-ghost" id="forgotBackToLogin">Back to login</button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STATS ===== -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">12.4K</div>
+        <div class="stat-label">Active Players Tracked</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">850+</div>
+        <div class="stat-label">Certified Scouts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">142</div>
+        <div class="stat-label">Talents Signed</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== AI SCOUTING SHOWCASE ===== -->
+  <section class="showcase-section">
+    <p class="section-label">AI Scouting Engine</p>
+    <h2 class="section-title">Powered by ESV<span style="color:var(--toxic-lime);">™</span></h2>
+    <p class="section-desc">Our proprietary Esports Value algorithm evaluates every facet of a player's performance in real-time.</p>
+    <div class="showcase-grid">
+      <div class="radar-container">
+        <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+          <!-- Pentagon guides -->
+          <polygon points="150,20 271,115 226,265 74,265 29,115" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <polygon points="150,50 239,125 206,240 94,240 61,125" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <polygon points="150,80 207,135 186,215 114,215 93,135" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <polygon points="150,110 175,145 166,190 134,190 125,145" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <!-- Center lines -->
+          <line x1="150" y1="20" x2="150" y2="265" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="29" y1="115" x2="271" y2="115" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="74" y1="265" x2="226" y2="265" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <!-- Data polygon -->
+          <polygon points="150,40 250,120 220,245 80,245 50,120" fill="rgba(168,85,247,0.2)" stroke="var(--hyper-purple)" stroke-width="2" stroke-linejoin="round"/>
+          <polygon points="150,40 250,120 220,245 80,245 50,120" fill="none" stroke="var(--electric-teal)" stroke-width="1" stroke-dasharray="4,4" stroke-linejoin="round"/>
+          <!-- Data dots -->
+          <circle cx="150" cy="40" r="4" fill="var(--hyper-purple)" stroke="var(--electric-teal)" stroke-width="1.5"/>
+          <circle cx="250" cy="120" r="4" fill="var(--hyper-purple)" stroke="var(--electric-teal)" stroke-width="1.5"/>
+          <circle cx="220" cy="245" r="4" fill="var(--hyper-purple)" stroke="var(--electric-teal)" stroke-width="1.5"/>
+          <circle cx="80" cy="245" r="4" fill="var(--hyper-purple)" stroke="var(--electric-teal)" stroke-width="1.5"/>
+          <circle cx="50" cy="120" r="4" fill="var(--hyper-purple)" stroke="var(--electric-teal)" stroke-width="1.5"/>
+          <!-- Labels -->
+          <text x="150" y="10" text-anchor="middle" fill="var(--on-surface-variant)" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="500">AIM</text>
+          <text x="282" y="118" text-anchor="start" fill="var(--on-surface-variant)" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="500">STRATEGY</text>
+          <text x="228" y="278" text-anchor="middle" fill="var(--on-surface-variant)" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="500">REFLEX</text>
+          <text x="72" y="278" text-anchor="middle" fill="var(--on-surface-variant)" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="500">TEAMWORK</text>
+          <text x="18" y="118" text-anchor="end" fill="var(--on-surface-variant)" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="500">CONSISTENCY</text>
+          <!-- Center glow -->
+          <circle cx="150" cy="145" r="6" fill="rgba(168,85,247,0.15)" stroke="rgba(168,85,247,0.3)" stroke-width="1"/>
+        </svg>
+      </div>
+      <div class="showcase-features">
+        <div class="showcase-feature">
+          <div class="feat-icon purple"><span class="material-symbols-outlined" style="font-size:20px;">neurology</span></div>
+          <div class="feat-text">
+            <h4>Real-Time Analysis</h4>
+            <p>ESV scores update instantly as players upload new clips and match performance data.</p>
+          </div>
+        </div>
+        <div class="showcase-feature">
+          <div class="feat-icon lime"><span class="material-symbols-outlined" style="font-size:20px;">trophy</span></div>
+          <div class="feat-text">
+            <h4>Multi-Game Support</h4>
+            <p>Valorant, PUBG Mobile, CS2 and more — a unified scoring system across all titles.</p>
+          </div>
+        </div>
+        <div class="showcase-feature">
+          <div class="feat-icon teal"><span class="material-symbols-outlined" style="font-size:20px;">groups</span></div>
+          <div class="feat-text">
+            <h4>Scout Matchmaking</h4>
+            <p>Our AI recommends top prospects to certified scouts based on team requirements.</p>
+          </div>
+        </div>
+        <div class="showcase-feature">
+          <div class="feat-icon red"><span class="material-symbols-outlined" style="font-size:20px;">monitoring</span></div>
+          <div class="feat-text">
+            <h4>Trend Prediction</h4>
+            <p>Identify rising stars before the competition with predictive performance modeling.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURED PLAYERS ===== -->
+  <section class="players-section">
+    <p class="section-label" style="color:var(--electric-teal);">Featured Players</p>
+    <h2 class="section-title">Top Prospects <span style="background:linear-gradient(135deg,var(--electric-teal),var(--hyper-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">This Week</span></h2>
+    <p class="section-desc">AI-ranked talent ready for scouting. ESV scores reflect current form and potential.</p>
+    <div class="players-carousel-wrapper">
+      <div class="players-carousel hide-scrollbar" id="playersCarousel">
+        <div class="player-card">
+          <div class="player-avatar" style="background:linear-gradient(135deg,var(--hyper-purple),var(--electric-teal));display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:white;">🎮</div>
+          <div class="player-name">ShadowStrike</div>
+          <div class="player-game">Valorant · Duelist</div>
+          <div class="player-esv"><span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL'1,'wght'400,'GRAD'0,'opsz'20;">bolt</span> ESV 94.2</div>
+          <div class="player-location"><span class="material-symbols-outlined">location_on</span> Lahore</div>
+        </div>
+        <div class="player-card">
+          <div class="player-avatar" style="background:linear-gradient(135deg,var(--toxic-lime),var(--hyper-purple));display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:white;">📱</div>
+          <div class="player-name">FrostByte</div>
+          <div class="player-game">PUBG Mobile · IGL</div>
+          <div class="player-esv"><span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL'1,'wght'400,'GRAD'0,'opsz'20;">bolt</span> ESV 91.8</div>
+          <div class="player-location"><span class="material-symbols-outlined">location_on</span> Karachi</div>
+        </div>
+        <div class="player-card">
+          <div class="player-avatar" style="background:linear-gradient(135deg,var(--electric-teal),var(--toxic-lime));display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:white;">🎯</div>
+          <div class="player-name">NeonAce</div>
+          <div class="player-game">CS2 · AWPer</div>
+          <div class="player-esv"><span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL'1,'wght'400,'GRAD'0,'opsz'20;">bolt</span> ESV 89.5</div>
+          <div class="player-location"><span class="material-symbols-outlined">location_on</span> Islamabad</div>
+        </div>
+        <div class="player-card">
+          <div class="player-avatar" style="background:linear-gradient(135deg,var(--competitive-red),var(--hyper-purple));display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:white;">🔥</div>
+          <div class="player-name">ViperX</div>
+          <div class="player-game">Valorant · Controller</div>
+          <div class="player-esv"><span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL'1,'wght'400,'GRAD'0,'opsz'20;">bolt</span> ESV 87.3</div>
+          <div class="player-location"><span class="material-symbols-outlined">location_on</span> Faisalabad</div>
+        </div>
+      </div>
+      <div class="carousel-arrows">
+        <button class="carousel-arrow" id="carouselPrev"><span class="material-symbols-outlined">chevron_left</span></button>
+        <button class="carousel-arrow" id="carouselNext"><span class="material-symbols-outlined">chevron_right</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT US ===== -->
+  <section class="about-section" id="about">
+    <h2>About PakEsports Scout PRO</h2>
+    <p class="section-desc">
+      Pakistan's first AI-powered esports talent identification platform. We bridge the gap between
+      raw talent and professional opportunities by connecting scouts with the nation's most promising
+      competitive gamers through advanced analytics and video performance review.
+    </p>
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="card-icon">🧠</div>
+        <h3>AI Scouting Engine</h3>
+        <p>Our proprietary ESV algorithm evaluates aim, positioning, teamwork, consistency, and decision-making from every uploaded clip to deliver an objective performance score.</p>
+      </div>
+      <div class="about-card">
+        <div class="card-icon">🔗</div>
+        <h3>Scout Network</h3>
+        <p>A growing network of certified scouts across Pakistan actively reviewing player footage, building shortlists, and discovering the next generation of esports stars.</p>
+      </div>
+      <div class="about-card">
+        <div class="card-icon">📈</div>
+        <h3>Player Development</h3>
+        <p>Players get AI-powered feedback on their gameplay, track their ESV growth over time, and gain visibility among professional scouts and organizations.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT US ===== -->
+  <section class="contact-section" id="contact">
+    <h2>Contact Us</h2>
+    <p class="section-desc">
+      Have questions, feedback, or want to partner with us? Reach out to the PakEsports team.
+    </p>
+    <div class="contact-grid">
+      <div class="contact-item">
+        <span class="material-symbols-outlined">mail</span>
+        <div>
+          <h4>Email</h4>
+          <p><a href="mailto:info@pakesports.pk">info@pakesports.pk</a></p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <span class="material-symbols-outlined">location_on</span>
+        <div>
+          <h4>Location</h4>
+          <p>Karachi, Pakistan</p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <span class="material-symbols-outlined">globe</span>
+        <div>
+          <h4>Social</h4>
+          <p>
+            <a href="#">Twitter / X</a> &middot;
+            <a href="#">Discord</a> &middot;
+            <a href="#">YouTube</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER CTA ===== -->
+  <section class="footer-cta">
+    <div class="footer-cta-inner">
+      <h2>Ready to discover <span style="background:linear-gradient(135deg,var(--toxic-lime),var(--electric-teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Pakistan's finest</span>?</h2>
+      <p>Join the network of certified scouts and pro players shaping the future of Pakistani esports.</p>
+      <div class="cta-actions">
+        <button class="btn-stitch-primary" id="openAuthBtn3">
+          <span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL'0,'wght'500,'GRAD'0,'opsz'20;">person_add</span>
+          JOIN THE NETWORK
+        </button>
+        <button class="btn-stitch-secondary">
+          <span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL'0,'wght'400,'GRAD'0,'opsz'20;">description</span>
+          VIEW DOCS
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer-bottom">
+    <p>&copy; 2026 PakEsports Scout PRO — AI-Powered Scouting Platform</p>
+    <div class="footer-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </footer>
+
+  <!-- ===== MOBILE BOTTOM NAV ===== -->
+  <nav class="mobile-bottom-nav">
+    <div class="mob-nav-items">
+      <button class="mob-nav-item active">
+        <span class="material-symbols-outlined">home</span>
+        Home
+      </button>
+      <button class="mob-nav-item" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
+        <span class="material-symbols-outlined">info</span>
+        About
+      </button>
+      <button class="mob-nav-item mob-auth-btn" id="mobileOpenAuthBtn">
+        <span class="material-symbols-outlined" style="color:var(--toxic-lime);">person</span>
+        Sign In
+      </button>
+      <button class="mob-nav-item" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
+        <span class="material-symbols-outlined">mail</span>
+        Contact
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== AUTH MODAL OVERLAY (for mobile / smaller screens) ===== -->
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-modal">
+      <button class="auth-close" id="authModalClose"><span class="material-symbols-outlined">close</span></button>
+
+      <!-- LOGIN FORM inside modal -->
+      <div id="modalLoginCard">
+        <h2>Welcome back</h2>
+        <p class="auth-subtitle">Sign in to your dashboard</p>
+        <div id="modalAuthError" class="error-msg"></div>
+        <form id="modalLoginForm">
+          <input type="text" id="modalUsername" placeholder="Username" required autocomplete="username">
+          <div class="pw-field">
+            <input type="password" id="modalPassword" placeholder="Password" required autocomplete="current-password">
+            <button type="button" class="pw-toggle" tabindex="-1" aria-label="Toggle password visibility">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
+          <div class="role-select">
+            <label class="role-option selected" data-role="player">
+              <input type="radio" name="modalLoginRole" value="player" checked>
+              <span style="display:block;font-size:1.5rem;margin-bottom:0.25rem;">🎮</span>
+              Player
+            </label>
+            <label class="role-option" data-role="scout">
+              <input type="radio" name="modalLoginRole" value="scout">
+              <span style="display:block;font-size:1.5rem;margin-bottom:0.25rem;">🔍</span>
+              Scout
+            </label>
+          </div>
+          <div class="pw-checklist" id="modalLoginPwChecklist">
+            <div class="pw-criteria" data-criteria="length">At least 8 characters</div>
+            <div class="pw-criteria" data-criteria="number">Contains a number (0-9)</div>
+            <div class="pw-criteria" data-criteria="special">Contains a special character (!@#$%^&*)</div>
+          </div>
+          <button type="submit" class="btn btn-neon">Login</button>
+        </form>
+        <p style="margin-top:0.5rem;text-align:center;color:var(--muted);font-size:0.85rem;">
+          <button type="button" class="btn btn-ghost" id="modalShowForgotBtn" style="font-size:0.85rem;">Forgot password?</button>
+        </p>
+        <p style="margin-top:0.5rem;text-align:center;color:var(--muted);font-size:0.9rem;">
+          New here? <button type="button" class="btn btn-ghost" id="modalShowRegisterBtn">Create account</button>
+        </p>
+        <div class="demo-accounts">
+          <p>Demo accounts</p>
+          <div class="demo-tags">
+            <span class="demo-tag">pro_player / demo123</span>
+            <span class="demo-tag scout-tag">scout_ali / demo123</span>
+            <span class="demo-tag admin-tag">admin / admin123</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- REGISTER FORM inside modal -->
+      <div id="modalRegisterCard" style="display:none;">
+        <h2>Join PakEsports</h2>
+        <p class="auth-subtitle">Register as a player or scout</p>
+        <div id="modalRegError" class="error-msg"></div>
+        <form id="modalRegisterForm">
+          <input type="text" id="modalRegUsername" placeholder="Username" required>
+          <input type="email" id="modalRegEmail" placeholder="Email (optional)">
+          <input type="text" id="modalRegCity" placeholder="City">
+          <div class="role-select">
+            <label class="role-option selected" data-role="player">
+              <input type="radio" name="modalRole" value="player" checked>
+              <span style="display:block;font-size:1.5rem;margin-bottom:0.25rem;">🎮</span>
+              Player
+            </label>
+            <label class="role-option" data-role="scout">
+              <input type="radio" name="modalRole" value="scout">
+              <span style="display:block;font-size:1.5rem;margin-bottom:0.25rem;">🔍</span>
+              Scout
+            </label>
+          </div>
+          <div class="pw-field">
+            <input type="password" id="modalRegPassword" placeholder="Password" required pattern="(?=.*\d)(?=.*[!@#$%^&*]).{8,}">
+            <button type="button" class="pw-toggle" tabindex="-1" aria-label="Toggle password visibility">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
+          <div class="pw-checklist" id="modalPwChecklist">
+            <div class="pw-criteria" data-criteria="length">At least 8 characters</div>
+            <div class="pw-criteria" data-criteria="number">Contains a number (0-9)</div>
+            <div class="pw-criteria" data-criteria="special">Contains a special character (!@#$%^&*)</div>
+          </div>
+          <button type="submit" class="btn btn-neon">Register</button>
+        </form>
+        <p style="margin-top:1rem;text-align:center;color:var(--muted);font-size:0.9rem;">
+          Have an account? <button type="button" class="btn btn-ghost" id="modalShowLoginBtn">Login</button>
+        </p>
+      </div>
+
+      <!-- FORGOT PASSWORD inside modal -->
+      <div id="modalForgotCard" style="display:none;">
+        <h2>Reset Password</h2>
+        <p class="auth-subtitle">Enter your username, email, and a new password</p>
+        <div id="modalForgotError" class="error-msg"></div>
+        <div id="modalForgotSuccess" class="success-msg" style="display:none;"></div>
+        <form id="modalForgotForm">
+          <input type="text" id="modalForgotUsername" placeholder="Username" required autocomplete="off">
+          <input type="email" id="modalForgotEmail" placeholder="Email" required autocomplete="off">
+          <div class="pw-field">
+            <input type="password" id="modalForgotPassword" placeholder="New password" required pattern="(?=.*\d)(?=.*[!@#$%^&*]).{8,}">
+            <button type="button" class="pw-toggle" tabindex="-1" aria-label="Toggle password visibility">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
+          <div class="pw-checklist" id="modalForgotPwChecklist">
+            <div class="pw-criteria" data-criteria="length">At least 8 characters</div>
+            <div class="pw-criteria" data-criteria="number">Contains a number (0-9)</div>
+            <div class="pw-criteria" data-criteria="special">Contains a special character (!@#$%^&*)</div>
+          </div>
+          <input type="password" id="modalForgotConfirmPassword" placeholder="Confirm password" required>
+          <button type="submit" class="btn btn-neon">Reset Password</button>
+        </form>
+        <p style="margin-top:1rem;text-align:center;color:var(--muted);font-size:0.9rem;">
+          <button type="button" class="btn btn-ghost" id="modalForgotBackToLogin">Back to login</button>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { requireGuest, login, register, redirectByRole, resetPassword } from './services/auth.js';
+
+    requireGuest();
+
+    /* ---- carousel arrows ---- */
+    const carousel = document.getElementById('playersCarousel');
+    document.getElementById('carouselPrev').onclick = () => {
+      carousel.scrollBy({ left: -260, behavior: 'smooth' });
+    };
+    document.getElementById('carouselNext').onclick = () => {
+      carousel.scrollBy({ left: 260, behavior: 'smooth' });
+    };
+
+    /* ---- auth overlay toggle ---- */
+    const overlay = document.getElementById('authOverlay');
+    function openOverlay() { overlay.classList.add('open'); }
+    function closeOverlay() { overlay.classList.remove('open'); }
+
+    document.getElementById('openAuthBtn').onclick = openOverlay;
+    document.getElementById('openAuthBtn2').onclick = openOverlay;
+    document.getElementById('openAuthBtn3').onclick = openOverlay;
+    document.getElementById('mobileOpenAuthBtn').onclick = openOverlay;
+    document.getElementById('authModalClose').onclick = closeOverlay;
+    overlay.onclick = (e) => { if (e.target === overlay) closeOverlay(); };
+
+    /* ============================= */
+    /* === EXISTING AUTH LOGIC ===== */
+    /* ============================= */
+
+    const loginCard = document.getElementById('loginCard');
+    const registerCard = document.getElementById('registerCard');
+    const modalLoginCard = document.getElementById('modalLoginCard');
+    const modalRegisterCard = document.getElementById('modalRegisterCard');
+
+    /* ---- sidebar toggle ---- */
+    document.getElementById('showRegisterBtn').onclick = () => {
+      loginCard.style.display = 'none';
+      registerCard.style.display = 'block';
+    };
+    document.getElementById('showLoginBtn').onclick = () => {
+      registerCard.style.display = 'none';
+      loginCard.style.display = 'block';
+    };
+
+    /* ---- modal toggle ---- */
+    document.getElementById('modalShowRegisterBtn').onclick = () => {
+      modalLoginCard.style.display = 'none';
+      modalRegisterCard.style.display = 'block';
+    };
+    document.getElementById('modalShowLoginBtn').onclick = () => {
+      modalRegisterCard.style.display = 'none';
+      modalLoginCard.style.display = 'block';
+    };
+
+    /* ---- role selection (sidebar) ---- */
+    document.querySelectorAll('#loginCard .role-option, #registerCard .role-option').forEach((el) => {
+      el.onclick = () => {
+        const container = el.closest('.role-select');
+        container.querySelectorAll('.role-option').forEach((o) => o.classList.remove('selected'));
+        el.classList.add('selected');
+        el.querySelector('input').checked = true;
+      };
+    });
+
+    /* ---- role selection (modal) ---- */
+    document.querySelectorAll('#modalLoginCard .role-option, #modalRegisterCard .role-option').forEach((el) => {
+      el.onclick = () => {
+        const container = el.closest('.role-select');
+        container.querySelectorAll('.role-option').forEach((o) => o.classList.remove('selected'));
+        el.classList.add('selected');
+        el.querySelector('input').checked = true;
+      };
+    });
+
+    /* ---- sidebar login ---- */
+    document.getElementById('loginForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const err = document.getElementById('authError');
+      err.textContent = '';
+      try {
+        const res = await login(
+          document.getElementById('username').value,
+          document.getElementById('password').value,
+          document.querySelector('#loginCard input[name="loginRole"]:checked').value
+        );
+        redirectByRole(res.role);
+      } catch (ex) {
+        err.textContent = ex.message || 'Login failed';
+      }
+    };
+
+    /* ---- modal login ---- */
+    document.getElementById('modalLoginForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const err = document.getElementById('modalAuthError');
+      err.textContent = '';
+      try {
+        const res = await login(
+          document.getElementById('modalUsername').value,
+          document.getElementById('modalPassword').value,
+          document.querySelector('#modalLoginCard input[name="modalLoginRole"]:checked').value
+        );
+        redirectByRole(res.role);
+      } catch (ex) {
+        err.textContent = ex.message || 'Login failed';
+      }
+    };
+
+    function validatePassword(pw) {
+      if (pw.length < 8) return 'Password must be at least 8 characters';
+      if (!/\d/.test(pw)) return 'Password must include at least one number';
+      if (!/[!@#$%^&*]/.test(pw)) return 'Password must include at least one special character (!@#$%^&*)';
+      return null;
+    }
+
+    function setupPwChecklist(inputId, checklistId) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      input.oninput = function () {
+        const pw = this.value;
+        const checks = {
+          length: pw.length >= 8,
+          number: /\d/.test(pw),
+          special: /[!@#$%^&*]/.test(pw),
+        };
+        document.querySelectorAll(`#${checklistId} .pw-criteria`).forEach(el => {
+          el.classList.toggle('met', checks[el.dataset.criteria]);
+        });
+      };
+    }
+    function setupPwToggle(inputId) {
+      const container = document.getElementById(inputId)?.closest('.pw-field');
+      if (!container) return;
+      const input = container.querySelector('input');
+      const btn = container.querySelector('.pw-toggle');
+      if (!input || !btn) return;
+      btn.onclick = () => {
+        const isPw = input.type === 'password';
+        input.type = isPw ? 'text' : 'password';
+        btn.querySelector('.material-symbols-outlined').textContent = isPw ? 'visibility_off' : 'visibility';
+      };
+    }
+    setupPwChecklist('regPassword', 'regPwChecklist');
+    setupPwChecklist('modalRegPassword', 'modalPwChecklist');
+    setupPwChecklist('password', 'loginPwChecklist');
+    setupPwChecklist('modalPassword', 'modalLoginPwChecklist');
+    setupPwToggle('password');
+    setupPwToggle('regPassword');
+    setupPwToggle('modalPassword');
+    setupPwToggle('modalRegPassword');
+
+    /* ---- sidebar register ---- */
+    document.getElementById('registerForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const err = document.getElementById('regError');
+      err.textContent = '';
+      const pw = document.getElementById('regPassword').value;
+      const pwErr = validatePassword(pw);
+      if (pwErr) { err.textContent = pwErr; return; }
+      try {
+        await register({
+          username: document.getElementById('regUsername').value,
+          password: pw,
+          email: document.getElementById('regEmail').value,
+          city: document.getElementById('regCity').value,
+          role: document.querySelector('#registerCard input[name="role"]:checked').value,
+        });
+        registerCard.style.display = 'none';
+        loginCard.style.display = 'block';
+        document.getElementById('authError').textContent = 'Registered! Please login.';
+        document.getElementById('authError').className = 'success-msg';
+      } catch (ex) {
+        err.textContent = ex.message || 'Registration failed';
+      }
+    };
+
+    /* ---- modal register ---- */
+    document.getElementById('modalRegisterForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const err = document.getElementById('modalRegError');
+      err.textContent = '';
+      const pw = document.getElementById('modalRegPassword').value;
+      const pwErr = validatePassword(pw);
+      if (pwErr) { err.textContent = pwErr; return; }
+      try {
+        await register({
+          username: document.getElementById('modalRegUsername').value,
+          password: pw,
+          email: document.getElementById('modalRegEmail').value,
+          city: document.getElementById('modalRegCity').value,
+          role: document.querySelector('#modalRegisterCard input[name="modalRole"]:checked').value,
+        });
+        modalRegisterCard.style.display = 'none';
+        modalLoginCard.style.display = 'block';
+        document.getElementById('modalAuthError').textContent = 'Registered! Please login.';
+        document.getElementById('modalAuthError').className = 'success-msg';
+      } catch (ex) {
+        err.textContent = ex.message || 'Registration failed';
+      }
+    };
+
+    /* ============================= */
+    /* === FORGOT PASSWORD LOGIC ==== */
+    /* ============================= */
+
+    const forgotCard = document.getElementById('forgotCard');
+    const modalForgotCard = document.getElementById('modalForgotCard');
+
+    /* ---- sidebar forgot toggle ---- */
+    document.getElementById('showForgotBtn').onclick = () => {
+      loginCard.style.display = 'none';
+      forgotCard.style.display = 'block';
+      document.getElementById('forgotError').textContent = '';
+      document.getElementById('forgotSuccess').style.display = 'none';
+    };
+    document.getElementById('forgotBackToLogin').onclick = () => {
+      forgotCard.style.display = 'none';
+      loginCard.style.display = 'block';
+    };
+
+    /* ---- modal forgot toggle ---- */
+    document.getElementById('modalShowForgotBtn').onclick = () => {
+      modalLoginCard.style.display = 'none';
+      modalForgotCard.style.display = 'block';
+      document.getElementById('modalForgotError').textContent = '';
+      document.getElementById('modalForgotSuccess').style.display = 'none';
+    };
+    document.getElementById('modalForgotBackToLogin').onclick = () => {
+      modalForgotCard.style.display = 'none';
+      modalLoginCard.style.display = 'block';
+    };
+
+    /* ---- shared forgot submit ---- */
+    async function handleForgotSubmit(usernameId, emailId, passwordId, confirmId, errorId, successId) {
+      const username = document.getElementById(usernameId).value.trim();
+      const email = document.getElementById(emailId).value.trim();
+      const newPassword = document.getElementById(passwordId).value;
+      const confirmPassword = document.getElementById(confirmId).value;
+      const errEl = document.getElementById(errorId);
+      const successEl = document.getElementById(successId);
+      errEl.textContent = '';
+      successEl.style.display = 'none';
+
+      if (!username || !email) { errEl.textContent = 'Please fill in all fields'; return; }
+
+      const pwErr = validatePassword(newPassword);
+      if (pwErr) { errEl.textContent = pwErr; return; }
+
+      if (newPassword !== confirmPassword) { errEl.textContent = 'Passwords do not match'; return; }
+
+      try {
+        await resetPassword({ username, email, newPassword });
+        successEl.textContent = 'Password has been reset successfully';
+        successEl.style.display = 'block';
+      } catch (ex) {
+        errEl.textContent = ex.message || 'Reset failed';
+      }
+    }
+
+    document.getElementById('forgotForm').onsubmit = (e) => {
+      e.preventDefault();
+      handleForgotSubmit('forgotUsername', 'forgotEmail', 'forgotPassword', 'forgotConfirmPassword', 'forgotError', 'forgotSuccess');
+    };
+    document.getElementById('modalForgotForm').onsubmit = (e) => {
+      e.preventDefault();
+      handleForgotSubmit('modalForgotUsername', 'modalForgotEmail', 'modalForgotPassword', 'modalForgotConfirmPassword', 'modalForgotError', 'modalForgotSuccess');
+    };
+
+    /* ---- forgot password checklist + toggle ---- */
+    setupPwChecklist('forgotPassword', 'forgotPwChecklist');
+    setupPwChecklist('modalForgotPassword', 'modalForgotPwChecklist');
+    setupPwToggle('forgotPassword');
+    setupPwToggle('modalForgotPassword');
+  </script>
+</body>
+</html>

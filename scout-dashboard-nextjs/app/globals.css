@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple;
+  }
+
+  .pulse-dot {
+    @apply w-2 h-2 rounded-full bg-primary animate-pulse;
+  }
+
+  .pulse-dot-primary {
+    @apply w-2 h-2 rounded-full bg-purple animate-pulse;
+  }
+
+  .glass {
+    @apply bg-glass border border-glass-border backdrop-blur-xl;
+  }
+
+  .glass-hover {
+    @apply hover:bg-glass/90 hover:border-glass-border transition-all duration-200;
+  }
+
+  .neon-glow {
+    box-shadow: 0 0 20px rgba(158, 255, 0, 0.15), 0 0 40px rgba(158, 255, 0, 0.05);
+  }
+
+  .neon-glow-purple {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.15), 0 0 40px rgba(168, 85, 247, 0.05);
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #1E293B transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #1E293B;
+    border-radius: 20px;
+  }
+}

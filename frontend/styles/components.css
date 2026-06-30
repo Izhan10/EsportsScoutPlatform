@@ -1,0 +1,404 @@
+/* Reusable component styles for PakEsports Scout PRO - Stitch Design */
+
+/* Profile Hero (Stitch style) */
+.profile-hero {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.profile-hero img {
+  width: 100px;
+  height: 100px;
+  border-radius: 16px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--toxic-lime);
+  box-shadow: 0 0 20px rgba(163, 255, 18, 0.3);
+}
+
+.profile-hero h1 {
+  font-size: 2rem;
+  margin: 0;
+  font-family: 'Sora', sans-serif;
+}
+
+.profile-hero .badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+/* Stats Bar (Stitch style) */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.stats-bar .stat {
+  background: rgba(11, 16, 32, 0.8);
+  backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.stats-bar .stat strong {
+  display: block;
+  font-size: 1.5rem;
+  color: var(--toxic-lime);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.stats-bar .stat span {
+  font-size: 0.8rem;
+  color: var(--on-surface-variant);
+}
+
+/* Career Timeline (Stitch style) */
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--glass-stroke);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 1.5rem;
+  padding-left: 0;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -1.65rem;
+  top: 0.4rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(168, 85, 247, 0.2);
+  border: 2px solid var(--hyper-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeline-item::after {
+  content: '';
+  position: absolute;
+  left: -1.1rem;
+  top: 0.95rem;
+  width: 6px;
+  height: 6px;
+  background: var(--hyper-purple);
+  border-radius: 50%;
+}
+
+.timeline-item .year {
+  font-size: 0.8rem;
+  color: var(--on-surface-variant);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.timeline-item h4 {
+  margin: 0.25rem 0;
+  font-family: 'Sora', sans-serif;
+}
+
+.timeline-item p {
+  color: var(--on-surface-variant);
+  font-size: 0.9rem;
+}
+
+/* Modal (Stitch style) */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--glass-stroke);
+  border-radius: 20px;
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  transform: scale(0.95);
+  transition: transform 0.3s;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-overlay.open .modal-content {
+  transform: scale(1);
+}
+
+/* Toast Notifications (Stitch style) */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  z-index: 9000;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  background: rgba(11, 16, 32, 0.9);
+  backdrop-filter: blur(40px);
+  border: 1px solid var(--glass-stroke);
+  color: var(--on-surface);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  pointer-events: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast.success {
+  border-color: var(--toxic-lime);
+  color: var(--toxic-lime);
+  box-shadow: 0 0 20px rgba(163, 255, 18, 0.2);
+}
+
+.toast.error {
+  border-color: var(--competitive-red);
+  color: var(--competitive-red);
+  box-shadow: 0 0 20px rgba(255, 59, 129, 0.2);
+}
+
+/* Loading Skeleton (Stitch style) */
+.skeleton {
+  background: linear-gradient(90deg, rgba(11, 16, 32, 0.8) 25%, rgba(255,255,255,0.05) 50%, rgba(11, 16, 32, 0.8) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-text { height: 1rem; margin-bottom: 0.5rem; }
+.skeleton-avatar { width: 44px; height: 44px; border-radius: 50%; }
+.skeleton-card { height: 200px; border-radius: 12px; }
+
+/* Liquipedia Badge (Stitch style) */
+.liquipedia-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #60a5fa;
+}
+
+.liquipedia-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #60a5fa;
+  font-size: 0.8rem;
+}
+
+.liquipedia-link {
+  color: var(--hyper-purple);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.liquipedia-link:hover {
+  text-decoration: underline;
+  color: var(--toxic-lime);
+}
+
+/* Stitch-style card with neon hover */
+.stitch-card {
+  background: rgba(11, 16, 32, 0.8);
+  backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.25rem;
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+.stitch-card:hover {
+  border-color: rgba(163, 255, 18, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(163, 255, 18, 0.1);
+}
+
+/* Stitch form controls */
+.stitch-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--glass-stroke);
+  border-radius: 12px;
+  color: var(--on-surface);
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.stitch-input:focus {
+  outline: none;
+  border-color: var(--toxic-lime);
+  box-shadow: 0 0 0 3px rgba(163, 255, 18, 0.15);
+}
+
+.stitch-input::placeholder {
+  color: var(--on-surface-variant);
+  opacity: 0.5;
+}
+
+/* Stitch select */
+.stitch-select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--glass-stroke);
+  border-radius: 12px;
+  color: var(--on-surface);
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23cbc3d7' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+}
+
+.stitch-select:focus {
+  outline: none;
+  border-color: var(--toxic-lime);
+  box-shadow: 0 0 0 3px rgba(163, 255, 18, 0.15);
+}
+
+/* Stitch gradient button */
+.stitch-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  background: linear-gradient(135deg, var(--hyper-purple), var(--on-primary-fixed-variant));
+  color: #fff;
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+}
+
+.stitch-btn-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 40px rgba(168, 85, 247, 0.5);
+}
+
+.stitch-btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* Stitch ghost button */
+.stitch-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.5rem;
+  border: 1px solid var(--glass-stroke);
+  border-radius: 12px;
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  background: transparent;
+  color: var(--on-surface);
+}
+
+.stitch-btn-ghost:hover {
+  border-color: var(--toxic-lime);
+  background: rgba(163, 255, 18, 0.05);
+}
+
+/* Stitch badge */
+.stitch-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.stitch-badge-lime {
+  background: var(--toxic-lime);
+  color: #000;
+}
+
+.stitch-badge-purple {
+  background: var(--hyper-purple);
+  color: #fff;
+}
+
+.stitch-badge-teal {
+  background: var(--electric-teal);
+  color: #000;
+}
+
+/* Stitch divider with neon */
+.stitch-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-stroke), transparent);
+  margin: 1.5rem 0;
+}
+
+/* Material Symbols default */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Upload · PakEsports Scout PRO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/main.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--deep-obsidian); color: var(--on-surface); font-family: var(--font-body); font-size: 15px; line-height: 1.5; overflow: hidden; -webkit-font-smoothing: antialiased; }
+    body { display: flex; flex-direction: column; }
+    a { color: inherit; text-decoration: none; }
+    :root { --sidebar-w: 240px; --nav-h: 60px; }
+
+    .top-nav { display: flex; align-items: center; height: var(--nav-h); padding: 0 20px; background: rgba(7,11,20,0.9); backdrop-filter: blur(40px); border-bottom: 1px solid var(--glass-stroke); flex-shrink: 0; z-index: 100; gap: 0; }
+    .top-nav .brand { font-family: var(--font-headline); font-weight: 800; font-size: 15px; letter-spacing: -0.02em; background: linear-gradient(90deg, var(--toxic-lime), var(--electric-teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; white-space: nowrap; margin-right: 32px; }
+    .top-nav .nav-links { display: flex; align-items: center; gap: 4px; }
+    .top-nav .nav-links a { padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--on-surface-variant); border-radius: 8px; transition: background 0.2s, color 0.2s; white-space: nowrap; }
+    .top-nav .nav-links a:hover { color: var(--on-surface); background: rgba(255,255,255,0.04); }
+    .top-nav .nav-links a.active { color: var(--toxic-lime); background: rgba(163,255,18,0.08); }
+    .top-nav .icon-group { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+    .top-nav .icon-btn { width: 36px; height: 36px; border: none; border-radius: 10px; background: transparent; color: var(--on-surface-variant); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, color 0.2s; }
+    .top-nav .icon-btn:hover { background: rgba(255,255,255,0.06); color: var(--on-surface); }
+    .top-nav .icon-btn .material-symbols-outlined { font-size: 20px; }
+    .top-nav .notif-dot { position: absolute; top: 4px; right: 4px; width: 7px; height: 7px; border-radius: 50%; background: var(--competitive-red, #FF3B81); box-shadow: 0 0 8px rgba(255,59,129,0.6); }
+    .top-nav .notif-btn { position: relative; }
+
+    .layout { display: flex; flex: 1; overflow: hidden; }
+
+    .sidebar { width: var(--sidebar-w); flex-shrink: 0; background: rgba(7,11,20,0.95); border-right: 1px solid var(--glass-stroke); display: flex; flex-direction: column; padding: 20px 12px 16px; overflow-y: auto; z-index: 50; }
+    .sidebar .sidebar-header { display: flex; align-items: center; gap: 10px; padding: 0 8px 16px; border-bottom: 1px solid var(--glass-stroke); margin-bottom: 16px; }
+    .sidebar .sidebar-header .material-symbols-outlined { font-size: 22px; color: var(--toxic-lime); }
+    .sidebar .sidebar-header .sidebar-title { font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--toxic-lime); }
+    .sidebar .sidebar-header .switch-link { font-family: var(--font-body); font-size: 11px; color: var(--on-surface-variant); margin-left: auto; transition: color 0.2s; }
+    .sidebar .sidebar-header .switch-link:hover { color: var(--toxic-lime); }
+    .sidebar .nav-section { margin-bottom: 20px; }
+    .sidebar .nav-section .section-label { font-family: var(--font-mono); font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--on-surface-variant); padding: 0 8px; margin-bottom: 6px; }
+    .sidebar .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--on-surface-variant); cursor: pointer; transition: background 0.2s, color 0.2s; position: relative; text-decoration: none; }
+    .sidebar .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--on-surface); }
+    .sidebar .nav-item .material-symbols-outlined { font-size: 18px; }
+    .sidebar .nav-item.active { background: rgba(163,255,18,0.06); color: var(--toxic-lime); border-left: 2px solid var(--toxic-lime); border-radius: 0 8px 8px 0; margin-left: -2px; padding-left: 12px; }
+    .sidebar .nav-item.active .material-symbols-outlined { color: var(--toxic-lime); }
+    .sidebar .spacer { flex: 1; }
+    .sidebar .bottom-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; color: var(--on-surface-variant); cursor: pointer; transition: background 0.2s, color 0.2s; text-decoration: none; }
+    .sidebar .bottom-item:hover { background: rgba(255,255,255,0.04); color: var(--on-surface-variant); }
+    .sidebar .bottom-item .material-symbols-outlined { font-size: 18px; }
+
+    .main-area { flex: 1; overflow-y: auto; padding: 28px; padding-bottom: 100px; position: relative; }
+
+    .page-header { margin-bottom: 24px; }
+    .page-header h1 { font-family: var(--font-headline); font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+    .page-header p { font-family: var(--font-body); font-size: 14px; color: var(--on-surface-variant); margin-top: 4px; }
+
+    .upload-form { max-width: 520px; }
+    .upload-form label { display: block; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--on-surface-variant); margin-bottom: 6px; margin-top: 4px; }
+    .upload-form .btn-neon:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .rejection-card {
+      max-width: 520px;
+      margin-top: 20px;
+      padding: 24px;
+      border: 1px solid rgba(255,59,129,0.3);
+      border-radius: 12px;
+      background: rgba(255,59,129,0.06);
+      text-align: center;
+      animation: shakeIn 0.4s ease-out;
+    }
+    .rejection-card .rejection-icon {
+      width: 48px; height: 48px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: rgba(255,59,129,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 700; color: var(--competitive-red);
+    }
+    .rejection-card .rejection-title {
+      font-family: var(--font-headline);
+      font-size: 16px; font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .rejection-card #rejectionReason {
+      color: var(--on-surface-variant);
+      font-size: 13px; line-height: 1.5;
+      margin-bottom: 8px;
+    }
+    .rejection-card .rejection-hint {
+      font-size: 11px;
+      color: var(--outline);
+      margin-bottom: 16px;
+    }
+    .rejection-card .btn-ghost {
+      font-size: 13px;
+      padding: 8px 20px;
+      border: 1px solid var(--glass-stroke);
+      border-radius: 8px;
+    }
+    .rejection-card .btn-ghost:hover {
+      border-color: var(--on-surface-variant);
+    }
+    @keyframes shakeIn {
+      0% { opacity: 0; transform: translateY(8px); }
+      60% { transform: translateY(-2px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 56px; background: rgba(7,11,20,0.95); backdrop-filter: blur(40px); border-top: 1px solid var(--glass-stroke); z-index: 200; align-items: center; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom, 0); }
+    .bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 1px; color: var(--on-surface-variant); font-size: 9px; font-weight: 500; letter-spacing: 0.04em; transition: color 0.2s; padding: 4px 0; text-decoration: none; }
+    .bottom-nav a .material-symbols-outlined { font-size: 20px; }
+    .bottom-nav a.active { color: var(--toxic-lime); }
+    .bottom-nav a:hover { color: var(--on-surface-variant); }
+
+    @media (max-width: 1024px) {
+      .sidebar { display: none; }
+      .main-area { padding: 18px 16px; }
+      .bottom-nav { display: flex; }
+    }
+    @media (max-width: 600px) {
+      .top-nav .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body class="shell-player">
+
+    <main class="main-area">
+      <div class="page-header">
+        <h1>Upload gameplay clip</h1>
+        <p>AI analyzes your clip automatically and adds ESV to the global feed.</p>
+      </div>
+
+      <form class="upload-form glass-card" id="uploadForm">
+        <label>Video file *</label>
+        <input type="file" id="videoFile" accept="video/*" required>
+        <label for="gameTitle">Game *</label>
+        <select id="gameTitle" required></select>
+        <input type="text" id="rank" placeholder="Rank (e.g. Immortal 2)">
+        <textarea id="caption" rows="3" placeholder="Caption / description"></textarea>
+        <div id="uploadStatus" class="error-msg"></div>
+        <button type="submit" class="btn btn-neon" id="uploadBtn">Upload & Analyze</button>
+        <div id="rejectionPanel" class="rejection-card" hidden>
+          <div class="rejection-icon">✕</div>
+          <div class="rejection-title">Upload rejected</div>
+          <p id="rejectionReason"></p>
+          <p class="rejection-hint">Only direct gameplay clips with game UI (crosshair, HUD, minimap) are accepted. No screen recordings, animations, facecam videos, or desktop captures allowed.</p>
+          <button type="button" class="btn btn-ghost" id="dismissRejection">Try a different clip</button>
+        </div>
+      </form>
+    </main>
+
+  <script type="module">
+    import { requireRole } from '../../services/auth.js';
+    import { api } from '../../services/api.js';
+    import { initLayout } from '../../components/layout.js';
+    initLayout();
+
+    if (!requireRole('player')) throw new Error('unauthorized');
+
+    const gameSelect = document.getElementById('gameTitle');
+    let allowedGames = [];
+
+    async function loadGames() {
+      try {
+        const games = await api('/auth/me/games');
+        allowedGames = games;
+        if (!games.length) {
+          gameSelect.innerHTML = '<option value="">No games assigned</option>';
+          gameSelect.disabled = true;
+          return;
+        }
+        gameSelect.innerHTML = games.map(g =>
+          `<option value="${g}">${g}</option>`
+        ).join('');
+      } catch {
+        gameSelect.innerHTML = '<option value="">Failed to load games</option>';
+        gameSelect.disabled = true;
+        allowedGames = [];
+        console.error('Failed to load games — upload may be restricted');
+      }
+    }
+    loadGames();
+
+    document.getElementById('uploadForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const status = document.getElementById('uploadStatus');
+      const btn = document.getElementById('uploadBtn');
+      const rejectPanel = document.getElementById('rejectionPanel');
+      const rejectReason = document.getElementById('rejectionReason');
+
+      rejectPanel.hidden = true;
+      status.textContent = '';
+      status.className = '';
+
+      const file = document.getElementById('videoFile').files[0];
+      if (!file) {
+        status.textContent = 'Please select a video file to upload';
+        status.className = 'error-msg';
+        return;
+      }
+
+      const game = gameSelect.value;
+      if (!game || !allowedGames.includes(game)) {
+        status.textContent = 'Wrong video — only gameplay videos for your assigned games are supported';
+        status.className = 'error-msg';
+        return;
+      }
+
+      status.textContent = 'Uploading & running AI analysis...';
+      status.className = 'success-msg';
+      btn.disabled = true;
+      btn.textContent = 'Analyzing...';
+
+      const fd = new FormData();
+      fd.append('video', file);
+      fd.append('gameTitle', game);
+      fd.append('rank', document.getElementById('rank').value);
+      fd.append('caption', document.getElementById('caption').value);
+
+      try {
+        await api('/videos/upload', { method: 'POST', body: fd, headers: {}, timeout: 60000 });
+        status.textContent = 'Clip live on feed with ESV score!';
+        status.className = 'success-msg';
+        btn.textContent = 'Upload & Analyze';
+        btn.disabled = false;
+        setTimeout(() => { window.location.href = 'feed.html'; }, 1200);
+      } catch (err) {
+        const msg = err.message || 'Upload failed';
+        btn.textContent = 'Upload & Analyze';
+        btn.disabled = false;
+        if (msg.toLowerCase().includes('not supported') || msg.toLowerCase().includes('gameplay') || msg.toLowerCase().includes('select the correct game')) {
+          rejectReason.textContent = msg;
+          rejectPanel.hidden = false;
+          status.textContent = '';
+          status.className = '';
+        } else {
+          status.textContent = msg;
+          status.className = 'error-msg';
+        }
+      }
+    };
+
+    document.getElementById('dismissRejection').onclick = () => {
+      document.getElementById('rejectionPanel').hidden = true;
+    };
+  </script>
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  <script type="module" src="../../services/notification.js"></script>
+</body>
+</html>
