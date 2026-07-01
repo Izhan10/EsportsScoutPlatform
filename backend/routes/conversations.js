@@ -8,6 +8,30 @@ const { getIO } = require('../io');
 
 const router = express.Router();
 
+function normalizeConversationRow(r) {
+  if (r.otherUser) {
+    return {
+      id: r.id,
+      createdAt: r.createdAt || r.created_at,
+      otherUser: r.otherUser,
+      lastMessage: r.lastMessage ?? r.last_message ?? null,
+      unreadCount: Number(r.unreadCount ?? r.unread_count ?? 0),
+    };
+  }
+  return {
+    id: r.id,
+    createdAt: r.created_at,
+    otherUser: {
+      id: r.other_id,
+      username: r.username,
+      avatar: r.avatar,
+      role: r.role,
+    },
+    lastMessage: r.last_message ?? null,
+    unreadCount: parseInt(r.unread_count, 10) || 0,
+  };
+}
+
 const CHAT_UPLOAD_DIR = path.join(__dirname, '..', 'uploads', 'chat');
 if (!fs.existsSync(CHAT_UPLOAD_DIR)) fs.mkdirSync(CHAT_UPLOAD_DIR, { recursive: true });
 
@@ -48,15 +72,36 @@ router.post('/upload', authenticate, (req, res) => {
 router.get('/', authenticate, async (req, res) => {
   try {
     const result = await db.query(
-      'SELECT * FROM conversations WHERE participant1_id = $1 OR participant2_id = $1 ORDER BY created_at DESC',
+      `SELECT c.id, c.created_at,
+              u.id AS other_id, u.username, u.avatar, u.role,
+              (SELECT row_to_json(m.*) FROM messages m WHERE m.conversation_id = c.id ORDER BY m.id DESC LIMIT 1) AS last_message,
+              (SELECT COUNT(*) FROM messages m WHERE m.conversation_id = c.id AND m.sender_id != $1 AND m.read_at IS NULL) AS unread_count
+       FROM conversations c
+       JOIN users u ON u.id = CASE WHEN c.participant1_id = $1 THEN c.participant2_id ELSE c.participant1_id END
+       WHERE c.participant1_id = $1 OR c.participant2_id = $1
+       ORDER BY COALESCE((SELECT MAX(m.created_at) FROM messages m WHERE m.conversation_id = c.id), c.created_at) DESC`,
       [req.user.id]
     );
-    res.json(result.rows);
+
+    res.json(result.rows.map(normalizeConversationRow));
   } catch (err) {
     console.error('[Conversations] List error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+async function enrichConversation(userId, convId) {
+  const result = await db.query(
+    `SELECT c.id, c.created_at,
+            u.id AS other_id, u.username, u.avatar, u.role
+     FROM conversations c
+     JOIN users u ON u.id = CASE WHEN c.participant1_id = $1 THEN c.participant2_id ELSE c.participant1_id END
+     WHERE c.id = $2`,
+    [userId, convId]
+  );
+  if (!result.rows.length) return null;
+  return normalizeConversationRow({ ...result.rows[0], last_message: null, unread_count: 0 });
+}
 
 router.post('/start', authenticate, async (req, res) => {
   try {
@@ -71,14 +116,16 @@ router.post('/start', authenticate, async (req, res) => {
     );
 
     if (existing.rows.length > 0) {
-      return res.json(existing.rows[0]);
+      const enriched = await enrichConversation(req.user.id, existing.rows[0].id);
+      return res.json(enriched || existing.rows[0]);
     }
 
     const result = await db.query(
       'INSERT INTO conversations (participant1_id, participant2_id) VALUES ($1, $2) RETURNING *',
       [req.user.id, userId]
     );
-    res.status(201).json(result.rows[0]);
+    const enriched = await enrichConversation(req.user.id, result.rows[0].id);
+    res.status(201).json(enriched || result.rows[0]);
   } catch (err) {
     console.error('[Conversations] Start error:', err);
     res.status(500).json({ error: 'Server error' });
@@ -105,12 +152,12 @@ router.get('/:id/messages', authenticate, async (req, res) => {
       [convId]
     );
 
-    const rows = result.rows.map((msg) => {
+    const rows = await Promise.all(result.rows.map(async (msg) => {
       if (msg.message_type === 'team_offer') {
         try {
           const offerData = JSON.parse(msg.message || '{}');
           if (offerData.id) {
-            const offerResult = db.query('SELECT status FROM team_offers WHERE id = $1', [offerData.id]);
+            const offerResult = await db.query('SELECT status FROM team_offers WHERE id = $1', [offerData.id]);
             if (offerResult && offerResult.rows && offerResult.rows.length) {
               offerData.status = offerResult.rows[0].status;
               msg.message = JSON.stringify(offerData);
@@ -119,7 +166,7 @@ router.get('/:id/messages', authenticate, async (req, res) => {
         } catch {}
       }
       return msg;
-    });
+    }));
 
     res.json(rows);
   } catch (err) {

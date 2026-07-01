@@ -356,18 +356,10 @@ Generated: ${new Date(report.generatedAt).toLocaleString()}`;
       if (recruitBtn) {
         recruitBtn.onclick = async () => {
           try {
-            const convs = await api('/conversations');
-            const existing = convs.find(c => {
-              const otherId = c.participant1_id === currentUserId ? c.participant2_id : c.participant1_id;
-              return otherId === playerId;
-            });
-            if (existing) {
-              window.location.href = `../scout/messages.html?conv=${existing.id}`;
-            } else {
-              window.location.href = `../scout/messages.html?player=${playerId}`;
-            }
+            const conv = await api('/conversations/start', { method: 'POST', body: JSON.stringify({ userId: parseInt(playerId) }) });
+            window.location.href = `../scout/messages.html?conv=${conv.id}`;
           } catch {
-            window.location.href = `../scout/messages.html?player=${playerId}`;
+            window.location.href = '../scout/messages.html';
           }
         };
       }
@@ -704,5 +696,6 @@ Generated: ${new Date(report.generatedAt).toLocaleString()}`;
       </div>
     </div>
   </div>
+  <script type="module" src="../../services/notification.js"></script>
 </body>
 </html>

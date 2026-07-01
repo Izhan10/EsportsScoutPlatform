@@ -775,6 +775,26 @@ async function mockQuery(text, params = []) {
     const conv = data.conversations.find(c => c.id === convId);
     return { rows: conv ? [conv] : [] };
   }
+  if (queryStr.includes('FROM conversations c') && queryStr.includes('JOIN users u') && queryStr.includes('WHERE c.id = $2')) {
+    const userId = parseInt(params[0], 10);
+    const convId = parseInt(params[1], 10);
+    const conv = data.conversations.find(c => c.id === convId);
+    if (!conv || (conv.participant1_id !== userId && conv.participant2_id !== userId)) {
+      return { rows: [] };
+    }
+    const otherId = conv.participant1_id === userId ? conv.participant2_id : conv.participant1_id;
+    const otherUser = data.users.find(u => u.id === otherId) || {};
+    return {
+      rows: [{
+        id: conv.id,
+        created_at: conv.created_at,
+        other_id: otherUser.id,
+        username: otherUser.username,
+        avatar: otherUser.avatar || '',
+        role: otherUser.role,
+      }],
+    };
+  }
   if (queryStr.includes('FROM conversations') && queryStr.includes('participant1_id') && queryStr.includes('participant2_id')) {
     const uid1 = parseInt(params[0], 10);
     const uid2 = params[1] ? parseInt(params[1], 10) : null;

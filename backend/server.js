@@ -51,11 +51,15 @@ io.on('connection', (socket) => {
   });
 
   socket.on('joinConversation', async (conversationId) => {
-    const userId = socket.user?.id;
-    if (!userId || !conversationId) return;
-    const hasAccess = await verifyConversationAccess(conversationId, userId);
-    if (!hasAccess) return;
-    socket.join(`conv:${conversationId}`);
+    try {
+      const userId = socket.user?.id;
+      if (!userId || !conversationId) return;
+      const hasAccess = await verifyConversationAccess(conversationId, userId);
+      if (!hasAccess) return;
+      socket.join(`conv:${conversationId}`);
+    } catch (err) {
+      console.error('Socket joinConversation error', err);
+    }
   });
 
   socket.on('leaveConversation', (conversationId) => {
@@ -98,79 +102,111 @@ io.on('connection', (socket) => {
 
   // --- Video Call Signaling ---
   socket.on('videoCall:offer', async (data) => {
-    const { conversationId, offer } = data;
-    const userId = socket.user?.id;
-    if (!userId || !conversationId) return;
-    const hasAccess = await verifyConversationAccess(conversationId, userId);
-    if (!hasAccess) return;
-    socket.to(`conv:${conversationId}`).emit('videoCall:offer', {
-      offer,
-      callerId: userId,
-      callerUsername: socket.user?.username || 'Unknown',
-    });
+    try {
+      const { conversationId, offer } = data;
+      const userId = socket.user?.id;
+      if (!userId || !conversationId) return;
+      const hasAccess = await verifyConversationAccess(conversationId, userId);
+      if (!hasAccess) return;
+      socket.to(`conv:${conversationId}`).emit('videoCall:offer', {
+        offer,
+        callerId: userId,
+        callerUsername: socket.user?.username || 'Unknown',
+      });
+    } catch (err) {
+      console.error('Socket videoCall:offer error', err);
+    }
   });
 
   socket.on('videoCall:answer', async (data) => {
-    const { conversationId, answer } = data;
-    const userId = socket.user?.id;
-    if (!userId || !conversationId) return;
-    const hasAccess = await verifyConversationAccess(conversationId, userId);
-    if (!hasAccess) return;
-    socket.to(`conv:${conversationId}`).emit('videoCall:answer', { answer });
+    try {
+      const { conversationId, answer } = data;
+      const userId = socket.user?.id;
+      if (!userId || !conversationId) return;
+      const hasAccess = await verifyConversationAccess(conversationId, userId);
+      if (!hasAccess) return;
+      socket.to(`conv:${conversationId}`).emit('videoCall:answer', { answer });
+    } catch (err) {
+      console.error('Socket videoCall:answer error', err);
+    }
   });
 
   socket.on('videoCall:ice-candidate', async (data) => {
-    const { conversationId, candidate } = data;
-    const userId = socket.user?.id;
-    if (!userId || !conversationId) return;
-    const hasAccess = await verifyConversationAccess(conversationId, userId);
-    if (!hasAccess) return;
-    socket.to(`conv:${conversationId}`).emit('videoCall:ice-candidate', { candidate });
+    try {
+      const { conversationId, candidate } = data;
+      const userId = socket.user?.id;
+      if (!userId || !conversationId) return;
+      const hasAccess = await verifyConversationAccess(conversationId, userId);
+      if (!hasAccess) return;
+      socket.to(`conv:${conversationId}`).emit('videoCall:ice-candidate', { candidate });
+    } catch (err) {
+      console.error('Socket videoCall:ice-candidate error', err);
+    }
   });
 
   socket.on('videoCall:end', async (data) => {
-    const { conversationId } = data;
-    const userId = socket.user?.id;
-    if (!userId || !conversationId) return;
-    const hasAccess = await verifyConversationAccess(conversationId, userId);
-    if (!hasAccess) return;
-    socket.to(`conv:${conversationId}`).emit('videoCall:end', {});
+    try {
+      const { conversationId } = data;
+      const userId = socket.user?.id;
+      if (!userId || !conversationId) return;
+      const hasAccess = await verifyConversationAccess(conversationId, userId);
+      if (!hasAccess) return;
+      socket.to(`conv:${conversationId}`).emit('videoCall:end', {});
+    } catch (err) {
+      console.error('Socket videoCall:end error', err);
+    }
   });
 
   socket.on('videoCall:decline', async (data) => {
-    const { conversationId } = data;
-    const userId = socket.user?.id;
-    if (!userId || !conversationId) return;
-    const hasAccess = await verifyConversationAccess(conversationId, userId);
-    if (!hasAccess) return;
-    socket.to(`conv:${conversationId}`).emit('videoCall:decline', {});
+    try {
+      const { conversationId } = data;
+      const userId = socket.user?.id;
+      if (!userId || !conversationId) return;
+      const hasAccess = await verifyConversationAccess(conversationId, userId);
+      if (!hasAccess) return;
+      socket.to(`conv:${conversationId}`).emit('videoCall:decline', {});
+    } catch (err) {
+      console.error('Socket videoCall:decline error', err);
+    }
   });
 
   socket.on('videoCall:busy', async (data) => {
-    const { conversationId } = data;
-    const userId = socket.user?.id;
-    if (!userId || !conversationId) return;
-    const hasAccess = await verifyConversationAccess(conversationId, userId);
-    if (!hasAccess) return;
-    socket.to(`conv:${conversationId}`).emit('videoCall:busy', {});
+    try {
+      const { conversationId } = data;
+      const userId = socket.user?.id;
+      if (!userId || !conversationId) return;
+      const hasAccess = await verifyConversationAccess(conversationId, userId);
+      if (!hasAccess) return;
+      socket.to(`conv:${conversationId}`).emit('videoCall:busy', {});
+    } catch (err) {
+      console.error('Socket videoCall:busy error', err);
+    }
   });
 
   socket.on('typing:start', async (data) => {
-    const { conversationId } = data;
-    const userId = socket.user?.id;
-    if (!userId || !conversationId) return;
-    const hasAccess = await verifyConversationAccess(conversationId, userId);
-    if (!hasAccess) return;
-    socket.to(`conv:${conversationId}`).emit('typing:start', { conversationId, userId });
+    try {
+      const { conversationId } = data;
+      const userId = socket.user?.id;
+      if (!userId || !conversationId) return;
+      const hasAccess = await verifyConversationAccess(conversationId, userId);
+      if (!hasAccess) return;
+      socket.to(`conv:${conversationId}`).emit('typing:start', { conversationId, userId });
+    } catch (err) {
+      console.error('Socket typing:start error', err);
+    }
   });
 
   socket.on('typing:stop', async (data) => {
-    const { conversationId } = data;
-    const userId = socket.user?.id;
-    if (!userId || !conversationId) return;
-    const hasAccess = await verifyConversationAccess(conversationId, userId);
-    if (!hasAccess) return;
-    socket.to(`conv:${conversationId}`).emit('typing:stop', { conversationId, userId });
+    try {
+      const { conversationId } = data;
+      const userId = socket.user?.id;
+      if (!userId || !conversationId) return;
+      const hasAccess = await verifyConversationAccess(conversationId, userId);
+      if (!hasAccess) return;
+      socket.to(`conv:${conversationId}`).emit('typing:stop', { conversationId, userId });
+    } catch (err) {
+      console.error('Socket typing:stop error', err);
+    }
   });
 });
 

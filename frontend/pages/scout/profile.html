@@ -585,8 +585,13 @@
       `).join('')}</div>`;
 
       document.querySelectorAll('.btn-msg').forEach(btn => {
-        btn.onclick = () => {
-          window.location.href = `messages.html?conv=new&userId=${btn.dataset.playerId}`;
+        btn.onclick = async () => {
+          try {
+            const conv = await api('/conversations/start', { method: 'POST', body: JSON.stringify({ userId: parseInt(btn.dataset.playerId) }) });
+            window.location.href = `messages.html?conv=${conv.id}`;
+          } catch {
+            window.location.href = 'messages.html';
+          }
         };
       });
     }
@@ -831,7 +836,146 @@
 
     /* ========== LIQUIPEDIA IMPORT ========== */
 
-    document.getElementById('liquipediaBtn').onclick = () => window.location.href = 'profile.html';
+    let lpAbortController = null;
+    const searchCache = new Map();
+
+    function debounce(fn, ms) {
+      let timer;
+      return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms); };
+    }
+
+    document.getElementById('liquipediaBtn').onclick = () => openLiquipediaImport();
+
+    function openLiquipediaImport() {
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay open';
+      modal.innerHTML = `
+        <div class="modal-content">
+          <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+          <h2>Import From Liquipedia</h2>
+          <p>Search for your past player profile on Liquipedia to import your career history.</p>
+          <div style="display:flex;gap:0.5rem;position:relative;">
+            <input type="text" id="lpSearchInput" placeholder="Enter your player name..." style="flex:1;padding:0.65rem 0.75rem;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;font-family:inherit;">
+            <span id="lpSpinner" style="display:none;position:absolute;right:6rem;top:50%;transform:translateY(-50%);font-size:0.75rem;color:var(--muted);">searching...</span>
+            <button class="btn btn-neon" id="lpSearchBtn" style="width:auto;background:linear-gradient(135deg,#7c3aed,#06b6d4);">Search</button>
+          </div>
+          <div id="lpResults" style="margin-top:1rem;"></div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      const input = document.getElementById('lpSearchInput');
+      const searchBtn = document.getElementById('lpSearchBtn');
+      const resultsDiv = document.getElementById('lpResults');
+      const spinner = document.getElementById('lpSpinner');
+
+      async function performSearch(name, autocomplete) {
+        if (!name || name.trim().length < 2) { resultsDiv.innerHTML = ''; return; }
+        const trimmed = name.trim();
+
+        if (lpAbortController) lpAbortController.abort();
+        lpAbortController = new AbortController();
+
+        const cacheKey = trimmed.toLowerCase() + ':' + autocomplete;
+        const cached = searchCache.get(cacheKey);
+        if (cached) { renderResults(cached); return; }
+
+        spinner.style.display = 'inline';
+        try {
+          const data = await api('/liquipedia/search-player', {
+            method: 'POST',
+            body: JSON.stringify({ name: trimmed, autocomplete }),
+            signal: lpAbortController.signal,
+          });
+          if (lpAbortController.signal.aborted) return;
+          searchCache.set(cacheKey, data.results);
+          renderResults(data.results);
+        } catch (err) {
+          if (err.name === 'AbortError') return;
+          if (lpAbortController.signal.aborted) return;
+          resultsDiv.innerHTML = '<p style="color:var(--competitive-red);">Search failed: ' + err.message + '</p>';
+        } finally {
+          spinner.style.display = 'none';
+        }
+      }
+
+      function renderResults(results) {
+        if (!results.length) { resultsDiv.innerHTML = '<p style="color:var(--muted);">No results found. Try a different name.</p>'; return; }
+        resultsDiv.innerHTML = results.map(r => `
+          <div style="display:flex;align-items:center;gap:1rem;padding:0.75rem;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:0.5rem;border:1px solid var(--glass-stroke);">
+            <img src="${r.image || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + r.name}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=${r.name}'">
+            <div style="flex:1;">
+              <strong>${r.real_name || r.name}</strong>
+              <p style="font-size:0.8rem;color:var(--muted);">${r.country || ''} \u00B7 ${r.game || ''} \u00B7 ${r.role || ''}</p>
+            </div>
+            <button class="btn btn-neon" data-lp-import="${r.id}" data-lp-wiki="${r.wiki || 'valorant'}" style="width:auto;font-size:0.8rem;padding:0.4rem 0.75rem;background:linear-gradient(135deg,#7c3aed,#06b6d4);">Import</button>
+          </div>
+        `).join('');
+        resultsDiv.querySelectorAll('[data-lp-import]').forEach(btn => {
+          btn.onclick = async () => {
+            try {
+              btn.disabled = true;
+              btn.textContent = 'Importing...';
+              const importData = await api('/liquipedia/import-player-as-scout', { method: 'POST', body: JSON.stringify({ liquipediaId: btn.dataset.lpImport, wiki: btn.dataset.lpWiki }) });
+              const p = importData.profile;
+
+              const payload = {
+                real_name: p.real_name || '',
+                avatar: p.avatar || '',
+                bio: p.bio || '',
+                country: p.country || '',
+                social_links: p.social_links || {},
+                organization: p.organization || '',
+                coaching_specialty: p.coaching_specialty || '',
+                best_achievement: p.best_achievement || '',
+                years_experience: p.years_experience || 0,
+                teams_coached: p.teams_coached || '',
+                achievements: p.achievements || '',
+                experience: '',
+                cv_url: '',
+                liquipedia_id: p.liquipedia_id || '',
+                liquipedia_url: p.liquipedia_url || '',
+                liquipedia_data: p.liquipedia_data || {},
+                teams: (p.teams || []).map(t => ({ name: t.name, role: t.role, year: t.year })),
+                tournaments: (p.tournaments || []).map(t => ({ name: t.name, placement: t.placement, date: t.date })),
+                accolades: (p.accolades || []).map(a => ({ title: a.title, description: a.description, year: a.year })),
+              };
+
+              const result = await api('/scouts/import', {
+                method: 'POST',
+                body: JSON.stringify(payload)
+              });
+
+              resultsDiv.innerHTML = '<p style="color:var(--toxic-lime);">\u2713 Imported! Refreshing profile...</p>';
+              setTimeout(() => { modal.remove(); window.location.reload(); }, 1200);
+            } catch (err) { btn.disabled = false; btn.textContent = 'Import'; resultsDiv.innerHTML = '<p style="color:var(--competitive-red);">Import failed: ' + err.message + '</p>'; }
+          };
+        });
+      }
+
+      const debouncedSearch = debounce((name) => performSearch(name, true), 400);
+
+      input.oninput = () => {
+        const val = input.value;
+        if (val.trim().length < 3) { resultsDiv.innerHTML = ''; spinner.style.display = 'none'; return; }
+        debouncedSearch(val);
+      };
+
+      searchBtn.onclick = async () => {
+        if (lpAbortController) lpAbortController.abort();
+        lpAbortController = new AbortController();
+        await performSearch(input.value, false);
+      };
+
+      input.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (lpAbortController) lpAbortController.abort();
+          lpAbortController = new AbortController();
+          performSearch(input.value, false);
+        }
+      };
+    }
 
     /* ========== UTILITIES ========== */
 

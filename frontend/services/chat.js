@@ -589,11 +589,7 @@ export function setupVideoCall(config) {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
-    {
-      urls: process.env.TURN_URL || 'turn:openrelay.metered.ca:80',
-      username: process.env.TURN_USERNAME || 'openrelayproject',
-      credential: process.env.TURN_CREDENTIAL || 'openrelayproject',
-    },
+    { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
   ],
   iceTransportPolicy: 'all',
 };

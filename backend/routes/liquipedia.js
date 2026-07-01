@@ -88,6 +88,65 @@ router.post('/import-scout', authenticate, async (req, res) => {
   }
 });
 
+router.post('/import-player-as-scout', authenticate, async (req, res) => {
+  try {
+    const { liquipediaId, wiki } = req.body;
+    if (!liquipediaId) return res.status(400).json({ error: 'Liquipedia ID required' });
+
+    const remoteProfile = await liquipediaService.fetchPlayerProfile(liquipediaId, wiki);
+    const lpWiki = wiki || 'valorant';
+
+    const teams = (remoteProfile.teams || []).map(t => ({
+      name: t.name || '',
+      role: t.role || '',
+      year: parseInt((t.start_date || t.end_date || '').split('-')[0]) || null,
+    }));
+
+    const tournaments = (remoteProfile.tournaments || []).map(t => ({
+      name: t.name || '',
+      placement: t.placement || '',
+      date: (t.date || '').split('T')[0] || '',
+    }));
+
+    const accolades = (remoteProfile.achievements || []).map(a => ({
+      title: a.title || a.name || '',
+      description: a.placement || '',
+      year: a.year || (a.date || '').split('-')[0] || '',
+    }));
+
+    const mapped = {
+      real_name: remoteProfile.real_name || remoteProfile.name || '',
+      avatar: remoteProfile.image || '',
+      bio: `${remoteProfile.real_name || remoteProfile.name || 'Player'} is a former ${remoteProfile.role || 'professional'} ${remoteProfile.game || 'esports'} player` + (remoteProfile.country ? ` from ${remoteProfile.country}` : '') + `.`,
+      country: remoteProfile.country || '',
+      social_links: remoteProfile.social_links || {},
+      organization: (remoteProfile.teams || [])[0]?.name || '',
+      coaching_specialty: remoteProfile.game || remoteProfile.role || '',
+      best_achievement: accolades[0]?.title || '',
+      years_experience: 0,
+      teams_coached: teams.map(t => `${t.name} (${t.role})`).join(', '),
+      achievements: accolades.map(a => `• ${a.title}${a.year ? ' (' + a.year + ')' : ''}`).join('\n'),
+      experience: '',
+      cv_url: '',
+      liquipedia_id: liquipediaId,
+      liquipedia_url: `https://liquipedia.net/${lpWiki}/${encodeURIComponent(remoteProfile.real_name || remoteProfile.name || liquipediaId)}`,
+      liquipedia_data: remoteProfile,
+      profile_source: 'liquipedia',
+      teams,
+      tournaments,
+      accolades,
+    };
+
+    console.log('[LIQUIPEDIA IMPORT-PLAYER-AS-SCOUT] mapped fields:', Object.keys(mapped));
+    console.log('[LIQUIPEDIA IMPORT-PLAYER-AS-SCOUT] teams:', teams.length, 'tournaments:', tournaments.length, 'accolades:', accolades.length);
+
+    res.json({ profile: mapped });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message || 'Liquipedia import failed' });
+  }
+});
+
 router.post('/log-failure', authenticate, async (req, res) => {
   const { playerName, error } = req.body;
   if (!playerName) return res.status(400).json({ error: 'playerName required' });

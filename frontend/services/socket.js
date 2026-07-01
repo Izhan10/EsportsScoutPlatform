@@ -3,7 +3,7 @@ import { API_URL } from './api.js';
 let sharedSocket = null;
 
 export function getSocket() {
-  if (sharedSocket && sharedSocket.connected) return sharedSocket;
+  if (sharedSocket) return sharedSocket;
   const token = localStorage.getItem('token');
   if (!token || typeof io === 'undefined') return null;
   sharedSocket = io(API_URL, {

@@ -187,6 +187,7 @@ const NOTIF_STYLES = `
   let countBadgeEl = null;
   let btnEl = null;
   let socket = null;
+  let socketListenersBound = false;
   let totalUnread = 0;
 
   function injectStyles() {
@@ -227,7 +228,7 @@ const NOTIF_STYLES = `
       <div class="notif-dropdown-footer" id="notifViewAll" style="display:none">View all</div>
     `;
     btnEl = document.querySelector('.notif-btn');
-    if (btnEl) {
+    if (btnEl && btnEl.parentNode) {
       btnEl.style.position = 'relative';
       btnEl.parentNode.style.position = 'relative';
       btnEl.parentNode.appendChild(dropdownEl);
@@ -380,8 +381,10 @@ const NOTIF_STYLES = `
 
   function setupSocket() {
     if (typeof io === 'undefined') return;
+    if (socketListenersBound) return;
     try {
       socket = getSocket();
+      socketListenersBound = true;
       socket.on('connect', () => { fetchUnread(); });
       socket.on('reconnect', () => { fetchUnread(); });
       socket.on('connect_error', () => {});
@@ -521,9 +524,23 @@ const NOTIF_STYLES = `
   }
 
   injectStyles();
-  buildDropdown();
 
-  // Wait for DOM to be ready before fetching
+  function tryBuildDropdown() {
+    const btn = document.querySelector('.notif-btn');
+    if (btn && btn.parentNode) {
+      buildDropdown();
+      return true;
+    }
+    return false;
+  }
+
+  if (!tryBuildDropdown()) {
+    const obs = new MutationObserver(() => {
+      if (tryBuildDropdown()) obs.disconnect();
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       fetchUnread();
